@@ -1,0 +1,8 @@
+{
+  "name": "genie",
+  "version": "0.1.0",
+  "devDependencies": {
+    "angular": "^1.5.9",
+    "d3": "^3.5.5"
+  }
+}
