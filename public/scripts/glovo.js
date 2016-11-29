@@ -8016,13 +8016,17 @@ angular.module('genie.testing', [])
 	$scope.occupations = Occupations;
 
 	$scope.$watch('selected', function(newValue) {
+		var seen = 0; //Count number seen
 		d3.selectAll('.person').each(
 			function(d) {
 				if (d.occupation == newValue) {
 					d3.select(this).select('rect').attr('class', 'highlight');
+					seen++;
 				}
 			}
-		)
+		);
+		if (seen) d3.select("#response").text("There are " + seen + " " + newValue.toLowerCase() + "s in this visualization");
+
 	});
 
 	var boxWidth = 150,
