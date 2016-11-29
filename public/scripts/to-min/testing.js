@@ -1,5 +1,19 @@
 angular.module('genie.testing', [])
-.controller('testingCtrl', function(d3) {
+.controller('testingCtrl', function(d3, Occupations, $scope) {
+
+	$scope.selected = undefined;
+
+	$scope.occupations = Occupations;
+
+	$scope.$watch('selected', function(newValue) {
+		d3.selectAll('.person').each(
+			function(d) {
+				if (d.occupation == newValue) {
+					d3.select(this).select('rect').attr('class', 'highlight');
+				}
+			}
+		)
+	});
 
 	var boxWidth = 150,
 		boxHeight = 40,
@@ -12,6 +26,7 @@ angular.module('genie.testing', [])
 		// d3 multiplies the node size by this value
 		// to calculate the distance between nodes
 		separation = .5;
+
 	/**
 	 * For the sake of the examples, I want the setup code to be at the top.
 	 * However, since it uses a class (Tree) which is defined later, I wrap
@@ -228,6 +243,9 @@ angular.module('genie.testing', [])
 		// Add any new nodes
 		var nodeEnter = node.enter().append("g")
 			.attr("class", "person " + self.selector)
+			.attr("occupation", function(d) {
+				return d.occupation
+			})
 
 			// Add new nodes at the right side of their child's box.
 			// They will be transitioned into their proper position.
@@ -254,7 +272,7 @@ angular.module('genie.testing', [])
 			.attr("text-anchor", "start")
 			.attr('class', 'name')
 			.text(function(d) {
-				return d.name;
+				return d.occupation ? d.name + " (" + d.occupation + ")" : d.name;
 			})
 			.style('fill-opacity', 0);
 

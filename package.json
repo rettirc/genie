@@ -21,6 +21,7 @@
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-clean-css": "2.0.13",
     "gulp-concat": "2.6.1",
+    "gulp-concat-css": "2.3.0",
     "gulp-hub": "0.8.0",
     "gulp-imagemin": "3.1.1",
     "gulp-nodemon": "2.2.1",

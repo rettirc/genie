@@ -2,4 +2,15 @@ extends layout
 
 block content
 	div(ng-controller='testingCtrl')
+		div(class='form-group' style="width: 300px; padding: 25px; text-align: left;")
+			label(for='occupations' style="width: 100%; text-align: left;") Search for Occupations in Your Tree
+			input(
+				name="occupations"
+				id="occupations"
+				type="text"
+				placeholder="enter an occupation"
+				ng-model="selected"
+				uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
+				class="form-control"
+			)
 	

@@ -8,6 +8,7 @@ const nodemon = require('gulp-nodemon');
 const gutil = require('gulp-util');
 const concat = require('gulp-concat');
 const queue = require('streamqueue');
+const concatCSS = require('gulp-concat-css');
 
 
 const paths = {
@@ -28,8 +29,24 @@ const BROWSER_SYNC_RELOAD_DELAY = 500;
  * You can still declare named functions and export them as tasks
  */
 const styles = function styles() {
-	return gulp.src(paths.styles.src)
-		.pipe(sass())
+
+	function bootstrap() {
+		return gulp.src([
+				'bootstrap/dist/css/bootstrap.min.css'
+			],
+			{ cwd: 'bower_components' }
+		);
+	}
+
+	function appStyles() {
+		return gulp.src([
+				paths.styles.src
+			])
+			.pipe(sass())
+	}
+
+	return queue({ objectMode: true }, bootstrap, appStyles)
+		.pipe(concatCSS('genie.css'))
 		.pipe(cleanCSS())
 		// pass in options to the stream
 		.pipe(rename({
@@ -37,6 +54,7 @@ const styles = function styles() {
 			suffix: '.min'
 		}))
 		.pipe(gulp.dest(paths.styles.dest));
+
 };
 
 const watch = function watch() {
@@ -106,15 +124,20 @@ const scripts = function scripts() {
 		return gulp.src([
 				// angular
 				'angular/angular.min.js',
+				'angular-bootstrap/ui-bootstrap-tpls.js',
 
 				// d3
-				'd3/d3.min.js'
+				'd3/d3.min.js',
+
+				// bootstrap
+				'jquery/dist/jquery.min.js',
+				'bootstrap/dist/js/bootstrap.min.js'
 			],
 			{ cwd: 'bower_components' }
 		);
 	}
 
-	function app() {
+	function appScripts() {
 		return gulp.src([
 				'**/*.js'
 			],
@@ -122,7 +145,7 @@ const scripts = function scripts() {
 		)
 	}
 
-	return queue({ objectMode: true }, deps, app)
+	return queue({ objectMode: true }, deps, appScripts)
 		.pipe(concat('glovo.js'))
 		.pipe(gulp.dest('public/scripts'))
 		.pipe(browserSync.reload({ stream: true }));

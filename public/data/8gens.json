@@ -8,6 +8,7 @@
 			"_parents": [
 				{
 					"name": "Jared Evans",
+					"occupation": "Blacksmith",
 					"id": "efa251bb-13f7-583d-b5ec-c16f8fcd109f",
 					"_parents": [
 						{
@@ -322,14 +323,17 @@
 				},
 				{
 					"name": "Mina Taylor",
+					"occupation": "Barber",
 					"id": "6a2c6fee-7e8c-5d14-97a0-2fb79c20c89f",
 					"_parents": [
 						{
 							"name": "Benjamin Owens",
+							"occupation": "Barber",
 							"id": "bf9a8cf3-c132-5940-a894-7c0d5839d548",
 							"_parents": [
 								{
 									"name": "Russell Pope",
+									"occupation": "Barber",
 									"id": "df7836ef-6584-57b4-af24-22795ad7b568",
 									"_parents": [
 										{

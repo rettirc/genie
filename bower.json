@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "devDependencies": {
     "angular": "^1.5.9",
-    "d3": "^3.5.5"
+    "d3": "^3.5.5",
+    "angular-bootstrap": "^2.3.0",
+    "bootstrap": "^3.3.7"
   }
 }
