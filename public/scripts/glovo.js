@@ -8282,7 +8282,7 @@ angular.module('genie.testing', [])
 			.attr("text-anchor", "start")
 			.attr('class', 'name')
 			.text(function(d) {
-				return d.occupation ? d.name + " (" + d.occupation + ")" : d.name;
+				return false ? d.name + " (" + d.occupation + ")" : d.name;
 			})
 			.style('fill-opacity', 0);
 

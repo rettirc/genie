@@ -4,6 +4,7 @@
 	"_parents": [
 		{
 			"name": "Virgie Hampton",
+			"occupation": "Blacksmith",
 			"id": "56d25f0e-7c01-50f9-8dfe-9ed953ea5b33",
 			"_parents": [
 				{
@@ -960,6 +961,7 @@
 				},
 				{
 					"name": "Barry Perry",
+					"occupation": "Blacksmith",
 					"id": "214f52e2-51d5-51f8-9b3a-93b41b49ec58",
 					"_parents": [
 						{
@@ -11478,6 +11480,7 @@
 		},
 		{
 			"name": "Amelia Curtis",
+			"occupation": "Blacksmith",
 			"id": "a66042ef-d968-50a4-87e0-bea4e6793825",
 			"_children": [
 				{
