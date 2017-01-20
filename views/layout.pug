@@ -10,7 +10,7 @@ html
 
 	title Genie | Genealogy Done Right
 
-	body(style='margin: 0' ng-app='genie')
-		include navbar
-		block content
+	body(style='margin: 0' ng-app='genie' ng-controller="LayoutCtrl")
+		div(ui-view="nav")
+		div(ui-view="layout")
 		include footer

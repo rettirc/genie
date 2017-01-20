@@ -1,11 +1,20 @@
 angular.module('genie', [
+	'ui.bootstrap',
+	'ui.router',
+
+	'genie.state-config',
+	'genie.templates',
+
+	'genie.layout-ctrl',
+	'genie.auth-ctrl',
+	'genie.home-ctrl',
 	'genie.testing',
 	'genie.d3',
 	'genie.occupations',
-
-	'ui.bootstrap'
+	'genie.nav-ctrl'
 ])
-.config(function() {
+.config(function($locationProvider) {
+	$locationProvider.html5Mode({ enabled: true, requireBase: false });
 })
 .run(function() {
 });

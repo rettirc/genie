@@ -5,18 +5,23 @@ angular.module('genie.testing', [])
 
 	$scope.occupations = Occupations;
 
-	$scope.$watch('selected', function(newValue) {
+	function checkOccupation(occupation) {
 		var seen = 0; //Count number seen
 		d3.selectAll('.person').each(
 			function(d) {
-				if (d.occupation == newValue) {
+				if (d.occupation == occupation) {
 					d3.select(this).select('rect').attr('class', 'highlight');
 					seen++;
+				} else {
+					d3.select(this).select('rect').classed('highlight',  false);
 				}
 			}
 		);
-		if (seen) d3.select("#response").text("There are " + seen + " " + newValue.toLowerCase() + "s in this visualization");
+		if (seen) d3.select("#response").text("There are " + seen + " " + occupation.toLowerCase() + "(s) in this visualization");
+	}
 
+	$scope.$watch('selected', function(newValue) {
+		checkOccupation(newValue);
 	});
 
 	var boxWidth = 150,
@@ -269,6 +274,7 @@ angular.module('genie.testing', [])
 				width: 0,
 				height: 0
 			});
+
 		// Draw the person's name and position it inside the box
 		nodeEnter.append("text")
 			.attr("dx", 0)

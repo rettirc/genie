@@ -47,6 +47,9 @@ app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 3155760000
  */
 
 router.get('/', controller.index);
+router.get('', function(req, res) { res.redirect('/') });
+router.get('/auth', controller.index);
+
 
 /**
  * 500 Error Handler.

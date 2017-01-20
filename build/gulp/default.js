@@ -9,7 +9,9 @@ const gutil = require('gulp-util');
 const concat = require('gulp-concat');
 const queue = require('streamqueue');
 const concatCSS = require('gulp-concat-css');
-
+const html2js = require('gulp-ng-html2js');
+const pug = require('gulp-pug');
+const minifyHtml = require('gulp-minify-html');
 
 const paths = {
 	styles: {
@@ -125,6 +127,7 @@ const scripts = function scripts() {
 				// angular
 				'angular/angular.min.js',
 				'angular-bootstrap/ui-bootstrap-tpls.js',
+				'angular-ui-router/release/angular-ui-router.min.js',
 
 				// d3
 				'd3/d3.min.js',
@@ -145,8 +148,24 @@ const scripts = function scripts() {
 		)
 	}
 
-	return queue({ objectMode: true }, deps, appScripts)
-		.pipe(concat('glovo.js'))
+	function tmpls() {
+		return gulp.src([
+				'**/*.pug'
+			],
+			{ cwd: 'public/scripts/to-min' }
+		)
+			.pipe(pug({ client: false }))
+			.pipe(minifyHtml({
+				empty: true,
+				spare: true,
+				quotes: true
+			}))
+			.pipe(html2js({ moduleName: 'genie.templates' }))
+			.pipe(concat('templates.js'));
+	}
+
+	return queue({ objectMode: true }, deps, appScripts, tmpls)
+		.pipe(concat('genie.js'))
 		.pipe(gulp.dest('public/scripts'))
 		.pipe(browserSync.reload({ stream: true }));
 };
