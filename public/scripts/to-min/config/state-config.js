@@ -35,12 +35,12 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
-			.state('layout.riverEdit', {
-				url: '/riverEdit',
+			.state('layout.river', {
+				url: '/river',
 				views: {
 					page: {
-						templateUrl: 'states/auth/river-tmpl.html',
-						controller: 'RiverEditCtrl'
+						templateUrl: 'states/river/river-tmpl.html',
+						controller: 'RiverCtrl'
 					}
 				}
 			});

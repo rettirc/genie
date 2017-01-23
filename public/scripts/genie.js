@@ -8572,12 +8572,12 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
-			.state('layout.riverEdit', {
-				url: '/riverEdit',
+			.state('layout.river', {
+				url: '/river',
 				views: {
 					page: {
-						templateUrl: 'states/auth/river-tmpl.html',
-						controller: 'RiverEditCtrl'
+						templateUrl: 'states/river/river-tmpl.html',
+						controller: 'RiverCtrl'
 					}
 				}
 			});
@@ -8609,7 +8609,7 @@ angular.module('genie.nav-ctrl', [])
 });
 
 angular.module('genie.river-ctrl', [])
-.controller('RiverEditCtrl', function($scope) {
+.controller('RiverCtrl', function($scope) {
 	$scope.hello = 'hello';
 });
 
@@ -8621,19 +8621,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/auth/auth-tmpl.html',
-    '<div>LOGIN STUFF HERE!</div><div>TODO Login</div>');
-}]);
-})();
-
-(function(module) {
-try {
-  module = angular.module('genie.templates');
-} catch (e) {
-  module = angular.module('genie.templates', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('states/home/home-tmpl.html',
-    '<div>THIS IS THE HOMEPAGE</div>');
+    '<div>LOGIN STUFF HERE!</div>');
 }]);
 })();
 
@@ -8656,6 +8644,18 @@ try {
   module = angular.module('genie.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('states/home/home-tmpl.html',
+    '<div>THIS IS THE HOMEPAGE</div>');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('genie.templates');
+} catch (e) {
+  module = angular.module('genie.templates', []);
+}
+module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/nav/nav-tmpl.html',
     '<div ng-controller="NavCtrl" style="display: flex; background: grey; height: 70px; width: 100%; align-items: center; justify-content: flex-start"><div style="flex: 0 0 auto; display: flex; align-items: center; font-size: 2em; color: white; padding-left: 15px"><a class="brand" href="/">Genie</a><div style="font-size: .5em; color: white; padding-left: 10px">| Genealogy Reimagined</div></div><div style="flex: 0 0 auto"><div ng-click="go(\'layout.auth\')">Login</div></div></div>');
 }]);
@@ -8668,7 +8668,7 @@ try {
   module = angular.module('genie.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('states/riverEdit/river-tmpl.html',
+  $templateCache.put('states/river/river-tmpl.html',
     '<div>River View</div>');
 }]);
 })();

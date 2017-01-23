@@ -1,4 +1,4 @@
 angular.module('genie.river-ctrl', [])
-.controller('RiverEditCtrl', function($scope) {
+.controller('RiverCtrl', function($scope) {
 	$scope.hello = 'hello';
 });
