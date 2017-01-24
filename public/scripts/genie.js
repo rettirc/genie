@@ -8082,7 +8082,7 @@ angular.module('genie', [
 	'genie.testing',
 	'genie.d3',
 	'genie.occupations',
-	'genie.nav-ctrl'
+	'genie.nav-ctrl',
 	'genie.river-ctrl'
 ])
 .config(function($locationProvider) {
@@ -8585,7 +8585,6 @@ angular.module('genie.state-config', [])
 
 angular.module('genie.auth-ctrl', [])
 .controller('AuthCtrl', function($scope, $state) {
-	$scope.hello = 'hello';
 	$scope.go = function(route) {
 		$state.go(route);
 	}
@@ -8621,19 +8620,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/auth/auth-tmpl.html',
-    '<div>LOGIN STUFF HERE!</div>');
-}]);
-})();
-
-(function(module) {
-try {
-  module = angular.module('genie.templates');
-} catch (e) {
-  module = angular.module('genie.templates', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('states/layout/layout-tmpl.html',
-    '<div ui-view="page"></div>');
+    '<div>Login Page<div ng-click="go(\'layout.river\')">Login</div></div>');
 }]);
 })();
 
@@ -8646,6 +8633,18 @@ try {
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/home/home-tmpl.html',
     '<div>THIS IS THE HOMEPAGE</div>');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('genie.templates');
+} catch (e) {
+  module = angular.module('genie.templates', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('states/layout/layout-tmpl.html',
+    '<div ui-view="page"></div>');
 }]);
 })();
 

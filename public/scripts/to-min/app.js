@@ -11,7 +11,7 @@ angular.module('genie', [
 	'genie.testing',
 	'genie.d3',
 	'genie.occupations',
-	'genie.nav-ctrl'
+	'genie.nav-ctrl',
 	'genie.river-ctrl'
 ])
 .config(function($locationProvider) {
