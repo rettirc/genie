@@ -1,2 +1,2 @@
-[{"id":1,"firstName":"Martin","lastName":"Smith"},
-  {"id":2,"firstName":"Abigain","lastName":"Brown"}]
+[{"id":1,"firstName":"Martin","lastName":"Smith","profession":"writer"},
+  {"id":2,"firstName":"Abigail","lastName":"Brown","faith":"Mormon"}]
