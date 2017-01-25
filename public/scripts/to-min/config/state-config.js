@@ -34,5 +34,14 @@ angular.module('genie.state-config', [])
 						controller: 'AuthCtrl'
 					}
 				}
+			})
+			.state('layout.river', {
+				url: '/river',
+				views: {
+					page: {
+						templateUrl: 'states/river/river-tmpl.html',
+						controller: 'RiverCtrl'
+					}
+				}
 			});
 	});

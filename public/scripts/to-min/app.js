@@ -12,6 +12,7 @@ angular.module('genie', [
 	'genie.d3',
 	'genie.occupations',
 	'genie.nav-ctrl',
+	'genie.river-ctrl'
 ])
 .config(function($locationProvider) {
 	$locationProvider.html5Mode({ enabled: true, requireBase: false });
