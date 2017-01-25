@@ -51,3 +51,4 @@ jspm_packages
 # Misc
 .idea
 bower_components
+genie.js

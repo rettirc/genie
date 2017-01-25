@@ -50,6 +50,7 @@ router.get('/', controller.index);
 router.get('', function(req, res) { res.redirect('/') });
 router.get('/auth', controller.index);
 router.get('/river', controller.index);
+router.get('/map', controller.index);
 
 /**
  * 500 Error Handler.

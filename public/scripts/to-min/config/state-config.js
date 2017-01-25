@@ -43,5 +43,14 @@ angular.module('genie.state-config', [])
 						controller: 'RiverCtrl'
 					}
 				}
+			})
+			.state('layout.map', {
+				url: '/map',
+				views: {
+					page: {
+						templateUrl: 'states/map/map-tmpl.html',
+						controller: 'MapCtrl'
+					}
+				}
 			});
 	});
