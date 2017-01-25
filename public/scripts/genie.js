@@ -8590,13 +8590,13 @@ angular.module('genie.auth-ctrl', [])
 	}
 });
 
+angular.module('genie.layout-ctrl', [])
+.controller('LayoutCtrl', function($scope) {});
+
 angular.module('genie.home-ctrl', [])
 .controller('HomeCtrl', function($scope) {
 	$scope.hello = 'hello';
 });
-
-angular.module('genie.layout-ctrl', [])
-.controller('LayoutCtrl', function($scope) {});
 
 angular.module('genie.nav-ctrl', [])
 .controller('NavCtrl', function($scope, $state) {
@@ -8700,7 +8700,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/home/home-tmpl.html',
-    '<div ng-controller="SandboxCtrl" style="display: flex; height: 100vh; align-items: center; color: black; align-items: center"><img style="align-items: center; margin: 0 0 0 auto; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 10px 0 10px; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 auto 0 0; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"></div>');
+    '<div ng-controller="HomeCtrl" style="display: flex; height: 100vh; align-items: center; color: black; align-items: center"><img style="align-items: center; margin: 0 0 0 auto; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 10px 0 10px; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 auto 0 0; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"></div>');
 }]);
 })();
 
