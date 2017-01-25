@@ -1,2 +1,8 @@
-[{"id":1,"firstName":"Martin","lastName":"Smith","profession":"writer"},
-  {"id":2,"firstName":"Abigail","lastName":"Brown","faith":"Mormon"}]
+[
+  [{"dx":0,"firstName":"Martin","lastName":"Smith","birthYear":1958,"profession":"technician"}],
+  [{"dx":0.5,"firstName":"Aaron","lastName":"Smith","birthYear":1997,"profession":"programmer"},
+      {"dx":-1,"firstName":"Katie","lastName":"Smith","birthYear":1996,"profession":"writer"},
+      {"dx":-0.5, "firstName":"Scotty","lastName":"Smith","birthYear":1927,"profession":"salesman"},
+      {"dx":0.5,"firstName":"Margaret","lastName":"Merriwether","birthYear":1934,"birthPlace":"Vidalia"}]
+
+]
