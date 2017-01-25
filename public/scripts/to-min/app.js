@@ -11,11 +11,10 @@ angular.module('genie', [
 	'genie.testing',
 	'genie.d3',
 	'genie.occupations',
-	'genie.nav-ctrl'
+	'genie.nav-ctrl',
 ])
 .config(function($locationProvider) {
 	$locationProvider.html5Mode({ enabled: true, requireBase: false });
 })
 .run(function() {
 });
-

@@ -50,7 +50,6 @@ router.get('/', controller.index);
 router.get('', function(req, res) { res.redirect('/') });
 router.get('/auth', controller.index);
 
-
 /**
  * 500 Error Handler.
  */
