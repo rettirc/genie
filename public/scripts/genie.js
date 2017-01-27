@@ -8084,7 +8084,7 @@ angular.module('genie', [
 	'genie.occupations',
 	'genie.nav-ctrl',
 	'genie.river-ctrl',
-	'genie.river-ctrl'
+	'genie.map-ctrl'
 ])
 .config(function($locationProvider) {
 	$locationProvider.html5Mode({ enabled: true, requireBase: false });
@@ -8727,7 +8727,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/home/home-tmpl.html',
-    '<div ng-controller="HomeCtrl" style="display: flex; height: 100vh; align-items: center; color: black; align-items: center"><img style="align-items: center; margin: 0 0 0 auto; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 10px 0 10px; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 auto 0 0; border:5px solid black" src="media/img1.png" ng-click="go(\'layout.auth\')" width="300vh"></div>');
+    '<div ng-controller="HomeCtrl" style="display: flex; height: 100vh; align-items: center; color: black; align-items: center"><img style="align-items: center; margin: 0 0 0 auto; border:5px solid black" src="media/tree_icon.png" ng-click="go(\'layout.auth\')" width="300vh"><img style="align-items: center; margin: 0 10px 0 10px; border:5px solid black" src="media/river_icon.png" ng-click="go(\'layout.river\')" width="300vh"><img style="align-items: center; margin: 0 auto 0 0; border:5px solid black" src="media/map_icon.png" ng-click="go(\'layout.map\')" width="300vh"></div>');
 }]);
 })();
 
@@ -8751,7 +8751,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/map/map-tmpl.html',
-    '<div>Im the map im the map im the map im the map IM THE MAP</div><div ui-view="page"></div>');
+    '<div>Im the map im the map im the map im the map IM THE MAP</div><div ui-view="page"></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Occupations in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter an occupation" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Hobbies in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter a hobby" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Depth</label><input class="form-control" name="occupations" id="occupations" type="number" min="1" max="10" placeholder="1" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Choose a Color</label><input class="form-control" name="occupations" id="occupations" type="color" placeholder="enter a hobby" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div>');
 }]);
 })();
 
@@ -8775,6 +8775,6 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/river/river-tmpl.html',
-    '<div>River View<div id="riverView"></div></div>');
+    '<div>River View</div><div style="display:inline-block"><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Occupations in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter an occupation" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="occResp" style="width: 300px; padding: 25px; text-align:left"></label><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Hobbies in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter a hobby" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="hobbResp" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Depth</label><input class="form-control" name="occupations" id="occupations" type="number" min="1" max="10" placeholder="1" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="depthResp" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Choose a Color</label><input class="form-control" name="occupations" id="occupations" type="color" placeholder="enter a hobby" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="colorResp" style="width: 300px; padding: 25px; text-align:left"></label></div></div></div><div id="riverView" style="display:inline-block; padding: 25px"></div>');
 }]);
 })();
