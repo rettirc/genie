@@ -1,18 +1,19 @@
 angular.module('genie.river-ctrl', [])
 .controller('RiverCtrl', function(d3, $scope) {
 
-	var accentColor =
 
-	function checkAttribute(attribute) {
+
+	function checkAttribute(value) {
 		var seen = 0; //Count number seen
 		d3.selectAll('g').each(
 			function(d) {
-				if (d.attributes.profession == attribute) {
-					d3.select(this).select("rect").style('fill', '#aaaaff');
-					seen++;
-				} else {
 					d3.select(this).select("rect").style('fill', '#dddddd');
-				}
+					for (var attr in d.attributes) {
+						if (d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
+								d3.select(this).select("rect").style('fill', '#aaaaff');
+
+						}
+					}
 			}
 		);
 	}
@@ -30,11 +31,11 @@ angular.module('genie.river-ctrl', [])
 	// }
 
 	$scope.$watch('occupationSelected', function(newValue) {
-		checkAttribute(newValue);
+		checkAttribute(newValue.toLowerCase());
 	});
 
 	$scope.$watch('hobbySelected', function(newValue) {
-		checkAttribute(newValue);
+		checkAttribute(newValue.toLowerCase());
 	});
 
 	// $scope.$watch("depthSelected", function(newValue) {
@@ -80,15 +81,15 @@ angular.module('genie.river-ctrl', [])
 		var attributes = Object.keys(data.attributes);
 		for (var i = 0; i < attributes.length; i++) {
 			group.append("text") // Add on more text
-			.attr("y", yLocation(data.birthYear) + (i + 1) * 25)
+			.attr("y", yLocation(data.birthYear) + (i + 1) * 30 - 15)
 			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
 			.attr("font-size", "14") // Font size
 			.text(capitalizeAttribute(attributes[i])); // Physical text.
 
 			group.append("text") // Add on more text
-			.attr("y", yLocation(data.birthYear) + (i + 1) * 25 + 15)
+			.attr("y", yLocation(data.birthYear) + (i + 1) * 30)
 			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
-			.attr("font-size", "12") // Font size
+			.attr("font-size", "14") // Font size
 			.text(capitalizeAttribute(data.attributes[attributes[i]]));
 		}
 	}
@@ -117,7 +118,7 @@ angular.module('genie.river-ctrl', [])
 		.attr("text-anchor", "start")
 		.attr('class', 'name')
 		.attr("x", function(d, i) { // Similar procedure as before
-			return xLocation(d.dx);
+			return xLocation(d.dx) + 5;
 		})
 		.attr("y", function(d) {
 			return yLocation(d.birthYear);

@@ -7,15 +7,19 @@ svg {
 	border: 1px solid #aaa;
 }
 
-.person rect {
-	fill: #fff;
+rect {
+	fill: #ddd;
 	stroke: steelblue;
 	stroke-width: 1px;
 }
 
-.person {
+text {
 	font: 14px sans-serif;
-	cursor: pointer;
+	font-family: Roboto;
+}
+
+.name text {
+	color: steelblue;
 }
 
 .link {
