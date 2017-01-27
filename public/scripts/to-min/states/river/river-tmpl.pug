@@ -8,7 +8,7 @@ div(style="display:inline-block;")
       id="occupations"
       type="text"
       placeholder="enter an occupation"
-      ng-model="selected"
+      ng-model="occupationSelected"
       uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
       class="form-control"
     )
@@ -17,11 +17,11 @@ div(style="display:inline-block;")
     div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
       label(for='occupations' style="width: 100%; text-align: left;") Search for Hobbies in Your Tree
       input(
-        name="occupations"
-        id="occupations"
+        name="hobbySearch"
+        id="hobbySearch"
         type="text"
         placeholder="enter a hobby"
-        ng-model="selected"
+        ng-model="hobbySelected"
         uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
         class="form-control"
       )
@@ -36,7 +36,7 @@ div(style="display:inline-block;")
         min="1"
         max="10"
         placeholder="1"
-        ng-model="selected"
+        ng-model="depthSelected"
         uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
         class="form-control"
       )
@@ -49,7 +49,7 @@ div(style="display:inline-block;")
         id="occupations"
         type="color"
         placeholder="enter a hobby"
-        ng-model="selected"
+        ng-model="colorSelected"
         uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
         class="form-control"
       )
