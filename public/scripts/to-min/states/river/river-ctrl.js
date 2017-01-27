@@ -32,13 +32,19 @@ angular.module('genie.river-ctrl', [])
 	}
 
 	function displayPersonalData(group, data, index) { // Helper method to display personal data
-		var attributes = Object.keys(data); // TODO: Remove firstName, lastName, id etc
+		var attributes = Object.keys(data.attributes);
 		for (var i = 0; i < attributes.length; i++) {
 			group.append("text") // Add on more text
-			.attr("y", yLocation(data.birthYear) + (i + 1) * 10)
-			.attr("x", xLocation(data.dx)) // Make space for new lines
-			.attr("font-size", "10") // Font size
-			.text(attributes[i] + ": " + data[attributes[i]]); // Physical text. TODO: Make more interesting and less JSONy
+			.attr("y", yLocation(data.birthYear) + (i + 1) * 25)
+			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
+			.attr("font-size", "14") // Font size
+			.text(attributes[i]); // Physical text.
+
+			group.append("text") // Add on more text
+			.attr("y", yLocation(data.birthYear) + (i + 1) * 25 + 15)
+			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
+			.attr("font-size", "12") // Font size
+			.text(data.attributes[attributes[i]]);
 		}
 	}
 
@@ -57,7 +63,7 @@ angular.module('genie.river-ctrl', [])
 		})
 		.attr("width", 100) // Width 100. TODO: Make dynamic by size of text
 		.attr("height", function(d) { // Height is based on number of attributes in person object
-			return Object.keys(d).length * 30;
+			return 100;
 		})
 		.style("fill", "#dddddd"); // Background is a boring shade of gray, for now
 
