@@ -3,6 +3,7 @@
   [{"dx":0.5,"firstName":"Aaron","lastName":"Smith","birthYear":1997,"attributes":{"profession":"writer"}},
       {"dx":-1,"firstName":"Katie","lastName":"Smith","birthYear":1996,"attributes":{"profession":"programmer"}},
       {"dx":-0.5, "firstName":"Scotty","lastName":"Smith","birthYear":1927,"attributes":{"profession":"salesman"}},
-      {"dx":1,"firstName":"Margaret","lastName":"Merriwether","birthYear":1934,"birthPlace":"Vidalia","attributes":{"Claim to Fame":"Award winning Apple Pie"}}]
+      {"dx":1,"firstName":"Margaret","lastName":"Merriwether","birthYear":1934,"attributes":{"Claim to Fame":"Award winning Apple Pie"}},
+      {"dx":-2,"firstName":"Amanda","lastName":"Smith","birthYear":1965,"attributes":{"hobby":"painting"}}]
 
 ]

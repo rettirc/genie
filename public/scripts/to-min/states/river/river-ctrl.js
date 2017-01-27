@@ -1,6 +1,46 @@
 angular.module('genie.river-ctrl', [])
 .controller('RiverCtrl', function(d3, $scope) {
 
+	var accentColor =
+
+	function checkAttribute(attribute) {
+		var seen = 0; //Count number seen
+		d3.selectAll('g').each(
+			function(d) {
+				if (d.attributes.profession == attribute) {
+					d3.select(this).select("rect").style('fill', '#aaaaff');
+					seen++;
+				} else {
+					d3.select(this).select("rect").style('fill', '#dddddd');
+				}
+			}
+		);
+	}
+
+	// var jsonData;
+	//
+	// function drawDepth(d) {
+	// 	var familyData = jsonData[0];
+	// 	for (var i = 0; i < d; i++) {
+	// 		if(jsonData[i]) {
+	// 			familyData = familyData.concat(jsonData[i]);
+	// 		}
+	// 	}
+	// 	drawFamilyMembers(familyData);
+	// }
+
+	$scope.$watch('occupationSelected', function(newValue) {
+		checkAttribute(newValue);
+	});
+
+	$scope.$watch('hobbySelected', function(newValue) {
+		checkAttribute(newValue);
+	});
+
+	// $scope.$watch("depthSelected", function(newValue) {
+	// 		drawDepth(newValue);
+	// })
+
 	// Setup zoom and pan
 	var zoom = d3.behavior.zoom()
 		.scaleExtent([.1,1])
@@ -21,6 +61,7 @@ angular.module('genie.river-ctrl', [])
 			return console.error(error);
 		}
 		drawFamilyMembers(json[0].concat(json[1])); // Call the method to draw family members
+		// jsonData = json;
 	});
 
 	function xLocation(dx) {
@@ -31,6 +72,10 @@ angular.module('genie.river-ctrl', [])
 		return (birthYear - 1920) * 5 ; // Put this in a function as well -- later use birth year?
 	}
 
+	function capitalizeAttribute(string) {
+		return string[0].toUpperCase() + string.slice(1);
+	}
+
 	function displayPersonalData(group, data, index) { // Helper method to display personal data
 		var attributes = Object.keys(data.attributes);
 		for (var i = 0; i < attributes.length; i++) {
@@ -38,13 +83,13 @@ angular.module('genie.river-ctrl', [])
 			.attr("y", yLocation(data.birthYear) + (i + 1) * 25)
 			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
 			.attr("font-size", "14") // Font size
-			.text(attributes[i]); // Physical text.
+			.text(capitalizeAttribute(attributes[i])); // Physical text.
 
 			group.append("text") // Add on more text
 			.attr("y", yLocation(data.birthYear) + (i + 1) * 25 + 15)
 			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
 			.attr("font-size", "12") // Font size
-			.text(data.attributes[attributes[i]]);
+			.text(capitalizeAttribute(data.attributes[attributes[i]]));
 		}
 	}
 

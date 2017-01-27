@@ -8625,6 +8625,46 @@ angular.module('genie.nav-ctrl', [])
 angular.module('genie.river-ctrl', [])
 .controller('RiverCtrl', function(d3, $scope) {
 
+	var accentColor =
+
+	function checkAttribute(attribute) {
+		var seen = 0; //Count number seen
+		d3.selectAll('g').each(
+			function(d) {
+				if (d.attributes.profession == attribute) {
+					d3.select(this).select("rect").style('fill', '#aaaaff');
+					seen++;
+				} else {
+					d3.select(this).select("rect").style('fill', '#dddddd');
+				}
+			}
+		);
+	}
+
+	// var jsonData;
+	//
+	// function drawDepth(d) {
+	// 	var familyData = jsonData[0];
+	// 	for (var i = 0; i < d; i++) {
+	// 		if(jsonData[i]) {
+	// 			familyData = familyData.concat(jsonData[i]);
+	// 		}
+	// 	}
+	// 	drawFamilyMembers(familyData);
+	// }
+
+	$scope.$watch('occupationSelected', function(newValue) {
+		checkAttribute(newValue);
+	});
+
+	$scope.$watch('hobbySelected', function(newValue) {
+		checkAttribute(newValue);
+	});
+
+	// $scope.$watch("depthSelected", function(newValue) {
+	// 		drawDepth(newValue);
+	// })
+
 	// Setup zoom and pan
 	var zoom = d3.behavior.zoom()
 		.scaleExtent([.1,1])
@@ -8645,6 +8685,7 @@ angular.module('genie.river-ctrl', [])
 			return console.error(error);
 		}
 		drawFamilyMembers(json[0].concat(json[1])); // Call the method to draw family members
+		// jsonData = json;
 	});
 
 	function xLocation(dx) {
@@ -8655,6 +8696,10 @@ angular.module('genie.river-ctrl', [])
 		return (birthYear - 1920) * 5 ; // Put this in a function as well -- later use birth year?
 	}
 
+	function capitalizeAttribute(string) {
+		return string[0].toUpperCase() + string.slice(1);
+	}
+
 	function displayPersonalData(group, data, index) { // Helper method to display personal data
 		var attributes = Object.keys(data.attributes);
 		for (var i = 0; i < attributes.length; i++) {
@@ -8662,13 +8707,13 @@ angular.module('genie.river-ctrl', [])
 			.attr("y", yLocation(data.birthYear) + (i + 1) * 25)
 			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
 			.attr("font-size", "14") // Font size
-			.text(attributes[i]); // Physical text.
+			.text(capitalizeAttribute(attributes[i])); // Physical text.
 
 			group.append("text") // Add on more text
 			.attr("y", yLocation(data.birthYear) + (i + 1) * 25 + 15)
 			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
 			.attr("font-size", "12") // Font size
-			.text(data.attributes[attributes[i]]);
+			.text(capitalizeAttribute(data.attributes[attributes[i]]));
 		}
 	}
 
@@ -8757,7 +8802,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/map/map-tmpl.html',
-    '<div>Im the map im the map im the map im the map IM THE MAP</div><div ui-view="page"></div>');
+    '<div>Im the map im the map im the map im the map IM THE MAP</div><div ui-view="page"></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Occupations in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter an occupation" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Hobbies in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter a hobby" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Depth</label><input class="form-control" name="occupations" id="occupations" type="number" min="1" max="10" placeholder="1" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Choose a Color</label><input class="form-control" name="occupations" id="occupations" type="color" placeholder="enter a hobby" ng-model="selected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="response" style="width: 300px; padding: 25px; text-align:left"></label></div>');
 }]);
 })();
 
@@ -8781,6 +8826,6 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('states/river/river-tmpl.html',
-    '<div>River View<div id="riverView"></div></div>');
+    '<div>River View</div><div style="display:inline-block"><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Occupations in Your Tree</label><input class="form-control" name="occupations" id="occupations" type="text" placeholder="enter an occupation" ng-model="occupationSelected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="occResp" style="width: 300px; padding: 25px; text-align:left"></label><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Search for Hobbies in Your Tree</label><input class="form-control" name="hobbySearch" id="hobbySearch" type="text" placeholder="enter a hobby" ng-model="hobbySelected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="hobbResp" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Depth</label><input class="form-control" name="occupations" id="occupations" type="number" min="1" max="10" placeholder="1" ng-model="depthSelected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="depthResp" style="width: 300px; padding: 25px; text-align:left"></label></div><div class="form-group" style="width: 300px; padding: 5px; text-align: left"><label for="occupations" style="width: 100%; text-align: left">Choose a Color</label><input class="form-control" name="occupations" id="occupations" type="color" placeholder="enter a hobby" ng-model="colorSelected" uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"><label id="colorResp" style="width: 300px; padding: 25px; text-align:left"></label></div></div></div><div id="riverView" style="display:inline-block; padding: 25px"></div>');
 }]);
 })();
