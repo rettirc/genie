@@ -1,7 +1,7 @@
 angular.module('genie.river-ctrl', [])
 .controller('RiverCtrl', function(d3, $scope) {
 
-
+	var attributeColor = "#aaaaff";
 
 	function checkAttribute(value) {
 		var seen = 0; //Count number seen
@@ -10,7 +10,7 @@ angular.module('genie.river-ctrl', [])
 					d3.select(this).select("rect").style('fill', '#dddddd');
 					for (var attr in d.attributes) {
 						if (d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
-								d3.select(this).select("rect").style('fill', '#aaaaff');
+								d3.select(this).select("rect").style('fill', attributeColor);
 
 						}
 					}
@@ -36,6 +36,11 @@ angular.module('genie.river-ctrl', [])
 
 	$scope.$watch('hobbySelected', function(newValue) {
 		checkAttribute(newValue.toLowerCase());
+	});
+
+	$scope.$watch('colorSelected', function(newValue) {
+		// checkAttribute(newValue.toLowerCase());
+		attributeColor = newValue;
 	});
 
 	// $scope.$watch("depthSelected", function(newValue) {
