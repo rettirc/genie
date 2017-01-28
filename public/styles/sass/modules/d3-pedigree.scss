@@ -8,9 +8,15 @@ svg {
 }
 
 rect {
-	fill: #ddd;
+	fill: #1e90ff;
+	fill-opacity: 0.5;
 	stroke: steelblue;
 	stroke-width: 1px;
+	border-radius: 10px;
+}
+
+rect.selected {
+	fill: #ffffff;
 }
 
 text {

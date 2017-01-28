@@ -7,28 +7,16 @@ angular.module('genie.river-ctrl', [])
 		var seen = 0; //Count number seen
 		d3.selectAll('g').each(
 			function(d) {
-					d3.select(this).select("rect").style('fill', '#dddddd');
+					d3.select(this).select("rect").classed("selected", false); // Not selected
 					for (var attr in d.attributes) {
 						if (d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
-								d3.select(this).select("rect").style('fill', attributeColor);
+								d3.select(this).select("rect").classed('selected', true);
 
 						}
 					}
 			}
 		);
 	}
-
-	// var jsonData;
-	//
-	// function drawDepth(d) {
-	// 	var familyData = jsonData[0];
-	// 	for (var i = 0; i < d; i++) {
-	// 		if(jsonData[i]) {
-	// 			familyData = familyData.concat(jsonData[i]);
-	// 		}
-	// 	}
-	// 	drawFamilyMembers(familyData);
-	// }
 
 	$scope.$watch('occupationSelected', function(newValue) {
 		checkAttribute(newValue.toLowerCase());
@@ -43,18 +31,14 @@ angular.module('genie.river-ctrl', [])
 		attributeColor = newValue;
 	});
 
-	// $scope.$watch("depthSelected", function(newValue) {
-	// 		drawDepth(newValue);
-	// })
-
 	// Setup zoom and pan
 	var zoom = d3.behavior.zoom()
 		.scaleExtent([.1,1])
 		.on('zoom', function(){
-			svg.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
-		})
+			svg.attr("transform", d3.event.transform);
+		});
 		// Offset so that first pan and zoom does not jump back to the origin
-		.translate([400, 200]);
+
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
 		.attr("width", 800)
@@ -82,21 +66,37 @@ angular.module('genie.river-ctrl', [])
 		return string[0].toUpperCase() + string.slice(1);
 	}
 
-	function displayPersonalData(group, data, index) { // Helper method to display personal data
-		var attributes = Object.keys(data.attributes);
-		for (var i = 0; i < attributes.length; i++) {
-			group.append("text") // Add on more text
-			.attr("y", yLocation(data.birthYear) + (i + 1) * 30 - 15)
-			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
-			.attr("font-size", "14") // Font size
-			.text(capitalizeAttribute(attributes[i])); // Physical text.
+	function displayPersonalData() { // Helper method to display personal data
 
-			group.append("text") // Add on more text
-			.attr("y", yLocation(data.birthYear) + (i + 1) * 30)
-			.attr("x", xLocation(data.dx) + 5) // Make space for new lines
-			.attr("font-size", "14") // Font size
-			.text(capitalizeAttribute(data.attributes[attributes[i]]));
-		}
+		var group = d3.selectAll("g").each(
+			function(d) {
+				var attributes = Object.keys(d.attributes);
+				for (var i = 0; i < attributes.length; i++) {
+					d3.select(this).append("text")
+					.attr("x", xLocation(d.dx) + 5)
+					.attr("y", yLocation(d.birthYear) + (i + 1) * 30 - 15)
+					.text(capitalizeAttribute(attributes[i]));
+
+					d3.select(this).append("text")
+					.attr("x", xLocation(d.dx) + 5)
+					.attr("y", yLocation(d.birthYear) + (i + 1) * 30)
+					.text(capitalizeAttribute(d.attributes[attributes[i]]));
+				}
+			}
+		);
+		// for (var i = 0; i < attributes.length; i++) {
+		// 	group.append("text") // Add on more text
+		// 	.attr("y", yLocation(data.birthYear) + (i + 1) * 30 - 15)
+		// 	.attr("x", xLocation(data.dx) + 5) // Make space for new lines
+		// 	.attr("font-size", "14") // Font size
+		// 	.text(capitalizeAttribute(attributes[i])); // Physical text.
+		//
+		// 	group.append("text") // Add on more text
+		// 	.attr("y", yLocation(data.birthYear) + (i + 1) * 30)
+		// 	.attr("x", xLocation(data.dx) + 5) // Make space for new lines
+		// 	.attr("font-size", "14") // Font size
+		// 	.text(capitalizeAttribute(data.attributes[attributes[i]]));
+		// }
 	}
 
 	function drawFamilyMembers(data) {
@@ -115,8 +115,7 @@ angular.module('genie.river-ctrl', [])
 		.attr("width", 100) // Width 100. TODO: Make dynamic by size of text
 		.attr("height", function(d) { // Height is based on number of attributes in person object
 			return 100;
-		})
-		.style("fill", "#dddddd"); // Background is a boring shade of gray, for now
+		});
 
 		personNode
 		.append("text") // Add their name to the group
@@ -130,10 +129,11 @@ angular.module('genie.river-ctrl', [])
 		})
 		.attr("font-size", "14") // But bigger text
 		.text(function(d, i) {
-			displayPersonalData(personNode, d, i);
 			return d.firstName + " " + d.lastName;
 		})
 		.style('fill-opacity', 1);
+
+		displayPersonalData();
 
 	}
 
