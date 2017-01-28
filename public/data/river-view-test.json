@@ -4,8 +4,8 @@
       {"dx":-1,"firstName":"Katie","lastName":"Smith","birthYear":1996,"attributes":{"profession":"programmer"}},
       {"dx":-0.5, "firstName":"Scotty","lastName":"Smith","birthYear":1927,"attributes":{"profession":"salesman","hobby":"fishing"}},
       {"dx":1,"firstName":"Marge","lastName":"Mason","birthYear":1934,"attributes":{"Claim to Fame":"Apple Pie"}},
-      {"dx":-2,"firstName":"Amanda","lastName":"Smith","birthYear":1965,"attributes":{"hobby":"painting"}},
-      {"dx":-2, "firstName":"Jamie","lastName":"Morgan","birthYear":1935,"attributes":{"profession":"craftsman"}},
+      {"dx":-2,"firstName":"Amanda","lastName":"Smith","birthYear":1965,"attributes":{"hobby":"painting"}}],
+  [{"dx":-2, "firstName":"Jamie","lastName":"Morgan","birthYear":1935,"attributes":{"profession":"craftsman"}},
       {"dx":-3.5, "firstName":"Paul","lastName":"Morgan","birthYear":1936,"attributes":{"hobby":"puzzles"}},
       {"dx":-3.5, "firstName":"Jason","lastName":"Morgan","birthYear":1962,"attributes":{"profession":"technician"}},
       {"dx":-2.5, "firstName":"Daryll","lastName":"Morgan","birthYear":2000,"attributes":{"profession":"programmer"}}]

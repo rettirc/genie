@@ -12,7 +12,8 @@ rect {
 	fill-opacity: 0.5;
 	stroke: steelblue;
 	stroke-width: 1px;
-	border-radius: 10px;
+	rx: 2px;
+	ry: 2px
 }
 
 rect.selected {
