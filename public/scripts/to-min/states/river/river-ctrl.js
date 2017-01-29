@@ -13,11 +13,28 @@ angular.module('genie.river-ctrl', [])
 					for (var attr in d.attributes) {
 						if (d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
 								d3.select(this).select("rect").classed('selected', true);
-
+								seen++;
 						}
 					}
 			}
 		);
+		if (seen > 1) {
+			drawLink();
+		}
+	}
+
+	function drawLink() {
+		var selectedNodes = d3.selectAll('rect.selected');
+		
+		selectedNodes.style("fill", attributeColor)
+		.on("click", function() {
+			removeLink(selectedNodes);
+		});
+	}
+
+	function removeLink(selectedNodes) {
+		selectedNodes.attr("style", null)
+		.on("click", null);
 	}
 
 	$scope.$watch('occupationSelected', function(newValue) {
