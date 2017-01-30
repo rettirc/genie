@@ -5,13 +5,13 @@ angular.module('genie.river-ctrl', [])
 	var depth = 1;
 	var familyData = [];
 
-	function checkAttribute(value) {
+	function checkAttribute(attribute, value) {
 		var seen = 0; //Count number seen
 		d3.selectAll('g').each(
 			function(d) {
 					d3.select(this).select("rect").classed("selected", false); // Not selected
 					for (var attr in d.attributes) {
-						if (d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
+						if (attr == attribute && d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
 								d3.select(this).select("rect").classed('selected', true);
 								seen++;
 						}
@@ -25,7 +25,7 @@ angular.module('genie.river-ctrl', [])
 
 	function drawLink() {
 		var selectedNodes = d3.selectAll('rect.selected');
-		
+
 		selectedNodes.style("fill", attributeColor)
 		.on("click", function() {
 			removeLink(selectedNodes);
@@ -39,13 +39,13 @@ angular.module('genie.river-ctrl', [])
 
 	$scope.$watch('occupationSelected', function(newValue) {
 		if(newValue) {
-			checkAttribute(newValue.toLowerCase());
+			checkAttribute('profession', newValue.toLowerCase());
 		}
 	});
 
 	$scope.$watch('hobbySelected', function(newValue) {
 		if(newValue) {
-			checkAttribute(newValue.toLowerCase());
+			checkAttribute('hobby', newValue.toLowerCase());
 		}
 	});
 
