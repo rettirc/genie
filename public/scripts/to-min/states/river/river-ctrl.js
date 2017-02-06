@@ -1,170 +1,179 @@
 angular.module('genie.river-ctrl', [])
-.controller('RiverCtrl', function(d3, $scope) {
+.controller('RiverCtrl', function($scope, d3) {
 
 	var attributeColor = "#aaaaff";
 	var depth = 1;
 	var familyData = [];
 
-	function checkAttribute(attribute, value) {
-		var seen = 0; //Count number seen
-		d3.selectAll('g').each(
-			function(d) {
-					d3.select(this).select("rect").classed("selected", false); // Not selected
-					for (var attr in d.attributes) {
-						if (attr == attribute && d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
-								d3.select(this).select("rect").classed('selected', true);
-								seen++;
-						}
-					}
-			}
-		);
-		if (seen > 1) {
-			drawLink();
-		}
-	}
+	// function checkAttribute(attribute, value) {
+	// 	var seen = 0; //Count number seen
+	// 	d3.selectAll('g').each(
+	// 		function(d) {
+	// 				d3.select(this).select("rect").classed("selected", false); // Not selected
+	// 				for (var attr in d.attributes) {
+	// 					if (attr == attribute && d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
+	// 							d3.select(this).select("rect").classed('selected', true);
+	// 							seen++;
+	// 					}
+	// 				}
+	// 		}
+	// 	);
+	// 	if (seen > 1) {
+	// 		drawLink();
+	// 	}
+	// }
 
-	function drawLink() {
-		var selectedNodes = d3.selectAll('rect.selected');
+	// function drawLink() {
+	// 	var selectedNodes = d3.selectAll('rect.selected');
+	//
+	// 	selectedNodes.style("fill", attributeColor)
+	// 	.on("click", function() {
+	// 		removeLink(selectedNodes);
+	// 	});
+	// }
 
-		selectedNodes.style("fill", attributeColor)
-		.on("click", function() {
-			removeLink(selectedNodes);
-		});
-	}
+	// function removeLink(selectedNodes) {
+	// 	selectedNodes.attr("style", null)
+	// 	.on("click", null);
+	// }
 
-	function removeLink(selectedNodes) {
-		selectedNodes.attr("style", null)
-		.on("click", null);
-	}
-
-	$scope.$watch('occupationSelected', function(newValue) {
-		if(newValue) {
-			checkAttribute('profession', newValue.toLowerCase());
-		}
-	});
-
-	$scope.$watch('hobbySelected', function(newValue) {
-		if(newValue) {
-			checkAttribute('hobby', newValue.toLowerCase());
-		}
-	});
-
-	$scope.$watch('depthSelected', function(newValue) {
+	// $scope.$watch('occupationSelected', function(newValue) {
+	// 	if(newValue) {
+	// 		checkAttribute('profession', newValue.toLowerCase());
+	// 	}
+	// });
+	//
+	// $scope.$watch('hobbySelected', function(newValue) {
+	// 	if(newValue) {
+	// 		checkAttribute('hobby', newValue.toLowerCase());
+	// 	}
+	// });
+	//
+	// $scope.$watch('depthSelected', function(newValue) {
 		// checkAttribute(newValue.toLowerCase());
-		depth = newValue;
-		drawFamilyMembers();
-	});
-
-	$scope.$watch('colorSelected', function(newValue) {
-		// checkAttribute(newValue.toLowerCase());
-		attributeColor = newValue;
-	});
-
-	// Setup zoom and pan
-	var zoom = d3.behavior.zoom()
-		.scaleExtent([.1,1])
-		.on('zoom', function(){
-			svg.attr("transform", d3.event.transform);
-		});
-		// Offset so that first pan and zoom does not jump back to the origin
+		// depth = newValue;
+		// drawFamilyMembers();
+	// });
+	//
+	// $scope.$watch('colorSelected', function(newValue) {
+	// 	// checkAttribute(newValue.toLowerCase());
+	// 	attributeColor = newValue;
+	// });
 
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
 		.attr("width", 800)
-		.attr("height", 600) // Arbitrary size
-		.call(zoom);
-		//TODO: Make the size dynamic
+		.attr("height", 600); // Arbitrary size
 
-	d3.json("data/river-view-test.json", function(error, json) { // The data is physically in this file as JSON
+	var simulation = d3.forceSimulation()
+		.force("link", d3.forceLink().id(function(d) {
+			return d.id
+		}))
+		.force("collide", d3.forceCollide().radius(75).iterations(2))
+		.force("charge", d3.forceManyBody())
+		.force("center", d3.forceCenter(400,300));
+
+	d3.json("data/river-force-test.json", function(error, json) { // The data is physically in this file as JSON
 		if(error) {
 			return console.error(error);
 		}
-		familyData = json;
-		drawFamilyMembers(depth); // Call the method to draw family members
-		// jsonData = json;
+		var link = svg.append("g")
+			.classed("links", true)
+			.selectAll("line")
+			.data(json.links)
+			.enter()
+			.append("line")
+			.attr("stroke-width", 2)
+			.attr("stroke", "black");
+
+
+		var node = svg.append("g")
+			.classed("nodes", true)
+			.selectAll("g.node")
+			.data(json.nodes)
+			.enter()
+			.append("svg")
+			.classed("node", true)
+			.attr("x", 0)
+			.attr("y", 0)
+			.call(d3.drag()
+					.on("start", dragstarted)
+					.on("drag", dragged)
+					.on("end", dragended));
+
+		node.append("rect")
+			.attr("width", 100)
+			.attr("height",100)
+			.attr("fill", "steelblue")
+			.attr("x", 0)
+			.attr("y", 0);
+
+		node.call(displayPersonalData);
+
+		node.append("title").text(function(d) { return d.firstName });
+		// displayPersonalData();
+		simulation.nodes(json.nodes).on("tick", ticked);
+		simulation.force("link").links(json.links);
+
+		function ticked() {
+			link.attr("x1", function(d) { return d.source.x; })
+				.attr("y1", function(d) { return d.source.y; })
+				.attr("x2", function(d) { return d.target.x; })
+				.attr("y2", function(d) { return d.target.y; });
+
+			node.attr("x", function(d) { return d.x - 50; })
+				.attr("y", function(d) { return d.y - 50; });
+
+		}
+
 	});
 
-	function xLocation(dx) {
-		return 400 + (dx * 75); // Put this in a function -- later use d3 scaling??
+	function dragstarted(d) {
+	  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+	  d.fx = d.x;
+	  d.fy = d.y;
 	}
 
-	function yLocation(birthYear) {
-		return (birthYear - 1920) * 5 ; // Put this in a function as well -- later use birth year?
+	function dragged(d) {
+	  d.fx = d3.event.x;
+	  d.fy = d3.event.y;
+	}
+
+	function dragended(d) {
+	  if (!d3.event.active) simulation.alphaTarget(0);
+	  d.fx = null;
+	  d.fy = null;
 	}
 
 	function capitalizeAttribute(string) {
 		return string[0].toUpperCase() + string.slice(1);
 	}
 
-	function displayPersonalData() { // Helper method to display personal data
+	function displayPersonalData(nodes) { // Helper method to display personal data
 
-		var group = d3.selectAll("g").each(
+		nodes.each(
 			function(d) {
 				var attributes = Object.keys(d.attributes);
+				var group = d3.select(this);
+				group.append("text")
+					.attr("x", 5)
+					.attr("y", 15)
+					.text(function(d) {return d.firstName + " " + d.lastName});
 				for (var i = 0; i < attributes.length; i++) {
-					d3.select(this).append("text")
+					group.append("text")
 					.classed("info",true)
-					.attr("x", xLocation(d.dx) + 5)
-					.attr("y", yLocation(d.birthYear) + (i + 1) * 30 - 15)
+					.attr("x", 5)
+					.attr("y", (i + 1) * 30)
 					.text(capitalizeAttribute(attributes[i]));
 
 					d3.select(this).append("text")
 					.classed("info",true)
-					.attr("x", xLocation(d.dx) + 5)
-					.attr("y", yLocation(d.birthYear) + (i + 1) * 30)
+					.attr("x", 5)
+					.attr("y", (i + 1) * 30 + 15)
 					.text(capitalizeAttribute(d.attributes[attributes[i]]));
 				}
 			}
 		);
-
-	}
-
-	function drawFamilyMembers() {
-		var data = familyData[0];
-		var curDepth = 1;
-		while (curDepth < depth && familyData[curDepth]) {
-			data = data.concat(familyData[curDepth++]);
-		}
-
-		var node = svg.selectAll("g") // Group NEEDED I learned the hard way
-		.data(data); // bind data
-
-		node.selectAll("text.info").remove();
-
-		var personNode = node.enter() // Userd for new data TODO: Make update and exit procedures
-		.append("g"); // Because we're using enter, add a group
-
-		personNode.append("rect") // Add a rectangle to the group
-		.attr("y", function(d) { // Y is based on ID: TODO: Make based on year
-			return yLocation(d.birthYear) - 20;
-		})
-		.attr("x", function(d,i) { // X based on position in the list
-			return xLocation(d.dx);
-		})
-		.attr("width", 100) // Width 100. TODO: Make dynamic by size of text
-		.attr("height", function(d) { // Height is based on number of attributes in person object
-			return 100;
-		});
-
-		personNode
-		.append("text") // Add their name to the group
-		.attr("text-anchor", "start")
-		.attr('class', 'name')
-		.attr("x", function(d, i) { // Similar procedure as before
-			return xLocation(d.dx) + 5;
-		})
-		.attr("y", function(d) {
-			return yLocation(d.birthYear);
-		})
-		.attr("font-size", "14") // But bigger text
-		.text(function(d, i) {
-			return d.firstName + " " + d.lastName;
-		})
-		.style('fill-opacity', 1);
-
-		displayPersonalData();
-
-		node.exit().remove(); // Get rid of ones we don't want
 
 	}
 

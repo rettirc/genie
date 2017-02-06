@@ -1,0 +1,27 @@
+{
+  "nodes":[
+    {"id":0,"firstName":"Martin","lastName":"Smith","birthYear":1958,"attributes":{"profession":"technician"}},
+    {"id":1,"firstName":"Aaron","lastName":"Smith","birthYear":1997,"attributes":{"profession":"writer"}},
+    {"id":2,"firstName":"Katie","lastName":"Smith","birthYear":1996,"attributes":{"profession":"programmer"}},
+    {"id":3, "firstName":"Scotty","lastName":"Smith","birthYear":1927,"attributes":{"profession":"salesman","hobby":"fishing"}},
+    {"id":4,"firstName":"Marge","lastName":"Mason","birthYear":1934,"attributes":{"Claim to Fame":"Apple Pie"}},
+    {"id":5,"firstName":"Amanda","lastName":"Smith","birthYear":1965,"attributes":{"hobby":"painting"}},
+    {"id":6, "firstName":"Jamie","lastName":"Morgan","birthYear":1935,"attributes":{"profession":"craftsman"}},
+    {"id":7, "firstName":"Paul","lastName":"Morgan","birthYear":1936,"attributes":{"hobby":"puzzles"}},
+    {"id":8, "firstName":"Jason","lastName":"Morgan","birthYear":1962,"attributes":{"profession":"technician"}},
+    {"id":9, "firstName":"Daryll","lastName":"Morgan","birthYear":2000,"attributes":{"profession":"programmer"}}
+  ],
+  "links":[
+    {"source":0,"target":1},
+    {"source":0,"target":2},
+    {"source":3,"target":0},
+    {"source":4,"target":0},
+    {"source":5,"target":1},
+    {"source":5,"target":2},
+    {"source":6,"target":5},
+    {"source":7,"target":5},
+    {"source":6,"target":8},
+    {"source":7,"target":8},
+    {"source":8,"target":9}
+  ]
+}
