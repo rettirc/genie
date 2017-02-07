@@ -62,7 +62,7 @@ angular.module('genie.river-ctrl', [])
 
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
-		.attr("width", 800)
+		.attr("width", "100%")
 		.attr("height", 600); // Arbitrary size
 
 	var simulation = d3.forceSimulation()
@@ -73,7 +73,7 @@ angular.module('genie.river-ctrl', [])
 		.force("charge", d3.forceManyBody())
 		.force("center", d3.forceCenter(400,300));
 
-	d3.json("data/river-force-test.json", function(error, json) { // The data is physically in this file as JSON
+	var displayData = function(error, json) { // The data is physically in this file as JSON
 		if(error) {
 			return console.error(error);
 		}
@@ -126,7 +126,7 @@ angular.module('genie.river-ctrl', [])
 
 		}
 
-	});
+	};
 
 	function dragstarted(d) {
 	  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -176,6 +176,8 @@ angular.module('genie.river-ctrl', [])
 		);
 
 	}
+
+	d3.json("data/river-force-test.json", function(error,json) { displayData(error,json); })
 
 
 });

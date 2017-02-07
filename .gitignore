@@ -52,3 +52,4 @@ jspm_packages
 .idea
 bower_components
 genie.js
+river-data.json
