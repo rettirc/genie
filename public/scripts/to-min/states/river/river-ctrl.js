@@ -65,13 +65,17 @@ angular.module('genie.river-ctrl', [])
 		.attr("width", "100%")
 		.attr("height", 600); // Arbitrary size
 
+	var width = $("#riverView").width();
+	var height = $("#riverView").height();
+
+
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) {
 			return d.id
 		}))
 		.force("collide", d3.forceCollide().radius(75).iterations(2))
 		.force("charge", d3.forceManyBody())
-		.force("center", d3.forceCenter(400,300));
+		.force("center", d3.forceCenter(width / 2, height / 2));
 
 	var displayData = function(error, json) { // The data is physically in this file as JSON
 		if(error) {
@@ -116,10 +120,10 @@ angular.module('genie.river-ctrl', [])
 		simulation.force("link").links(json.links);
 
 		function ticked() {
-			link.attr("x1", function(d) { return d.source.x; })
-				.attr("y1", function(d) { return d.source.y; })
-				.attr("x2", function(d) { return d.target.x; })
-				.attr("y2", function(d) { return d.target.y; });
+			link.attr("x1", function(d) { return d.source.x + 0 * 60 * Math.max(1, Math.cos(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y))); })
+				.attr("y1", function(d) { return d.source.y - 0 * 60 * Math.sin(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y)); })
+				.attr("x2", function(d) { return d.target.x + 0 * 60 * Math.max(1, Math.cos(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y))); })
+				.attr("y2", function(d) { return d.target.y - 0 * 60 * Math.sin(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y)); });
 
 			node.attr("x", function(d) { return d.x - 50; })
 				.attr("y", function(d) { return d.y - 50; });
