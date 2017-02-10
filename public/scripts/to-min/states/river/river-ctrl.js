@@ -120,10 +120,22 @@ angular.module('genie.river-ctrl', [])
 		simulation.force("link").links(json.links);
 
 		function ticked() {
-			link.attr("x1", function(d) { return d.source.x + 0 * 60 * Math.max(1, Math.cos(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y))); })
-				.attr("y1", function(d) { return d.source.y - 0 * 60 * Math.sin(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y)); })
-				.attr("x2", function(d) { return d.target.x + 0 * 60 * Math.max(1, Math.cos(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y))); })
-				.attr("y2", function(d) { return d.target.y - 0 * 60 * Math.sin(Math.atan2(d.target.x - d.source.x, d.target.y - d.source.y)); });
+			link.attr("x1", function(d) {
+					var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+					return d.source.x + 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+				})
+				.attr("y1",  function(d) {
+						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+						return d.source.y - 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+				})
+				.attr("x2",  function(d) {
+						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+						return d.target.x - 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+					})
+				.attr("y2",  function(d) {
+						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+						return d.target.y + 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+					});
 
 			node.attr("x", function(d) { return d.x - 50; })
 				.attr("y", function(d) { return d.y - 50; });
