@@ -57,5 +57,14 @@ div(ui-view="page")
         class="form-control"
       )
       label(id="response" style="width: 300px; padding: 25px; text-align:left;")
+-//
+    div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
+      label(for='occupations' style="width: 100%; text-align: left;") Choose a minimum date
+      input(type="number" step="1" ng-model="newTime")
+-//
+  div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
+      label(for='occupations' style="width: 100%; text-align: left;") Click for death/birth locations
+      input(type="button" ng-click="deathBirthPlaces()")    
+
 div(id="mapView" style="display:inline-block; padding: 25px; width: 80%;")
     h1 Map View

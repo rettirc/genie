@@ -1,5 +1,22 @@
 angular.module('genie.map-ctrl', [])
 .controller('MapCtrl', function($scope, d3) {
+
+	function Main($scope) {
+	  $scope.newTime = 2000;
+	}
+
+	//func called when value in min year field is changed to show travel past that date
+	$scope.$watch('newTime', function(newValue) {
+		if(newValue) {
+			travelRange(newValue);
+		}
+	});
+
+	//func called on button click to display death/birthplace distribution
+	$scope.deathBirthPlaces = function(route) {
+		deathBirthPlaces()
+	}
+
 	var mapDict
 	var width = 960;
 	var height = 500;
@@ -32,214 +49,130 @@ angular.module('genie.map-ctrl', [])
 	    		.attr("class", "tooltip")
 	    		.style("opacity", 0);
 
-	d3.json("data/river-force-test.json", function(error,all_json) {
-		// hightlightBirthDeathPlaces(all_json)
-		highlightStateTravel(all_json)
-	})
-
-	function initMapDict() {
-		if (!mapDict) {
-			mapDict = {}
-			d3.json("data/us-states.json", function(states_json) {
-				for (var j = 0; j < states_json.features.length; j++)  {
-					mapDict[states_json.features[j].properties.name] = 0
-				}
-			});
-		} else {
-			for (key in Object.keys(mapDict))  {
-				mapDict[key] = 0
-			}
-		}
+	//Function called to display places traveled past a certain date
+	function travelRange(start) {
+		d3.json("data/river-force-test.json", function(error,all_json) {
+			highlightStateTravelRange(all_json, start)
+		})
 	}
 
-	function highlightStateTravel(all_json) {
+	//Function called to display death/birth place distribution on states
+	function deathBirthPlaces() {
+		d3.json("data/river-force-test.json", function(error,all_json) {
+			hightlightBirthDeathPlaces(all_json)
+		})
+	}
+
+	//Highlight death/birthplaces by default
+	d3.json("data/river-force-test.json", function(error,all_json) {
+		hightlightBirthDeathPlaces(all_json)
+	})
+
+	//updates the mapdict with travel data and updates the map view
+	function highlightStateTravelRange(all_json, start) {
 		mapDict = {}
-		color.domain([0, 4]); // setting the range of the input data
+		//set degree of color gradient by changing max ([min, max])
+		color.domain([0, 4]);
+		//unpack the state JSON. Contains state names as well as geo data for map shape and position
 		d3.json("data/us-states.json", function(states_json) {
+			//initialize the mapDict
 			for (var j = 0; j < states_json.features.length; j++)  {
 				mapDict[states_json.features[j].properties.name] = 0;
 			}
-			// Load GeoJSON data and merge with states data
+			// Loop through each state data value in the inputted json file
 			for (var i = 0; i < all_json.nodes.length; i++) {
-				// Grab State Name
+				// Grab the map of states traveled to
 				var travelJson = all_json.nodes[i].travel
 				if (travelJson) {
 					visitedStates = Object.keys(travelJson)
+					//for each state, create/increment the map entry
+					for (var j = 0; j < visitedStates.length; j++) {
+						if (travelJson[visitedStates[j]] >= start) {
+							mapDict[visitedStates[j]] += 1
+						}
+					}
+				}
+			}
+			//show results on the map
+			highlightLocations(states_json)
+		});
+	}
+
+	//updates the mapdict with travel data and updates the map view
+	function highlightStateTravel(all_json) {
+		mapDict = {}
+		//set degree of color gradient by changing max ([min, max])
+		color.domain([0, 4]);
+		//unpack the state JSON. Contains state names as well as geo data for map shape and position
+		d3.json("data/us-states.json", function(states_json) {
+			//initialize the mapDict
+			for (var j = 0; j < states_json.features.length; j++)  {
+				mapDict[states_json.features[j].properties.name] = 0;
+			}
+			// Loop through each state data value in the inputted json file
+			for (var i = 0; i < all_json.nodes.length; i++) {
+				// Grab the map of states traveled to
+				var travelJson = all_json.nodes[i].travel
+				if (travelJson) {
+					visitedStates = Object.keys(travelJson)
+					//for each state, create/increment the map entry
 					for (var i = 0; i < visitedStates.length; i++) {
 						mapDict[visitedStates[i]] += 1
 					}
 				}
 			}
-			highlightLocations("state", states_json)
+			//show results on the map
+			highlightLocations(states_json)
 		});
 	}
 
+	//Hightlight where people were born and died
 	function hightlightBirthDeathPlaces(all_json) {
-		initMapDict()
-		color.domain([0, 4]); // setting the range of the input data
-		// Load GeoJSON data and merge with states data
+		//clear the map dict, may have any set of locations
+		mapDict = {}
+		//unpack the state JSON. Contains state names as well as geo data for map shape and position
 		d3.json("data/us-states.json", function(states_json) {
-			// Loop through each state data value in the .csv file
+			//initialize the mapDict
+			for (var j = 0; j < states_json.features.length; j++)  {
+				mapDict[states_json.features[j].properties.name] = 0
+			}
+			//set degree of color gradient by changing max ([min, max])
+			color.domain([0, 4]);
+			// Loop through each inidivdual data value in the inputted json file
 			for (var i = 0; i < all_json.nodes.length; i++) {
-				// Grab State Name
+				// Grab death/birth state Name
 				var birthState = all_json.nodes[i].birth_loc;
 				var deathState = all_json.nodes[i].death_loc;
-				if (birthState || deathState) {
-					// Find the corresponding state inside the GeoJSON
-					for (var j = 0; j < states_json.features.length; j++)  {
-						var jsonState = states_json.features[j].properties.name;
-						if (birthState == jsonState || deathState == jsonState) {
-
-							// Copy the data value into the JSON
-							if (states_json.features[j].properties.visited) {
-								states_json.features[j].properties.visited += 1;
-							} else {
-								states_json.features[j].properties.visited = 1
-							}
-							// Stop looking through the JSON
-							break
-						}
-					}
-				}
+				//if either piece of data is included, update to dict
+				mapDict[birthState] += 1;
+				mapDict[deathState] += 1;
 			}
-			highlightLocations("state", states_json)
+			//show results on the map
+			highlightLocations(states_json)
 		});
 	}
 
-	function highlightLocations(scope, location_json) {
-		if (scope == "state") {
-			// Bind the data to the SVG and create one path per GeoJSON feature
-			svg.selectAll("path")
-				.data(location_json.features)
-				.enter()
-				.append("path")
-				.attr("d", path)
-				.style("stroke", "#fff")
-				.style("stroke-width", "1")
-				.style("fill", function(d) {
-					// Get data value
-					var value = mapDict[d.properties.name];
-					if (value) {
-						//If value exists…
-						return color(Math.min(value, 4));
-					} else {
-						//If value is undefined…
-						return "rgb(213,222,217)";
-					}
-				});
-		}
+	//update the map to display the contents of mapDict
+	function highlightLocations(location_json) {
+		// Bind the data to the SVG and create one path per GeoJSON feature
+		svg.selectAll("*").remove()
+		svg.selectAll("path")
+			.data(location_json.features)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			.style("stroke", "#fff")
+			.style("stroke-width", "1")
+			.style("fill", function(d) {
+				// Get data value
+				var value = mapDict[d.properties.name];
+				if (value) {
+					//If value exists set the state
+					return color(Math.min(value, 4));
+				} else {
+					//If value is undefined…
+					return "rgb(213,222,217)";
+				}
+			});
 	}
-// 	// Load in my states data!
-// 	d3.csv("data/stateslived.csv", function(data) {
-// 		color.domain([0,1,2,3]); // setting the range of the input data
-//
-// 		// Load GeoJSON data and merge with states data
-// 		d3.json("data/us-states.json", function(json) {
-// 			// Loop through each state data value in the .csv file
-// 			for (var i = 0; i < data.length; i++) {
-//
-// 				// Grab State Name
-// 				var dataState = data[i].state;
-//
-// 				// Grab data value
-// 				var dataValue = data[i].visited;
-//
-// 				// Find the corresponding state inside the GeoJSON
-// 				for (var j = 0; j < json.features.length; j++)  {
-// 					var jsonState = json.features[j].properties.name;
-//
-// 					if (dataState == jsonState) {
-//
-// 						// Copy the data value into the JSON
-// 						json.features[j].properties.visited = dataValue;
-//
-// 						// Stop looking through the JSON
-// 						break;
-// 					}
-// 				}
-// 			}
-//
-// 			// Bind the data to the SVG and create one path per GeoJSON feature
-// 			svg.selectAll("path")
-// 				.data(json.features)
-// 				.enter()
-// 				.append("path")
-// 				.attr("d", path)
-// 				.style("stroke", "#fff")
-// 				.style("stroke-width", "1")
-// 				.style("fill", function(d) {
-// 					// Get data value
-// 					var value = d.properties.visited;
-//
-// 					if (value) {
-// 						//If value exists…
-// 						return color(value);
-// 					} else {
-// 						//If value is undefined…
-// 						return "rgb(213,222,217)";
-// 					}
-// 				});
-//
-//
-// 			// Map the cities I have lived in!
-// 			d3.csv("data/citieslived.csv", function(data) {
-// 				svg.selectAll("circle")
-// 					.data(data)
-// 					.enter()
-// 					.append("circle")
-// 					.attr("cx", function(d) {
-// 						return projection([d.lon, d.lat])[0];
-// 					})
-// 					.attr("cy", function(d) {
-// 						return projection([d.lon, d.lat])[1];
-// 					})
-// 					.attr("r", function(d) {
-// 						return Math.sqrt(d.years) * 4;
-// 					})
-// 						.style("fill", "rgb(217,91,67)")
-// 						.style("opacity", 0.85)
-//
-// 					// Modification of custom tooltip code provided by Malcolm Maclean, "D3 Tips and Tricks"
-// 					// http://www.d3noob.org/2013/01/adding-tooltips-to-d3js-graph.html
-// 					.on("mouseover", function(d) {
-// 				    	div.transition()
-// 				      	   .duration(200)
-// 				           .style("opacity", .9);
-// 				           div.text(d.place)
-// 				           .style("left", (d3.event.pageX) + "px")
-// 				           .style("top", (d3.event.pageY - 28) + "px");
-// 					})
-//
-// 				    // fade out tooltip on mouse out
-// 				    .on("mouseout", function(d) {
-// 				        div.transition()
-// 				           .duration(500)
-// 				           .style("opacity", 0);
-// 				    });
-// 			});
-//
-// 			// Modified Legend Code from Mike Bostock: http://bl.ocks.org/mbostock/3888852
-// 			var legend = d3.select("body").append("svg")
-// 			      			.attr("class", "legend")
-// 			     			.attr("width", 140)
-// 			    			.attr("height", 200)
-// 			   				.selectAll("g")
-// 			   				.data(color.domain().slice().reverse())
-// 			   				.enter()
-// 			   				.append("g")
-// 			     			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-//
-// 		  	legend.append("rect")
-// 		   		  .attr("width", 18)
-// 		   		  .attr("height", 18)
-// 		   		  .style("fill", color);
-//
-// 		  	legend.append("text")
-// 		  		  .data(legendText)
-// 		      	  .attr("x", 24)
-// 		      	  .attr("y", 9)
-// 		      	  .attr("dy", ".35em")
-// 		      	  .text(function(d) { return d; });
-// 		});
-// 	});
 });
