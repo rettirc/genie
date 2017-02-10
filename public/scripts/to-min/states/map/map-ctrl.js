@@ -1,5 +1,6 @@
 angular.module('genie.map-ctrl', [])
 .controller('MapCtrl', function($scope, d3) {
+	var mapDict
 	var width = 960;
 	var height = 500;
 
@@ -20,7 +21,7 @@ angular.module('genie.map-ctrl', [])
 	var legendText = ["Cities Lived", "States Lived", "States Visited", "Nada"];
 
 	//Create SVG element and append map to the SVG
-	var svg = d3.select("body")
+	var svg = d3.select("#mapView")
 				.append("svg")
 				.attr("width", width)
 				.attr("height", height);
@@ -32,6 +33,49 @@ angular.module('genie.map-ctrl', [])
 	    		.style("opacity", 0);
 
 	d3.json("data/river-force-test.json", function(error,all_json) {
+		// hightlightBirthDeathPlaces(all_json)
+		highlightStateTravel(all_json)
+	})
+
+	function initMapDict() {
+		if (!mapDict) {
+			mapDict = {}
+			d3.json("data/us-states.json", function(states_json) {
+				for (var j = 0; j < states_json.features.length; j++)  {
+					mapDict[states_json.features[j].properties.name] = 0
+				}
+			});
+		} else {
+			for (key in Object.keys(mapDict))  {
+				mapDict[key] = 0
+			}
+		}
+	}
+
+	function highlightStateTravel(all_json) {
+		mapDict = {}
+		color.domain([0, 4]); // setting the range of the input data
+		d3.json("data/us-states.json", function(states_json) {
+			for (var j = 0; j < states_json.features.length; j++)  {
+				mapDict[states_json.features[j].properties.name] = 0;
+			}
+			// Load GeoJSON data and merge with states data
+			for (var i = 0; i < all_json.nodes.length; i++) {
+				// Grab State Name
+				var travelJson = all_json.nodes[i].travel
+				if (travelJson) {
+					visitedStates = Object.keys(travelJson)
+					for (var i = 0; i < visitedStates.length; i++) {
+						mapDict[visitedStates[i]] += 1
+					}
+				}
+			}
+			highlightLocations("state", states_json)
+		});
+	}
+
+	function hightlightBirthDeathPlaces(all_json) {
+		initMapDict()
 		color.domain([0, 4]); // setting the range of the input data
 		// Load GeoJSON data and merge with states data
 		d3.json("data/us-states.json", function(states_json) {
@@ -44,9 +88,6 @@ angular.module('genie.map-ctrl', [])
 					// Find the corresponding state inside the GeoJSON
 					for (var j = 0; j < states_json.features.length; j++)  {
 						var jsonState = states_json.features[j].properties.name;
-						console.log(jsonState);
-						console.log(birthState);
-						console.log(birthState == jsonState);
 						if (birthState == jsonState || deathState == jsonState) {
 
 							// Copy the data value into the JSON
@@ -61,10 +102,15 @@ angular.module('genie.map-ctrl', [])
 					}
 				}
 			}
+			highlightLocations("state", states_json)
+		});
+	}
 
+	function highlightLocations(scope, location_json) {
+		if (scope == "state") {
 			// Bind the data to the SVG and create one path per GeoJSON feature
 			svg.selectAll("path")
-				.data(states_json.features)
+				.data(location_json.features)
 				.enter()
 				.append("path")
 				.attr("d", path)
@@ -72,81 +118,17 @@ angular.module('genie.map-ctrl', [])
 				.style("stroke-width", "1")
 				.style("fill", function(d) {
 					// Get data value
-					var value = d.properties.visited;
-
+					var value = mapDict[d.properties.name];
 					if (value) {
-						console.log(value);
 						//If value exists…
 						return color(Math.min(value, 4));
 					} else {
-						console.log("nothing");
 						//If value is undefined…
 						return "rgb(213,222,217)";
 					}
 				});
-
-			//
-			// // Map the cities I have lived in!
-			// d3.csv("data/citieslived.csv", function(data) {
-			// 	svg.selectAll("circle")
-			// 		.data(data)
-			// 		.enter()
-			// 		.append("circle")
-			// 		.attr("cx", function(d) {
-			// 			return projection([d.lon, d.lat])[0];
-			// 		})
-			// 		.attr("cy", function(d) {
-			// 			return projection([d.lon, d.lat])[1];
-			// 		})
-			// 		.attr("r", function(d) {
-			// 			return Math.sqrt(d.years) * 4;
-			// 		})
-			// 			.style("fill", "rgb(217,91,67)")
-			// 			.style("opacity", 0.85)
-			//
-			// 		// Modification of custom tooltip code provided by Malcolm Maclean, "D3 Tips and Tricks"
-			// 		// http://www.d3noob.org/2013/01/adding-tooltips-to-d3js-graph.html
-			// 		.on("mouseover", function(d) {
-			// 	    	div.transition()
-			// 	      	   .duration(200)
-			// 	           .style("opacity", .9);
-			// 	           div.text(d.place)
-			// 	           .style("left", (d3.event.pageX) + "px")
-			// 	           .style("top", (d3.event.pageY - 28) + "px");
-			// 		})
-			//
-			// 	    // fade out tooltip on mouse out
-			// 	    .on("mouseout", function(d) {
-			// 	        div.transition()
-			// 	           .duration(500)
-			// 	           .style("opacity", 0);
-			// 	    });
-			// });
-
-			// Modified Legend Code from Mike Bostock: http://bl.ocks.org/mbostock/3888852
-			// var legend = d3.select("body").append("svg")
-			//       			.attr("class", "legend")
-			//      			.attr("width", 140)
-			//     			.attr("height", 200)
-			//    				.selectAll("g")
-			//    				.data(color.domain().slice().reverse())
-			//    				.enter()
-			//    				.append("g")
-			//      			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-			//
-			//  	legend.append("rect")
-			//   		  .attr("width", 18)
-			//   		  .attr("height", 18)
-			//   		  .style("fill", color);
-			//
-			//  	legend.append("text")
-			//  		  .data(legendText)
-		    //   	  .attr("x", 24)
-		    //   	  .attr("y", 9)
-		    //   	  .attr("dy", ".35em")
-		    //   	  .text(function(d) { return d; });
-		});
-	})
+		}
+	}
 // 	// Load in my states data!
 // 	d3.csv("data/stateslived.csv", function(data) {
 // 		color.domain([0,1,2,3]); // setting the range of the input data

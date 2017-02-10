@@ -1,6 +1,7 @@
 {
   "nodes":[
-    {"id":0,"firstName":"Martin","lastName":"Smith","birthYear":1958,"attributes":{"profession":"technician"}, "birth_loc":"Wyoming", "death_loc":"Alabama"},
+    {"id":0,"firstName":"Martin","lastName":"Smith","birthYear":1958,"attributes":{"profession":"technician"}, "birth_loc":"Wyoming", "death_loc":"Alabama",
+        "travel": {"Georgia": 2000, "Tennessee":2001, "Kentucky":2002, "Indiana":2003, "Michigan": 2004}},
     {"id":1,"firstName":"Aaron","lastName":"Smith","birthYear":1997,"attributes":{"profession":"writer"}, "birth_loc":"Georgia", "death_loc":"Georgia"},
     {"id":2,"firstName":"Katie","lastName":"Smith","birthYear":1996,"attributes":{"profession":"programmer"}, "birth_loc":"Georgia", "death_loc":"Georgia"},
     {"id":3, "firstName":"Scotty","lastName":"Smith","birthYear":1927,"attributes":{"profession":"salesman","hobby":"fishing"}, "birth_loc":"Florida", "death_loc":"California"},
