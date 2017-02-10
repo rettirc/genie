@@ -60,22 +60,39 @@ angular.module('genie.river-ctrl', [])
 	// 	attributeColor = newValue;
 	// });
 
+	$scope.$watch(function() {return $window.innerWidth;}, function(newValue) {
+		width = document.getElementById("riverView").clientWidth;
+		forceCenter.x(width);
+	})
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
 		.attr("width", "100%")
-		.attr("height", 600); // Arbitrary size
+		.attr("height", 800); // Arbitrary size
 
-	var width = $("#riverView").width();
-	var height = $("#riverView").height();
+	svg.append("defs").append("marker")
+		.attr("id", "arrow")
+		.attr("markerWidth", 10)
+		.attr("markerHeight", 10)
+		.attr("refX", 0)
+		.attr("refY", 3)
+		.attr("orient", "auto")
+		.attr("markerUnits", "strokeWidth")
+		.append("path")
+		.attr("d", "M0,0 L0,6 L6,3 z")
+		.attr("fill", "#00f");
 
+	var width = document.getElementById("riverView").clientWidth;
+	var height = document.getElementById("riverView").clientHeight;
+
+	var forceCenter = d3.forceCenter(width / 2, height / 2 - 100);
 
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) {
 			return d.id
 		}))
-		.force("collide", d3.forceCollide().radius(75).iterations(2))
+		.force("collide", d3.forceCollide().radius(85).iterations(2))
 		.force("charge", d3.forceManyBody())
-		.force("center", d3.forceCenter(width / 2, height / 2));
+		.force("center", forceCenter);
 
 	var displayData = function(error, json) { // The data is physically in this file as JSON
 		if(error) {
@@ -88,7 +105,8 @@ angular.module('genie.river-ctrl', [])
 			.enter()
 			.append("line")
 			.attr("stroke-width", 2)
-			.attr("stroke", "black");
+			.attr("stroke", "black")
+			.attr("marker-end", "url(#arrow)");
 
 
 		var node = svg.append("g")
@@ -130,11 +148,11 @@ angular.module('genie.river-ctrl', [])
 				})
 				.attr("x2",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.x - 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+						return d.target.x - 70 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
 					})
 				.attr("y2",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.y + 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+						return d.target.y + 70 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
 					});
 
 			node.attr("x", function(d) { return d.x - 50; })
