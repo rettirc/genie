@@ -68,6 +68,26 @@ angular.module('genie.map-ctrl', [])
 		hightlightBirthDeathPlaces(all_json)
 	})
 
+	//Function to show world map, and allow clickable of US
+	//TODO: Fix the world view so that is starts with this view and when clicked
+	//moves to the highlighted us map Corey did
+
+	// function worldMap(all_json, start) {
+	// 	mapDict = {}
+	//
+	// 	color.domain([0,4]);
+	//
+	// 	d3.json("data/world-countries.json", function(countries_json) ) {
+	// 		svg.selectAll("path")
+	// 			.data(location_json.features)
+	// 			.enter()
+	// 			.append("path")
+	// 			.attr("d", path)
+	// 			.style("stroke", "#fff")
+	// 			.style("stroke-width", "1");
+	// 	}
+	// }
+
 	//updates the mapdict with travel data and updates the map view
 	function highlightStateTravelRange(all_json, start) {
 		mapDict = {}
