@@ -1,70 +1,23 @@
-div To be implemented
 div(ui-view="page")
--// TODO: organize properly and give better naming conventions
-//- TODO: Also figure out why a comment is needed at the beginning of each div for it to work
--//
-  div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
-    label(for='occupations' style="width: 100%; text-align: left;") Search for Occupations in Your Tree
-    input(
-      name="occupations"
-      id="occupations"
-      type="text"
-      placeholder="enter an occupation"
-      ng-model="selected"
-      uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
-      class="form-control"
-    )
-    label(id="response" style="width: 300px; padding: 25px; text-align:left;")
--//
-    div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
-      label(for='occupations' style="width: 100%; text-align: left;") Search for Hobbies in Your Tree
-      input(
-        name="occupations"
-        id="occupations"
-        type="text"
-        placeholder="enter a hobby"
-        ng-model="selected"
-        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
-        class="form-control"
-      )
-      label(id="response" style="width: 300px; padding: 25px; text-align:left;")
--//
-    div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
-      label(for='occupations' style="width: 100%; text-align: left;") Depth
-      input(
-        name="occupations"
-        id="occupations"
-        type="number"
-        min="1"
-        max="10"
-        placeholder="1"
-        ng-model="selected"
-        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
-        class="form-control"
-      )
-      label(id="response" style="width: 300px; padding: 25px; text-align:left;")
-
--//
-    div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
-      label(for='occupations' style="width: 100%; text-align: left;") Choose a Color
-      input(
-        name="occupations"
-        id="occupations"
-        type="color"
-        placeholder="enter a hobby"
-        ng-model="selected"
-        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
-        class="form-control"
-      )
-      label(id="response" style="width: 300px; padding: 25px; text-align:left;")
--//
-    div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
-      label(for='occupations' style="width: 100%; text-align: left;") Choose a minimum date
-      input(type="number" step="1" ng-model="newTime")
--//
-  div(class='form-group' style="width: 300px; padding: 5px; text-align: left;")
-      label(for='occupations' style="width: 100%; text-align: left;") Click for death/birth locations
-      input(type="button" ng-click="deathBirthPlaces()")    
-
-div(id="mapView" style="display:inline-block; padding: 25px; width: 80%;")
     h1 Map View
+div(class="form-group" style="width: 20%; padding: 0px; text-align: left; float:left;")
+    //- div(style="padding: 5px; text-align: left; width: 100%;")
+    //-     label() Map Type
+    //-     select(ng-change="")
+    //-         option(value='0') US
+    //-         option(value='1') Globe
+    //- div(style="padding: 5px; text-align: left;")
+    //-     label(style="width: 100%;") Display Options
+    //-     select(ng-change="changeMap(value)")
+    //-         option(value='0') Locations Traveled
+    //-         option(value='1') Locations of Birth and Death
+    div(style="padding: 5px; text-align: left;")
+        label(for='occupations' style="width: 100%;") Choose a minimum date
+        input(type="number" step="1" ng-model="newTimeMin.value" ng-min=0 ng-max=2017)
+    div(style="padding: 5px; text-align: left;")
+        label(for='occupations' style="width: 100%;") Choose a maximum date
+        input(type="number" step="1" ng-model="newTimeMax.value" ng-min=0 ng-max=2017)
+    div(style="padding: 5px; text-align: left;")
+        label(for='occupations' style="width: 100%;")
+        input(type="button" ng-click="deathBirthPlaces()" value='Click for death/birth locations')
+div(id="mapView" style="padding: 0px; width: 40%; float:left;")

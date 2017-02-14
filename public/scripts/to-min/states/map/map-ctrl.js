@@ -1,14 +1,27 @@
 angular.module('genie.map-ctrl', [])
 .controller('MapCtrl', function($scope, d3) {
 
-	function Main($scope) {
-	  $scope.newTime = 2000;
-	}
+	$scope.newTimeMin = {
+		value: 2000
+	};
+
+	$scope.newTimeMax = {
+		value: 2017
+	};
 
 	//func called when value in min year field is changed to show travel past that date
-	$scope.$watch('newTime', function(newValue) {
+	$scope.$watch('newTimeMin.value', function(newValue) {
 		if(newValue) {
-			travelRange(newValue);
+			minTime = newValue;
+			displayTravelRange();
+		}
+	});
+
+	//func called when value in max year field is changed to show travel past that date
+	$scope.$watch('newTimeMax.value', function(newValue) {
+		if(newValue) {
+			maxTime = newValue;
+			displayTravelRange();
 		}
 	});
 
@@ -20,6 +33,8 @@ angular.module('genie.map-ctrl', [])
 	var mapDict
 	var width = 960;
 	var height = 500;
+	var maxTime = 2017;
+	var minTime = 0;
 
 	// D3 Projection
 	var projection = d3.geoAlbersUsa()
@@ -50,9 +65,9 @@ angular.module('genie.map-ctrl', [])
 	    		.style("opacity", 0);
 
 	//Function called to display places traveled past a certain date
-	function travelRange(start) {
+	function displayTravelRange() {
 		d3.json("data/river-force-test.json", function(error,all_json) {
-			highlightStateTravelRange(all_json, start)
+			highlightStateTravelRange(all_json)
 		})
 	}
 
@@ -63,13 +78,8 @@ angular.module('genie.map-ctrl', [])
 		})
 	}
 
-	//Highlight death/birthplaces by default
-	d3.json("data/river-force-test.json", function(error,all_json) {
-		hightlightBirthDeathPlaces(all_json)
-	})
-
 	//updates the mapdict with travel data and updates the map view
-	function highlightStateTravelRange(all_json, start) {
+	function highlightStateTravelRange(all_json) {
 		mapDict = {}
 		//set degree of color gradient by changing max ([min, max])
 		color.domain([0, 4]);
@@ -87,7 +97,8 @@ angular.module('genie.map-ctrl', [])
 					visitedStates = Object.keys(travelJson)
 					//for each state, create/increment the map entry
 					for (var j = 0; j < visitedStates.length; j++) {
-						if (travelJson[visitedStates[j]] >= start) {
+						if (travelJson[visitedStates[j]] >= minTime
+							&& travelJson[visitedStates[j]] <= maxTime) {
 							mapDict[visitedStates[j]] += 1
 						}
 					}
@@ -174,5 +185,18 @@ angular.module('genie.map-ctrl', [])
 					return "rgb(213,222,217)";
 				}
 			});
+	}
+
+	function changeMap(value) {
+		switch (value) {
+			case 0:
+				displayTravelRange()
+				break;
+			case 1:
+				deathBirthPlaces()
+				break;
+			default:
+
+		}
 	}
 });
