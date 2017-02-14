@@ -78,6 +78,26 @@ angular.module('genie.map-ctrl', [])
 		})
 	}
 
+	//Function to show world map, and allow clickable of US
+	//TODO: Fix the world view so that is starts with this view and when clicked
+	//moves to the highlighted us map Corey did
+
+	function worldMap(all_json) {
+		mapDict = {}
+
+		color.domain([0,4]);
+
+		d3.json("data/world-countries.json", function(countries_json) {
+			svg.selectAll("path")
+				.data(location_json.features)
+				.enter()
+				.append("path")
+				.attr("d", path)
+				.style("stroke", "#fff")
+				.style("stroke-width", "1");
+		})
+	}
+
 	//updates the mapdict with travel data and updates the map view
 	function highlightStateTravelRange(all_json) {
 		mapDict = {}
@@ -160,6 +180,32 @@ angular.module('genie.map-ctrl', [])
 			}
 			//show results on the map
 			highlightLocations(states_json)
+		});
+	}
+
+	//Hightlight where people were born and died
+	function hightlightBirthDeathPlacesCountries(all_json) {
+		//clear the map dict, may have any set of locations
+		mapDict = {}
+		//unpack the state JSON. Contains state names as well as geo data for map shape and position
+		d3.json("data/world-countries.json", function(countries_json) {
+			//initialize the mapDict
+			for (var j = 0; j < countries_json.features.length; j++)  {
+				mapDict[countries_json.features[j].properties.name] = 0
+			}
+			//set degree of color gradient by changing max ([min, max])
+			color.domain([0, 4]);
+			// Loop through each inidivdual data value in the inputted json file
+			for (var i = 0; i < all_json.nodes.length; i++) {
+				// Grab death/birth state Name
+				var birthState = all_json.nodes[i].birth_loc;
+				var deathState = all_json.nodes[i].death_loc;
+				//if either piece of data is included, update to dict
+				mapDict[birthState] += 1;
+				mapDict[deathState] += 1;
+			}
+			//show results on the map
+			highlightLocations(countries_json)
 		});
 	}
 
