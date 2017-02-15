@@ -77,7 +77,7 @@ angular.module('genie.map-ctrl', [])
 	});
 
 	var mapDict = {}
-	var mapScope = "us" //us or globe
+	var mapScope = "globe" //us or globe
 	var mapType = "travel" //birthDeath or travel
 	var width = 960;
 	var height = 500;
@@ -239,6 +239,7 @@ angular.module('genie.map-ctrl', [])
 			.enter()
 			.append("path")
 			.attr("d", locationPath)
+			.on("click", onClick)
 			.style("stroke", "#fff")
 			.style("stroke-width", "1")
 			.style("fill", function(d) {
@@ -252,5 +253,12 @@ angular.module('genie.map-ctrl', [])
 					return "rgb(213,222,217)";
 				}
 			});
+	}
+	//Function to zoom in when a country is clicked
+	function onClick(d) {
+		if (d.id == 'USA') {
+			mapScope = 'us';
+			updateMap();
+		}
 	}
 });
