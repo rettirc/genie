@@ -190,15 +190,15 @@ angular.module('genie.map-ctrl', [])
 
 	//Hightlight where people were born and died
 	function hightlightBDState(all_json) {
-		hightlightBD(all_json, "data/us-states.json")
+		hightlightBD(all_json, "data/us-states.json", 'S')
 	}
 
 	//Hightlight where people were born and died
 	function hightlightBDGlobal(all_json) {
-		hightlightBD(all_json, "data/world-countries.json")
+		hightlightBD(all_json, "data/world-countries.json", 'G')
 	}
 
-	function hightlightBD(all_json, mapPath) {
+	function hightlightBD(all_json, mapPath, GS) {
 		//clear the map dict, may have any set of locations
 		mapDict = {}
 		//unpack the state JSON. Contains state names as well as geo data for map shape and position
@@ -219,7 +219,11 @@ angular.module('genie.map-ctrl', [])
 				mapDict[deathState] += 1;
 			}
 			//show results on the map
-			highlightLocations(countries_json)
+			if (GS == 'S') {
+				highlightLocations(states_json)
+			} else {
+				highlightGlobalLocations(states_json)
+			}
 		});
 	}
 
