@@ -88,10 +88,18 @@ angular.module('genie.map-ctrl', [])
 					   .translate([width/2, height/2])    // translate to center of screen
 					   .scale([1000]);          // scale things down so see entire US
 
+	// D3 World Projection; geoAlbersUsa creates a map zoomed into us only
+	var worldProjection = d3.geoAlbers()
+						.scale([-100]);
+
 	// Define path generator
 	var path = d3.geoPath()               // path generator that will convert GeoJSON to SVG paths
 			  	 .projection(projection);  // tell path generator to use albersUsa projection
 
+  // World path for the world projection rather than US
+
+	var worldPath = d3.geoPath()
+						.projection(worldProjection);
 
 	// Define linear scale for output
 	var color = d3.scaleLinear()
@@ -134,37 +142,19 @@ angular.module('genie.map-ctrl', [])
 
 	}
 
-	//Function to show world map, and allow clickable of US
-	//TODO: Fix the world view so that is starts with this view and when clicked
-	//moves to the highlighted us map Corey did
-
-	// function worldMap(all_json) {
-	// 	mapDict = {}
-	//
-	// 	color.domain([0,4]);
-	//
-	// 	d3.json("data/world-countries.json", function(countries_json) {
-	// 		svg.selectAll("path")
-	// 			.data(location_json.features)
-	// 			.enter()
-	// 			.append("path")
-	// 			.attr("d", path)
-	// 			.style("stroke", "#fff")
-	// 			.style("stroke-width", "1");
-	// 	})
-	// }
-
 	//updates the mapdict with travel data and updates the map view
 	function highlightStateTravel(all_json) {
-		hightlightTravel(all_json, "data/us-states.json")
+		hightlightTravel(all_json, "data/us-states.json", 'S')
 	}
 
 	//updates the mapdict with travel data and updates the map view
 	function highlightGlobalTravel(all_json) {
-		hightlightTravel(all_json, "data/world-countries.json")
+		hightlightTravel(all_json, "data/world-countries.json", 'G')
 	}
 
-	function hightlightTravel(all_json, mapPath) {
+	//GS is a variable to establish whether we have a global view or state view
+
+	function hightlightTravel(all_json, mapPath, GS) {
 		mapDict = {}
 		//set degree of color gradient by changing max ([min, max])
 		color.domain([0, 4]);
@@ -190,7 +180,11 @@ angular.module('genie.map-ctrl', [])
 				}
 			}
 			//show results on the map
-			highlightLocations(states_json)
+			if (GS == 'S') {
+				highlightLocations(states_json)
+			} else {
+				highlightGlobalLocations(states_json)
+			}
 		});
 	}
 
@@ -238,6 +232,30 @@ angular.module('genie.map-ctrl', [])
 			.enter()
 			.append("path")
 			.attr("d", path)
+			.style("stroke", "#fff")
+			.style("stroke-width", "1")
+			.style("fill", function(d) {
+				// Get data value
+				var value = mapDict[d.properties.name];
+				if (value) {
+					//If value exists set the state
+					return color(Math.min(value, 4));
+				} else {
+					//If value is undefined…
+					return "rgb(213,222,217)";
+				}
+			});
+	}
+
+	//Show the globe by binding SVG and creating a path per GeoJSON feature
+	//TODO: allow zoomability...also apparently make it work
+	function highlightGlobalLocations(location_json) {
+		svg.selectAll("*").remove()
+		svg.selectAll("path")
+			.data(location_json.features)
+			.enter()
+			.append("path")
+			.attr("d", worldPath)
 			.style("stroke", "#fff")
 			.style("stroke-width", "1")
 			.style("fill", function(d) {
