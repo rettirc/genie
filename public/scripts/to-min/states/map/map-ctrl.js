@@ -70,6 +70,7 @@ angular.module('genie.map-ctrl', [])
 	//func called when value in min year field is changed to show travel past that date
 	$scope.$watch('mapTypeData.model', function(newValue) {
 		if(newValue) {
+			console.log("value");
 			mapType = newValue
 			updateMap()
 		}
@@ -153,16 +154,15 @@ angular.module('genie.map-ctrl', [])
 	}
 
 	//GS is a variable to establish whether we have a global view or state view
-
 	function hightlightTravel(all_json, mapPath, GS) {
 		mapDict = {}
 		//set degree of color gradient by changing max ([min, max])
 		color.domain([0, 4]);
 		//unpack the state JSON. Contains state names as well as geo data for map shape and position
-		d3.json(mapPath, function(states_json) {
+		d3.json(mapPath, function(loc_json) {
 			//initialize the mapDict
-			for (var j = 0; j < states_json.features.length; j++)  {
-				mapDict[states_json.features[j].properties.name] = 0;
+			for (var j = 0; j < loc_json.features.length; j++)  {
+				mapDict[loc_json.features[j].properties.name] = 0;
 			}
 			// Loop through each state data value in the inputted json file
 			for (var i = 0; i < all_json.nodes.length; i++) {
@@ -179,12 +179,7 @@ angular.module('genie.map-ctrl', [])
 					}
 				}
 			}
-			//show results on the map
-			if (GS == 'S') {
-				highlightLocations(states_json)
-			} else {
-				highlightGlobalLocations(states_json)
-			}
+			highlightLocations(loc_json)
 		});
 	}
 
@@ -202,10 +197,10 @@ angular.module('genie.map-ctrl', [])
 		//clear the map dict, may have any set of locations
 		mapDict = {}
 		//unpack the state JSON. Contains state names as well as geo data for map shape and position
-		d3.json(mapPath, function(countries_json) {
+		d3.json(mapPath, function(loc_json) {
 			//initialize the mapDict
-			for (var j = 0; j < countries_json.features.length; j++)  {
-				mapDict[countries_json.features[j].properties.name] = 0
+			for (var j = 0; j < loc_json.features.length; j++)  {
+				mapDict[loc_json.features[j].properties.name] = 0
 			}
 			//set degree of color gradient by changing max ([min, max])
 			color.domain([0, 4]);
@@ -219,47 +214,31 @@ angular.module('genie.map-ctrl', [])
 				mapDict[deathState] += 1;
 			}
 			//show results on the map
-			if (GS == 'S') {
-				highlightLocations(states_json)
-			} else {
-				highlightGlobalLocations(states_json)
-			}
+			highlightLocations(loc_json)
 		});
 	}
 
 	//update the map to display the contents of mapDict
+	//TODO: allow zoomability...also apparently make it work
 	function highlightLocations(location_json) {
+		locationPath = null;
+		switch (mapScope) {
+			case "us":
+				locationPath = path
+				break;
+			case "globe":
+				locationPath = worldPath
+				break;
+			default:
+				locationPath = path
+		}
 		// Bind the data to the SVG and create one path per GeoJSON feature
 		svg.selectAll("*").remove()
 		svg.selectAll("path")
 			.data(location_json.features)
 			.enter()
 			.append("path")
-			.attr("d", path)
-			.style("stroke", "#fff")
-			.style("stroke-width", "1")
-			.style("fill", function(d) {
-				// Get data value
-				var value = mapDict[d.properties.name];
-				if (value) {
-					//If value exists set the state
-					return color(Math.min(value, 4));
-				} else {
-					//If value is undefined…
-					return "rgb(213,222,217)";
-				}
-			});
-	}
-
-	//Show the globe by binding SVG and creating a path per GeoJSON feature
-	//TODO: allow zoomability...also apparently make it work
-	function highlightGlobalLocations(location_json) {
-		svg.selectAll("*").remove()
-		svg.selectAll("path")
-			.data(location_json.features)
-			.enter()
-			.append("path")
-			.attr("d", worldPath)
+			.attr("d", locationPath)
 			.style("stroke", "#fff")
 			.style("stroke-width", "1")
 			.style("fill", function(d) {
