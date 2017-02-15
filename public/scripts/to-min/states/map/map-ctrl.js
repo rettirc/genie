@@ -89,8 +89,9 @@ angular.module('genie.map-ctrl', [])
 					   .scale([1000]);          // scale things down so see entire US
 
 	// D3 World Projection; geoAlbersUsa creates a map zoomed into us only
-	var worldProjection = d3.geoAlbers()
-						.scale([-100]);
+	var worldProjection = d3.geoEquirectangular()
+						.scale([-150])
+						.rotate([0, 180]);
 
 	// Define path generator
 	var path = d3.geoPath()               // path generator that will convert GeoJSON to SVG paths
