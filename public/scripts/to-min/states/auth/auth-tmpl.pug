@@ -1,1 +1,11 @@
-div Login Page (Someday)
+div Login
+  div(class="form-group" style="width: 20%; margin: 0px auto;")
+    div(id="emailForm")
+      label(for="emailNameInput") Email Address
+      input(type="email" class="form-control" id="emailNameInput" ng-model="email")
+    div(id="passwordForm")
+      label(for="passwordInput") Password
+      input(type="password" id="password" ng-model="password" aria-describedby="passHelp")
+      small(id="passHelp" class="form-text text-muted") This isn't going anywhere lol, just want this for the demo TODO REMOVE THIS
+    div(id="submitButton")
+      button(type="submit" class="btn btn-priary" id="submitButton" ) Submit

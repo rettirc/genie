@@ -35,6 +35,15 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
+			.state('layout.upload', {
+				url: '/upload',
+				views: {
+					page: {
+						templateUrl: 'states/upload/upload-tmpl.html',
+						controller: 'UploadCtrl'
+					}
+				}
+			})
 			.state('layout.river', {
 				url: '/river',
 				views: {
