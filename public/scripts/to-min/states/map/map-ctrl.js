@@ -14,7 +14,7 @@ angular.module('genie.map-ctrl', [])
 	};
 
 	$scope.mapScopeData = {
-		model: null,
+		model: 'us',
 		availableOptions: [
         	{
 				value: 'us',
@@ -28,7 +28,7 @@ angular.module('genie.map-ctrl', [])
 	}
 
 	$scope.mapTypeData = {
-		model: null,
+		model: 'travel',
 		availableOptions: [
         	{
 				value: 'travel',

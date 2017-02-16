@@ -1,5 +1,10 @@
 div
 div(style="display:inline-block; width: 100%")
+  div(class="form-group col-lg-3")
+    div(style="padding: 5px; text-align: left; width: 100%;")
+        label(style="width: 100%;") Map Scope
+        select(ng-model="mapScopeData.model" style="width: 100%;")
+            option(ng-repeat="option in mapScopeData.availableOptions" value="{{option.value}}") {{option.name}}
   //- TODO: organize properly and give better naming conventions
   div(id="forms" class="col-lg-3" style="display:none;")
     div(class='form-group' style="padding: 5px; text-align: left;")
@@ -57,5 +62,5 @@ div(style="display:inline-block; width: 100%")
           class="form-control"
         )
         label(id="colorResp" style="width: 300px; padding: 25px; text-align:left;")
-  div(id="riverView" style="display:inline-block; padding: 25px; width: 80%")
-    h1 Welcome to the River View
+  div(id="riverView" style="display:inline-block; padding: 25px; width: 60%")
+    h1 River View
