@@ -1,5 +1,5 @@
 angular.module('genie.river-ctrl', [])
-.controller('RiverCtrl', function($scope, d3) {
+.controller('RiverCtrl', function($scope, $http, $window, d3) {
 
 	var attributeColor = "#aaaaff";
 	var depth = 1;
@@ -248,7 +248,8 @@ angular.module('genie.river-ctrl', [])
 
 	}
 
-	d3.json("data/river-force-test.json", function(error,json) { displayData(error,json); })
+	d3.json("data/river-force-test.json", function(error,json) { displayData(error,json); });
+	$http.post('/db', { test: 'test' }).then(function (response) { console.log(response.data); }, function(error) { console.error(error) } );
 
 
 });
