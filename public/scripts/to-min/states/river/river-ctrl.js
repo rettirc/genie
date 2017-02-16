@@ -94,10 +94,22 @@ angular.module('genie.river-ctrl', [])
 		.force("charge", d3.forceManyBody())
 		.force("center", forceCenter);
 
-	var displayData = function(error, json) { // The data is physically in this file as JSON
+	function displayData(error, json) { // The data is physically in this file as JSON
 		if(error) {
 			return console.error(error);
 		}
+
+		var connectionList = processConnections(json);
+
+		var connections = svg.append("g") // TODO: Make this possible to switch with links
+			.classed("connections", true)
+			.selectAll("path")
+			.data(connectionList)
+			.enter()
+			.append("path")
+			.attr("stroke", "black")
+			.attr("fill", "transparent");
+
 		var link = svg.append("g")
 			.classed("links", true)
 			.selectAll("line")
@@ -138,21 +150,28 @@ angular.module('genie.river-ctrl', [])
 		simulation.force("link").links(json.links);
 
 		function ticked() {
+
+			connections.attr("d", function(d) {
+				var n1 = json.nodes[d[0]];
+				var n2 = json.nodes[d[1]];
+				return "M" + n1.x + " " + n1.y + " Q " + n2.x + " " + n1.y + " " + n2.x + " " + n2.y; // Quadratic Bessier Curve
+			});
+
 			link.attr("x1", function(d) {
 					var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-					return d.source.x + 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+					return d.source.x + 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
 				})
 				.attr("y1",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.source.y - 60 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+						return d.source.y - 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
 				})
 				.attr("x2",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.x - 70 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+						return d.target.x - 65 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
 					})
 				.attr("y2",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.y + 70 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+						return d.target.y + 65 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
 					});
 
 			node.attr("x", function(d) { return d.x - 50; })
@@ -208,6 +227,24 @@ angular.module('genie.river-ctrl', [])
 				}
 			}
 		);
+
+	}
+
+	function processConnections(data) {
+		var nodes = data.nodes;
+		var seenAttributes = {};
+		for (var person of nodes) {
+			for (var attr in person.attributes) {
+				if (person.attributes.hasOwnProperty(attr)) {
+					if (seenAttributes[person.attributes[attr]]) {
+						seenAttributes[person.attributes[attr]].push(person.id);
+					} else {
+						seenAttributes[person.attributes[attr]] = [person.id];
+					}
+				}
+			}
+		}
+		return Object.keys(seenAttributes).map(function(key) { return seenAttributes[key] ;} ).filter(function(list) { return list.length > 1;});
 
 	}
 

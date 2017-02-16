@@ -14,7 +14,7 @@ angular.module('genie.map-ctrl', [])
 	};
 
 	$scope.mapScopeData = {
-		model: null,
+		model: 'us',
 		availableOptions: [
         	{
 				value: 'us',
@@ -28,7 +28,7 @@ angular.module('genie.map-ctrl', [])
 	}
 
 	$scope.mapTypeData = {
-		model: null,
+		model: 'travel',
 		availableOptions: [
         	{
 				value: 'travel',
@@ -61,7 +61,7 @@ angular.module('genie.map-ctrl', [])
 
 	//func called when zoom out button is pressed; zooms out to the last map view on the stack
 	$scope.zoomOut = function() {
-		mapScope = prevView
+		mapScope = prevView.pop();
 		updateMap()
 	}
 
@@ -81,7 +81,7 @@ angular.module('genie.map-ctrl', [])
 	var height = 500;
 	var maxTime = 2017;
 	var minTime = 0;
-	var prevView = 'globe'
+	var prevView = new Array();
 
 	// D3 Projection
 	var projection = d3.geoAlbersUsa()
@@ -218,12 +218,11 @@ angular.module('genie.map-ctrl', [])
 	}
 
 	//update the map to display the contents of mapDict
-	//TODO: allow zoomability...also apparently make it work
 	function highlightLocations(location_json) {
 		locationPath = null;
 		switch (mapScope) {
 			case "us":
-				prevView = 'globe'
+				prevView.push('globe');
 				locationPath = path
 				break;
 			case "globe":
