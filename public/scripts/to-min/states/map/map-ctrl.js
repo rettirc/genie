@@ -59,13 +59,11 @@ angular.module('genie.map-ctrl', [])
 		}
 	});
 
-	//func called when value in min year field is changed to show travel past that date
-	$scope.$watch('mapScopeData.model', function(newValue) {
-		if(newValue) {
-			mapScope = newValue
-			updateMap()
-		}
-	});
+	//func called when zoom out button is pressed; zooms out to the last map view on the stack
+	$scope.zoomOut = function() {
+		mapScope = prevView
+		updateMap()
+	}
 
 	//func called when value in min year field is changed to show travel past that date
 	$scope.$watch('mapTypeData.model', function(newValue) {
@@ -83,6 +81,7 @@ angular.module('genie.map-ctrl', [])
 	var height = 500;
 	var maxTime = 2017;
 	var minTime = 0;
+	var prevView = 'globe'
 
 	// D3 Projection
 	var projection = d3.geoAlbersUsa()
@@ -224,6 +223,7 @@ angular.module('genie.map-ctrl', [])
 		locationPath = null;
 		switch (mapScope) {
 			case "us":
+				prevView = 'globe'
 				locationPath = path
 				break;
 			case "globe":
