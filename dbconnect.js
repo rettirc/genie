@@ -3,17 +3,17 @@ const mysql = require('mysql');
 
 module.exports = (conName) => {
 
-  function dbConnect(queryText) {
+  function dbConnect(queryData) {
     var con = mysql.createConnection({
       host : 'localhost',
-      user : 'admin',
-      password : '12345', // Same as my luggage
+      user : 'cody',
+      password : '', // Same as my luggage
       database : String(conName) // Make sure it's a string
     });
 
     con.connect();
 
-    var queryString = queryText; // CLEAN ME CLEAN ME CLEAN ME
+    var queryString = 'IF EXISTS (SELECT * FROM indi)'; // CLEAN ME CLEAN ME CLEAN ME
 
     con.query(queryString, function(err, rows, fields) {
       if (err) console.error(err);
@@ -22,6 +22,8 @@ module.exports = (conName) => {
         return rows;
       }
     })
+
+    con.end();
   }
 
   return {

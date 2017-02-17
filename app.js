@@ -10,6 +10,7 @@ const fs = require('fs');
 const express = require('express');
 const errorHandler = require('errorhandler');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 
 // ours
 const dbConnect = require('./dbconnect.js');
@@ -29,6 +30,7 @@ const app = express();
  */
 app.use(bodyParser.json()); // JSON encoded bodies
 app.use(bodyParser.urlencoded({ extended: true})); // URL extended bodies
+app.use(fileUpload());
 
 /**
  * Express configuration.
@@ -61,10 +63,14 @@ router.get('', function(req, res) { res.redirect('/') });
 router.get('/auth', controller.index);
 router.get('/river', controller.index);
 router.get('/map', controller.index);
+router.get('/upload', controller.index);
 router.post('/db', function(req, res) { // Plug into database
-  var db = dbConnect(req.body.database);
-  res.json(db.query(req.body.query));
+  var db = dbConnect('fam_data');
+  res.json(db.query(req.body));
   res.end();
+});
+router.post('/uploadFile', function(req, res) {
+  console.log(req.files.inputFile);
 });
 
 /**

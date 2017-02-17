@@ -249,7 +249,7 @@ angular.module('genie.river-ctrl', [])
 	}
 
 	d3.json("data/river-force-test.json", function(error,json) { displayData(error,json); });
-	$http.post('/db', { test: 'test' }).then(function (response) { console.log(response.data); }, function(error) { console.error(error) } );
+	// $http.post('/db', { mode: 'query', base: '1000', depth: 5}).then(function (response) { console.log(response.data); }, function(error) { console.error(error) } );
 
 
 });

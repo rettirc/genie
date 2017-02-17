@@ -12,6 +12,8 @@
     "electron-pug": "1.5.1",
     "errorhandler": "1.5.0",
     "express": "4.14.0",
+    "express-fileupload": "0.0.7",
+    "fileupload": "^1.0.0",
     "gulp-uglify": "2.0.0",
     "mysql": "^2.13.0",
     "parse-gedcom": "^1.0.3",
