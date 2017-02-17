@@ -97,8 +97,7 @@ angular.module('genie.river-ctrl', [])
 		.attr("orient", "auto")
 		.attr("markerUnits", "strokeWidth")
 		.append("path")
-		.attr("d", "M0,0 L0,6 L6,3 z")
-		.attr("fill", "#00f");
+		.attr("d", "M0,0 L0,6 L6,3 z");
 
 	// var width = document.getElementById("riverView").width;
 	// var height = document.getElementById("riverView").height;
@@ -136,9 +135,7 @@ angular.module('genie.river-ctrl', [])
 			.selectAll("path")
 			.data(connectionData)
 			.enter()
-			.append("path")
-			.attr("stroke", "black")
-			.attr("fill", "transparent");
+			.append("path");
 
 		var link = svg.append("g")
 			.classed("links", true)
@@ -146,9 +143,7 @@ angular.module('genie.river-ctrl', [])
 			.data(linkingData)
 			.enter()
 			.append("line")
-			.attr("stroke-width", 2)
-			.attr("stroke", "black")
-			.attr("marker-end", "url(#arrow)");
+			.attr("marker-end", "url(#arrow)")
 
 
 		var node = svg.append("g")

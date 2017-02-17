@@ -8,12 +8,26 @@ svg {
 }
 
 rect {
-	fill: #1e90ff;
-	fill-opacity: 0.5;
-	stroke: steelblue;
-	stroke-width: 1px;
+	fill: #6495ED;
+	fill-opacity: 1;
 	rx: 2px;
 	ry: 2px
+}
+
+g.connections path {
+	stroke-dasharray: 5,5;
+	stroke-width: 2;
+	stroke: #cccccc;
+	fill: transparent;
+}
+
+g.links line {
+	stroke: #aaaaaa;
+	stroke-width: 2;
+}
+
+defs marker {
+	fill: #aaaaaa;
 }
 
 rect.selected {
