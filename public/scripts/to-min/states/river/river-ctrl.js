@@ -60,13 +60,32 @@ angular.module('genie.river-ctrl', [])
 	// 	attributeColor = newValue;
 	// });
 
+	$scope.riverScope = {
+		model: 'relational',
+		availableOptions: [
+        	{
+				value: 'relational',
+				name: 'Familial Connections'
+			},
+        	{
+				value: 'personal',
+				name: 'Personal Connections'
+			}
+    	]
+	}
+
+	$scope.$watch('riverScope.model', function(newValue) {
+		d3.selectAll('#riverView svg g').each(function(d) { d3.select(this).remove(); });
+		d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, newValue); });
+	})
+
 	$scope.$watch(function() {return $window.innerWidth;}, function(newValue) {
 		width = document.getElementById("riverView").clientWidth;
 		forceCenter.x(width);
 	})
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
-		.attr("width", "100%")
+		.attr("width", 1000)
 		.attr("height", 800); // Arbitrary size
 
 	svg.append("defs").append("marker")
@@ -81,8 +100,11 @@ angular.module('genie.river-ctrl', [])
 		.attr("d", "M0,0 L0,6 L6,3 z")
 		.attr("fill", "#00f");
 
-	var width = document.getElementById("riverView").clientWidth;
-	var height = document.getElementById("riverView").clientHeight;
+	// var width = document.getElementById("riverView").width;
+	// var height = document.getElementById("riverView").height;
+
+	var width = 1000;
+	var height = $("#riverView svg").height();
 
 	var forceCenter = d3.forceCenter(width / 2, height / 2 - 100);
 
@@ -92,19 +114,27 @@ angular.module('genie.river-ctrl', [])
 		}))
 		.force("collide", d3.forceCollide().radius(85).iterations(2))
 		.force("charge", d3.forceManyBody())
-		.force("center", forceCenter);
+		.force("center", d3.forceCenter(500, 400));
 
-	function displayData(error, json) { // The data is physically in this file as JSON
+	function displayData(error, json, linkMode) { // The data is physically in this file as JSON
 		if(error) {
 			return console.error(error);
 		}
 
 		var connectionList = processConnections(json);
 
-		var connections = svg.append("g") // TODO: Make this possible to switch with links
+		var linkingData = json.links;
+		var connectionData = connectionList;
+
+		if (linkMode == 'personal') {
+			var linkingData = connectionList;
+			var connectionData = json.links;
+		}
+
+		var connections = svg.append("g")
 			.classed("connections", true)
 			.selectAll("path")
-			.data(connectionList)
+			.data(connectionData)
 			.enter()
 			.append("path")
 			.attr("stroke", "black")
@@ -113,7 +143,7 @@ angular.module('genie.river-ctrl', [])
 		var link = svg.append("g")
 			.classed("links", true)
 			.selectAll("line")
-			.data(json.links)
+			.data(linkingData)
 			.enter()
 			.append("line")
 			.attr("stroke-width", 2)
@@ -147,13 +177,13 @@ angular.module('genie.river-ctrl', [])
 		node.append("title").text(function(d) { return d.firstName });
 		// displayPersonalData();
 		simulation.nodes(json.nodes).on("tick", ticked);
-		simulation.force("link").links(json.links);
+		simulation.force("link").links(linkingData);
 
 		function ticked() {
 
 			connections.attr("d", function(d) {
-				var n1 = json.nodes[d[0]];
-				var n2 = json.nodes[d[1]];
+				var n1 = json.nodes[d.source];
+				var n2 = json.nodes[d.target];
 				return "M" + n1.x + " " + n1.y + " Q " + n2.x + " " + n1.y + " " + n2.x + " " + n2.y; // Quadratic Bessier Curve
 			});
 
@@ -178,6 +208,8 @@ angular.module('genie.river-ctrl', [])
 				.attr("y", function(d) { return d.y - 50; });
 
 		}
+
+		simulation.alpha(1).restart();
 
 	};
 
@@ -244,11 +276,24 @@ angular.module('genie.river-ctrl', [])
 				}
 			}
 		}
-		return Object.keys(seenAttributes).map(function(key) { return seenAttributes[key] ;} ).filter(function(list) { return list.length > 1;});
+
+		var interestingLinks = Object.keys(seenAttributes).map(function(key) { return seenAttributes[key] ;} ).filter(function(list) { return list.length > 1;});
+
+		// console.log(interestingLinks);
+
+		var outputLinks = [];
+		for (var k = 0, interestingLink = interestingLinks[k]; k < interestingLinks.length; interestingLink = interestingLinks[++k]) {
+			for (var i = 0; i < interestingLink.length - 1; i++) {
+				for (var j = i + 1; j < interestingLink.length; j++) {
+					outputLinks.push({source:interestingLink[i], target:interestingLink[j]});
+				}
+			}
+		}
+		return outputLinks;
 
 	}
 
-	d3.json("data/river-force-test.json", function(error,json) { displayData(error,json); });
+	// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, 'familial'); });
 	// $http.post('/db', { mode: 'query', base: '1000', depth: 5}).then(function (response) { console.log(response.data); }, function(error) { console.error(error) } );
 
 
