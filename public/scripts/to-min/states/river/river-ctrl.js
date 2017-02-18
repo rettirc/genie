@@ -5,47 +5,28 @@ angular.module('genie.river-ctrl', [])
 	var depth = 1;
 	var familyData = [];
 
-	// function checkAttribute(attribute, value) {
-	// 	var seen = 0; //Count number seen
-	// 	d3.selectAll('g').each(
-	// 		function(d) {
-	// 				d3.select(this).select("rect").classed("selected", false); // Not selected
-	// 				for (var attr in d.attributes) {
-	// 					if (attr == attribute && d.attributes[attr] && d.attributes[attr].toLowerCase() == value) {
-	// 							d3.select(this).select("rect").classed('selected', true);
-	// 							seen++;
-	// 					}
-	// 				}
-	// 		}
-	// 	);
-	// 	if (seen > 1) {
-	// 		drawLink();
-	// 	}
-	// }
+	function checkAttribute(attribute, value) {
+		var seen = 0; //Count number seen
+		var matchingData = seenAttributes[value];
+		if (matchingData) {
+			for (var i = 0; i < matchingData.length; i++) {
+				var selectedNode = matchingData[i];
+				d3.selectAll("g.nodes svg").classed("selected-" + attribute + '-enabled', function(d) {
+					return d.attributes[attribute] === value;
+				})
+					.classed('selected-' + attribute + '-disabled', false);
+			}
+		} else {
+			d3.selectAll("g.nodes svg")
+				.classed('selected-' + attribute + '-enabled', false)
+				.classed('selected-' + attribute + '-disabled', false);
 
-	// function drawLink() {
-	// 	var selectedNodes = d3.selectAll('rect.selected');
-	//
-	// 	selectedNodes.style("fill", attributeColor)
-	// 	.on("click", function() {
-	// 		removeLink(selectedNodes);
-	// 	});
-	// }
-
-	// function removeLink(selectedNodes) {
-	// 	selectedNodes.attr("style", null)
-	// 	.on("click", null);
-	// }
+		}
+	}
 
 	// $scope.$watch('occupationSelected', function(newValue) {
 	// 	if(newValue) {
 	// 		checkAttribute('profession', newValue.toLowerCase());
-	// 	}
-	// });
-	//
-	// $scope.$watch('hobbySelected', function(newValue) {
-	// 	if(newValue) {
-	// 		checkAttribute('hobby', newValue.toLowerCase());
 	// 	}
 	// });
 	//
@@ -65,7 +46,7 @@ angular.module('genie.river-ctrl', [])
 		availableOptions: [
         	{
 				value: 'relational',
-				name: 'Familial Connections'
+				name: 'Family Connections'
 			},
         	{
 				value: 'personal',
@@ -74,18 +55,51 @@ angular.module('genie.river-ctrl', [])
     	]
 	}
 
+	$scope.hobbySelected = {
+		model: '',
+		enabled: false
+	}
+
+	$scope.occupationSelected = {
+		model: '',
+		enabled: false
+	}
+
+	$scope.depthSelected = 3;
+
 	$scope.$watch('riverScope.model', function(newValue) {
 		d3.selectAll('#riverView svg g').each(function(d) { d3.select(this).remove(); });
 		d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, newValue); });
 	})
 
+	$scope.$watch('hobbySelected.model', function(newValue) {
+		if(newValue) {
+			checkAttribute('hobby', newValue.toLowerCase());
+			$scope.hobbySelected.enabled = true;
+		} else {
+			$scope.hobbySelected.enabled = false;
+		}
+	});
+
+	$scope.$watch('hobbySelected.enabled', function(newValue) {
+		if (!newValue) {
+			d3.selectAll("svg.selected-hobby-enabled")
+				.classed('selected-hobby-enabled', false)
+				.classed('selected-hobby-disabled', true);
+		} else {
+			d3.selectAll("svg.selected-hobby-disabled")
+				.classed('selected-hobby-enabled', true)
+				.classed('selected-hobby-disabled', false);
+		}
+	});
+
 	$scope.$watch(function() {return $window.innerWidth;}, function(newValue) {
 		width = document.getElementById("riverView").clientWidth;
-		forceCenter.x(width);
+		forceCenter.x(width / 2);
 	})
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
-		.attr("width", 1000)
+		.attr("width", '100%')
 		.attr("height", 800); // Arbitrary size
 
 	svg.append("defs").append("marker")
@@ -105,15 +119,15 @@ angular.module('genie.river-ctrl', [])
 	var width = 1000;
 	var height = $("#riverView svg").height();
 
-	var forceCenter = d3.forceCenter(width / 2, height / 2 - 100);
+	var forceCenter = d3.forceCenter(width / 2, height / 2);
 
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) {
 			return d.id
 		}))
 		.force("collide", d3.forceCollide().radius(85).iterations(2))
-		.force("charge", d3.forceManyBody())
-		.force("center", d3.forceCenter(500, 400));
+		// .force("charge", d3.forceManyBody())
+		.force("center", forceCenter);
 
 	function displayData(error, json, linkMode) { // The data is physically in this file as JSON
 		if(error) {
@@ -155,6 +169,7 @@ angular.module('genie.river-ctrl', [])
 			.classed("node", true)
 			.attr("x", 0)
 			.attr("y", 0)
+			.attr("vizId", function(d) { return d.id; })
 			.call(d3.drag()
 					.on("start", dragstarted)
 					.on("drag", dragged)
@@ -257,9 +272,11 @@ angular.module('genie.river-ctrl', [])
 
 	}
 
+	var seenAttributes = {}; // Usefull for attributes
+
 	function processConnections(data) {
 		var nodes = data.nodes;
-		var seenAttributes = {};
+		seenAttributes = {};
 		for (var person of nodes) {
 			for (var attr in person.attributes) {
 				if (person.attributes.hasOwnProperty(attr)) {
