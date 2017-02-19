@@ -6,11 +6,11 @@ angular.module('genie.map-ctrl', [])
 	};
 
 	$scope.newTimeMax = {
-		value: 2017
+		value: 2000
 	};
 
 	$scope.mapScope = {
-		value: 2017
+		value: "globe"
 	};
 
 	$scope.mapScopeData = {
@@ -66,7 +66,6 @@ angular.module('genie.map-ctrl', [])
 	//func called when value in min year field is changed to show travel past that date
 	$scope.$watch('mapTypeData.model', function(newValue) {
 		if(newValue) {
-			console.log("value");
 			mapType = newValue
 			updateMap()
 		}
@@ -116,25 +115,23 @@ angular.module('genie.map-ctrl', [])
 	    		.style("opacity", 0);
 
 	function updateMap() {
-		d3.json("data/river-force-test.json", function(error,all_json) {
-			if (mapScope == "us") {
-				console.log("us");
-				if (mapType == "travel") {
-					console.log("travel");
-					highlightStateTravel(all_json)
-				} else if (mapType == "birthDeath") {
-					console.log("bd");
-					hightlightBDState(all_json)
+		d3.json("data/river-force-test.json", function(error, all_json) {
+			if(!error) {
+				if (mapScope == "us") {
+					if (mapType == "travel") {
+						highlightStateTravel(all_json)
+					} else if (mapType == "birthDeath") {
+						highlightBDState(all_json)
+					}
+				} else if (mapScope = "globe") {
+					if (mapType == "travel") {
+						highlightGlobalTravel(all_json)
+					} else if (mapType == "birthDeath") {
+						highlightBDGlobal(all_json)
+					}
 				}
-			} else if (mapScope = "globe") {
-				console.log("globe");
-				if (mapType == "travel") {
-					console.log("travel");
-					highlightGlobalTravel(all_json)
-				} else if (mapType == "birthDeath") {
-					console.log("bd");
-					hightlightBDGlobal(all_json)
-				}
+			} else {
+				console.log(error);
 			}
 		})
 
@@ -142,16 +139,16 @@ angular.module('genie.map-ctrl', [])
 
 	//updates the mapdict with travel data and updates the map view
 	function highlightStateTravel(all_json) {
-		hightlightTravel(all_json, "data/us-states.json", 'S')
+		highlightTravel(all_json, "data/us-states.json", 'S')
 	}
 
 	//updates the mapdict with travel data and updates the map view
 	function highlightGlobalTravel(all_json) {
-		hightlightTravel(all_json, "data/world-countries.json", 'G')
+		highlightTravel(all_json, "data/world-countries.json", 'G')
 	}
 
 	//GS is a variable to establish whether we have a global view or state view
-	function hightlightTravel(all_json, mapPath, GS) {
+	function highlightTravel(all_json, mapPath, GS) {
 		mapDict = {}
 		//set degree of color gradient by changing max ([min, max])
 		color.domain([0, 4]);
@@ -163,15 +160,15 @@ angular.module('genie.map-ctrl', [])
 			}
 			// Loop through each state data value in the inputted json file
 			for (var i = 0; i < all_json.nodes.length; i++) {
-				// Grab the map of states traveled to
+				// Grab the map of locations traveled to
 				var travelJson = all_json.nodes[i].travel
 				if (travelJson) {
-					visitedStates = Object.keys(travelJson)
+					visitedLocs = Object.keys(travelJson)
 					//for each state, create/increment the map entry
-					for (var x = 0; x < visitedStates.length; x++) {
-						if (travelJson[visitedStates[x]] >= minTime
-							&& travelJson[visitedStates[x]] <= maxTime) {
-							mapDict[visitedStates[x]] += 1
+					for (var x = 0; x < visitedLocs.length; x++) {
+						if (travelJson[visitedLocs[x]] >= minTime
+							&& travelJson[visitedLocs[x]] <= maxTime) {
+							mapDict[visitedLocs[x]] += 1
 						}
 					}
 				}
@@ -180,17 +177,17 @@ angular.module('genie.map-ctrl', [])
 		});
 	}
 
-	//Hightlight where people were born and died
-	function hightlightBDState(all_json) {
-		hightlightBD(all_json, "data/us-states.json", 'S')
+	//Highlight where people were born and died
+	function highlightBDState(all_json) {
+		highlightBD(all_json, "data/us-states.json", 'S')
 	}
 
-	//Hightlight where people were born and died
-	function hightlightBDGlobal(all_json) {
-		hightlightBD(all_json, "data/world-countries.json", 'G')
+	//Highlight where people were born and died
+	function highlightBDGlobal(all_json) {
+		highlightBD(all_json, "data/world-countries.json", 'G')
 	}
 
-	function hightlightBD(all_json, mapPath, GS) {
+	function highlightBD(all_json, mapPath, GS) {
 		//clear the map dict, may have any set of locations
 		mapDict = {}
 		//unpack the state JSON. Contains state names as well as geo data for map shape and position
@@ -204,11 +201,14 @@ angular.module('genie.map-ctrl', [])
 			// Loop through each inidivdual data value in the inputted json file
 			for (var i = 0; i < all_json.nodes.length; i++) {
 				// Grab death/birth state Name
-				var birthState = all_json.nodes[i].birth_loc;
-				var deathState = all_json.nodes[i].death_loc;
+				var birthLoc = all_json.nodes[i].birth_loc;
+				var deathLoc = all_json.nodes[i].death_loc;
 				//if either piece of data is included, update to dict
-				mapDict[birthState] += 1;
-				mapDict[deathState] += 1;
+				if (all_json.nodes[i].birthYear >= minTime &&
+					all_json.nodes[i].birthYear <= maxTime) {
+						mapDict[birthLoc] += 1;
+						mapDict[deathLoc] += 1;
+				}
 			}
 			//show results on the map
 			highlightLocations(loc_json)
