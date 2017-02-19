@@ -69,8 +69,8 @@ router.post('/db', function(req, res) { // Plug into database
   res.json(db.query(req.body));
   res.end();
 });
-router.get('/fileList', function(req, res) {
-  rfs.readdir(path.join(__dirname, 'public/data/uploads/'), (err, files) => {
+router.post('/fileList', function(req, res) {
+  fs.readdir(path.join(__dirname, 'public/data/uploads/'), (err, files) => {
     let list = [];
     files.forEach(file => {
       list.push(file);

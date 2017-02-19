@@ -4,10 +4,19 @@ angular.module('genie.upload-ctrl', [])
 		$state.go(route);
 	}
 
-	$http.get("/fileList").then( function(response) {
-		d3.select("#files").selectAll("li")
-			.data(response)
+	$http({method: 'POST', url: '/fileList'}).then( function(response) {
+		var rows = d3.select("#files").selectAll("tr")
+			.data(response.data);
+
+		rows.select("td")
 			.text(function(d) { return d; });
+
+		rows.enter()
+			.append("td")
+			.text(function(d) { return d; });
+
+	}, function(error) {
+		console.error(error)
 	});
 
 });
