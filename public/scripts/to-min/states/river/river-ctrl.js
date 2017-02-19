@@ -23,13 +23,6 @@ angular.module('genie.river-ctrl', [])
 
 		}
 	}
-
-	// $scope.$watch('occupationSelected', function(newValue) {
-	// 	if(newValue) {
-	// 		checkAttribute('profession', newValue.toLowerCase());
-	// 	}
-	// });
-	//
 	// $scope.$watch('depthSelected', function(newValue) {
 		// checkAttribute(newValue.toLowerCase());
 		// depth = newValue;
@@ -123,10 +116,10 @@ angular.module('genie.river-ctrl', [])
 
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) {
-			return d.id
+			return d.id;
 		}))
-		.force("collide", d3.forceCollide().radius(85).iterations(2))
-		// .force("charge", d3.forceManyBody())
+		.force("collide", d3.forceCollide().radius(80).iterations(2))
+		// .force("charge", d3.forceManyBody().strength())
 		.force("center", forceCenter);
 
 	function displayData(error, json, linkMode) { // The data is physically in this file as JSON
@@ -157,7 +150,7 @@ angular.module('genie.river-ctrl', [])
 			.data(linkingData)
 			.enter()
 			.append("line")
-			.attr("marker-end", "url(#arrow)")
+			.attr("marker-end", linkMode != 'personal' ? "url(#arrow)" : null);
 
 
 		var node = svg.append("g")
@@ -189,6 +182,8 @@ angular.module('genie.river-ctrl', [])
 		simulation.nodes(json.nodes).on("tick", ticked);
 		simulation.force("link").links(linkingData);
 
+		var targetDist = (linkMode == 'personal') ? 50 : 65;
+
 		function ticked() {
 
 			connections.attr("d", function(d) {
@@ -207,11 +202,11 @@ angular.module('genie.river-ctrl', [])
 				})
 				.attr("x2",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.x - 65 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+						return d.target.x - targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
 					})
 				.attr("y2",  function(d) {
 						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.y + 65 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+						return d.target.y + targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
 					});
 
 			node.attr("x", function(d) { return d.x - 50; })
