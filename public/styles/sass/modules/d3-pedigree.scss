@@ -4,30 +4,37 @@ body {
 
 svg {
 	margin-top: 32px;
-	border: 1px solid #aaa;
 }
 
 rect {
-	fill: #6495ED;
+	fill: #6ca1b9;
 	fill-opacity: 1;
 	rx: 2px;
 	ry: 2px
 }
 
+rect.bg {
+	fill: #c9dce2;
+}
+
 g.connections path {
 	stroke-dasharray: 5,5;
 	stroke-width: 2;
-	stroke: #cccccc;
+	stroke: #5f5c5c;
 	fill: transparent;
 }
 
 g.links line {
-	stroke: #aaaaaa;
+	stroke: #5f5c5c;
 	stroke-width: 2;
 }
 
-.selected-hobby-enabled {
-	fill: steelblue;
+.selected-hobby-enabled rect {
+	fill: #01688c;
+}
+
+.selected-profession-enabled rect {
+	fill: #01688c;
 }
 
 defs marker {
