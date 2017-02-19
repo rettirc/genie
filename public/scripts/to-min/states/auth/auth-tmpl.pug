@@ -7,5 +7,5 @@ div Login
       label(for="passwordInput") Password
       input(type="password" id="password" ng-model="password" aria-describedby="passHelp")
       small(id="passHelp" class="form-text text-muted") This isn't going anywhere lol, just want this for the demo TODO REMOVE THIS
-    div(id="submitButton")
-      button(type="submit" class="btn btn-priary" id="submitButton" ) Submit
+    div(id="submit")
+      button(type="submit" class="btn btn-priary" id="submitButton" ng-click="go('layout.upload')") Submit

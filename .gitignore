@@ -53,3 +53,4 @@ jspm_packages
 bower_components
 genie.js
 river-data.json
+public/data/uploads/*

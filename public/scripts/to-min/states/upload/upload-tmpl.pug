@@ -1,7 +1,12 @@
-div Data Upload
-  div(class="form-group" style="width: 20%; margin: 0px auto;")
-    form(id="fileForm" method="post" action="/uploadFile" enctype="multipart/form-data")
-      label(for="passwordInput") File to Upload
-      input(type="file" class="form-control-file" id="inputFile" aria-describedby="fileHelp")
-      small(id="fileHelp" class="form-text text-muted") GEDCOM files are supported
-      input(type="submit" class="btn btn-priary" id="submitButton")
+div
+  h1 Upload
+  div(style="width: 20%; margin: 20px auto")
+    div(id="fileList")
+      ul(id="files")
+        li You currently have no files uploaded
+    div(class="form-group")
+      form(class="form-group" id="fileForm" method="post" action="/uploadFile" enctype="multipart/form-data")
+        label(for="passwordInput") File to Upload
+        input(type="file" class="form-control-file" id="inputFile" name="inputFile" aria-describedby="fileHelp")
+        small(id="fileHelp" class="form-text text-muted") GEDCOM files are supported
+        button(class="btn btn-priary" id="submitButton") Submit

@@ -4,5 +4,5 @@ angular.module('genie.auth-ctrl', [])
 		$state.go(route);
 	}
 
-	$("#submitButton").on("click", function() { $scope.go("layout.upload")});
+	// $("#submitButton").on("click", function() { $scope.go("layout.upload")});
 });

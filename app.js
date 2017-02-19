@@ -12,8 +12,8 @@ const errorHandler = require('errorhandler');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 
-// ours
-const dbConnect = require('./dbconnect.js');
+// ours But not now
+// const dbConnect = require('./dbconnect.js');
 
 /**
  * Controllers (route handlers).
@@ -69,8 +69,28 @@ router.post('/db', function(req, res) { // Plug into database
   res.json(db.query(req.body));
   res.end();
 });
-router.post('/uploadFile', function(req, res) {
-  console.log(req.files.inputFile);
+router.get('/fileList', function(req, res) {
+  rfs.readdir(path.join(__dirname, 'public/data/uploads/'), (err, files) => {
+    let list = [];
+    files.forEach(file => {
+      list.push(file);
+    });
+    res.send(list);
+  })
+});
+router.post('/uploadFile',  function(req, res) {
+  // console.log(req.files.inputFile);
+  if(!req.files) {
+    res.redirect("/upload");
+  }
+  let inputFile = req.files.inputFile;
+
+  inputFile.mv(path.join(__dirname, "public/data/uploads/", inputFile.name), function(err) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.redirect("/upload");
+  });
 });
 
 /**
