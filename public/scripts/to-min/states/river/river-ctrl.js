@@ -86,14 +86,43 @@ angular.module('genie.river-ctrl', [])
 		}
 	});
 
+	$scope.$watch('occupationSelected.model', function(newValue) {
+		if(newValue) {
+			checkAttribute('profession', newValue.toLowerCase());
+			$scope.occupationSelected.enabled = true;
+		} else {
+			$scope.occupationSelected.enabled = false;
+		}
+	});
+
+	$scope.$watch('occupationSelected.enabled', function(newValue) {
+		if (!newValue) {
+			d3.selectAll("svg.selected-profession-enabled")
+				.classed('selected-profession-enabled', false)
+				.classed('selected-profession-disabled', true);
+		} else {
+			d3.selectAll("svg.selected-profession-disabled")
+				.classed('selected-profession-enabled', true)
+				.classed('selected-profession-disabled', false);
+		}
+	});
+
 	$scope.$watch(function() {return $window.innerWidth;}, function(newValue) {
 		width = document.getElementById("riverView").clientWidth;
 		forceCenter.x(width / 2);
+		d3.select("#bg")
+			.attr("width", width);
 	})
 
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
 		.attr("width", '100%')
 		.attr("height", 800); // Arbitrary size
+
+	svg.append("rect")
+		.attr("id", "bg")
+		.classed("bg", true)
+		.attr("width", width)
+		.attr("height", 800);
 
 	svg.append("defs").append("marker")
 		.attr("id", "arrow")
@@ -118,7 +147,7 @@ angular.module('genie.river-ctrl', [])
 		.force("link", d3.forceLink().id(function(d) {
 			return d.id;
 		}))
-		.force("collide", d3.forceCollide().radius(80).iterations(2))
+		.force("collide", d3.forceCollide().radius(90).iterations(2))
 		// .force("charge", d3.forceManyBody().strength())
 		.force("center", forceCenter);
 
