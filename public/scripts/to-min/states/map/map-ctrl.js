@@ -45,7 +45,6 @@ angular.module('genie.map-ctrl', [])
 	$scope.$watch('newTimeMin.value', function(newValue) {
 		if(newValue) {
 			minTime = newValue;
-			mapType = "travel"
 			updateMap();
 		}
 	});
@@ -54,7 +53,6 @@ angular.module('genie.map-ctrl', [])
 	$scope.$watch('newTimeMax.value', function(newValue) {
 		if(newValue) {
 			maxTime = newValue;
-			mapType = "travel"
 			updateMap();
 		}
 	});
