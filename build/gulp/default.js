@@ -12,6 +12,7 @@ const concatCSS = require('gulp-concat-css');
 const html2js = require('gulp-ng-html2js');
 const pug = require('gulp-pug');
 const minifyHtml = require('gulp-minify-html');
+const electron = require('gulp-electron');
 
 const paths = {
 	styles: {
@@ -180,3 +181,32 @@ gulp.task('default', gulp.series(
 		gulp.series(_nodemon, _browserSync)
 	)
 ));
+
+const packageJson = require("../../package.json");
+
+gulp.task('electron', function() {
+
+    gulp.src("")
+    .pipe(electron({
+        src: '../../public',
+        packageJson: packageJson,
+        release: 'release',
+        cache: 'cache',
+        version: 'v1.6.1',
+        platforms: ['darwin-x64', 'linux-ia32', 'linux-x64', 'linux-arm'],
+        platformResources: {
+            darwin: {
+                CFBundleDisplayName: packageJson.name,
+                CFBundleIdentifier: packageJson.name,
+                CFBundleName: packageJson.name,
+                CFBundleVersion: packageJson.version
+            },
+            win: {
+                "version-string": packageJson.version,
+                "file-version": packageJson.version,
+                "product-version": packageJson.version
+            }
+        }
+    }))
+    .pipe(gulp.dest(""));
+});

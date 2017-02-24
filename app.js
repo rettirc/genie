@@ -26,6 +26,10 @@ const controller = require(path.join(__dirname, 'controllers/index'));
 const app = express();
 
 /**
+ * Launch Electron
+ */
+// const electronWindow = require('./main.js');
+/**
  * Connect body parser
  */
 app.use(bodyParser.json()); // JSON encoded bodies
