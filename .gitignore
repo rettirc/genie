@@ -54,3 +54,4 @@ bower_components
 genie.js
 river-data.json
 public/data/uploads/*
+public/styles/style.min.css
