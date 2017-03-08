@@ -19,6 +19,7 @@ const fileUpload = require('express-fileupload');
  * Controllers (route handlers).
  */
 const controller = require(path.join(__dirname, 'controllers/index'));
+const apiController = require(path.join(__dirname, 'controllers/api/locations'));
 
 /**
  * Create Express server.
@@ -97,6 +98,7 @@ router.post('/uploadFile',  function(req, res) {
     res.redirect("/upload");
   });
 });
+router.get('/api/locations', apiController.all);
 
 /**
  * 500 Error Handler.
