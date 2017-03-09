@@ -53,6 +53,15 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
+			.state('layout.gallery', {
+				url: '/gallery',
+				views: {
+					page: {
+						templateUrl: 'states/gallery/gallery-tmpl.html',
+						controller: 'GalleryCtrl'
+					}
+				}
+			})
 			.state('layout.map', {
 				url: '/map',
 				views: {
