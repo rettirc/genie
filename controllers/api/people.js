@@ -8,3 +8,13 @@ exports.all = function(req, res) {
 		res.json(rows);
 	});
 };
+
+exports.queryId = function(req, res) {
+	var command = "SELECT * FROM tblIR WHERE ID=" + 3;
+	console.log(command);
+	db.all(command, function(err, rows) {
+		res.json(rows);
+		if (err) console.error(err);
+	});
+
+};

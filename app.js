@@ -20,6 +20,7 @@ const fileUpload = require('express-fileupload');
  */
 const controller = require(path.join(__dirname, 'controllers/index'));
 const apiController = require(path.join(__dirname, 'controllers/api/locations'));
+const peopleApiController = require(path.join(__dirname, 'controllers/api/people'));
 
 /**
  * Create Express server.
@@ -99,6 +100,7 @@ router.post('/uploadFile',  function(req, res) {
   });
 });
 router.get('/api/locations', apiController.all);
+router.get('/api/people', peopleApiController.queryId);
 
 /**
  * 500 Error Handler.

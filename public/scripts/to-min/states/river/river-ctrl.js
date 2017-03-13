@@ -62,7 +62,8 @@ angular.module('genie.river-ctrl', [])
 
 	$scope.$watch('riverScope.model', function(newValue) {
 		d3.selectAll('#riverView svg g').each(function(d) { d3.select(this).remove(); });
-		d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, newValue); });
+		gatherData();
+		// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, newValue); });
 	})
 
 	$scope.$watch('hobbySelected.model', function(newValue) {
@@ -327,6 +328,15 @@ angular.module('genie.river-ctrl', [])
 		}
 		return outputLinks;
 
+	}
+
+	function gatherData() {
+		$http.get("/api/people").then(function successCallback(response) {
+			var validPeople = response.data.filter(function(data) { return data.Surname; });
+			console.log(validPeople);
+		}, function errorCallback(response) {
+			console.log(response);
+		});
 	}
 
 	// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, 'familial'); });
