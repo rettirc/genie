@@ -9,8 +9,32 @@ exports.all = function(req, res) {
 	});
 };
 
+exports.childrenOfMarriage = function(req, res) {
+	db.all(`
+	SELECT cr.IDMR AS marriage_id, cr.IDIR AS child_id
+	FROM tblCR as cr
+	JOIN tblIR as ir
+	ON ir.IDIR = cr.IDIR
+	ORDER BY cr.IDMR
+	`, function(err, rows) {
+		if (err) {
+			console.error(err);
+		} else {
+			res.json(rows);
+		}
+	});
+}
+
 exports.queryId = function(req, res) {
-	var command = "SELECT * FROM tblIR WHERE ID=" + 3;
+	var command = `
+	WITH related AS
+	(
+		SELECT * 
+
+	)
+	SELECT *
+	FROM tblIR
+	`;
 	console.log(command);
 	db.all(command, function(err, rows) {
 		res.json(rows);
@@ -18,3 +42,18 @@ exports.queryId = function(req, res) {
 	});
 
 };
+
+// JOIN IDIR on Table IR
+
+// SELECT *
+// FROM tblMR
+// JOIN tblIR
+// ON tblMR.IDIR = tablIR.IDIR
+// JOIN
+//
+//
+// SELECT cr.IDMO AS marriage_id, cr.IDIR AS child_id
+// FROM tblCR as cr
+// JOIN tblIR as ir
+// ON ir.IDIR = cr.IDIR
+// ORDER BY cr."IDMR"

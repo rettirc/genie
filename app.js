@@ -101,6 +101,7 @@ router.post('/uploadFile',  function(req, res) {
 });
 router.get('/api/locations', apiController.all);
 router.get('/api/people', peopleApiController.queryId);
+router.get('/api/children', peopleApiController.childrenOfMarriage);
 
 /**
  * 500 Error Handler.
