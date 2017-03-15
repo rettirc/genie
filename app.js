@@ -100,8 +100,9 @@ router.post('/uploadFile',  function(req, res) {
   });
 });
 router.get('/api/locations', apiController.all);
-router.get('/api/people', peopleApiController.queryId);
+router.get('/api/people', peopleApiController.people);
 router.get('/api/children', peopleApiController.childrenOfMarriage);
+router.get('/api/marriages', peopleApiController.marriages);
 
 /**
  * 500 Error Handler.

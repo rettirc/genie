@@ -330,13 +330,37 @@ angular.module('genie.river-ctrl', [])
 
 	}
 
-	function gatherData() {
+	function gatherData(depth) {
 		$http.get("/api/people").then(function successCallback(response) {
-			var validPeople = response.data.filter(function(data) { return data.Surname; });
-			console.log(validPeople);
+			// console.log(response);
+			fetchChildren(response.data, depth);
 		}, function errorCallback(response) {
 			console.log(response);
 		});
+	}
+
+	function fetchChildren(jsonData) {
+		$http.get("/api/children").then(function successCallback(response) {
+			// console.log(response);
+			combineData(jsonData, response.data, 4);
+		}, function errorCallback(response) {
+			console.log(response);
+		});
+	}
+
+	function combineData(people, children, depth) {
+		var nodes = [];
+		var links = [];
+		var root = idIndexOf(people, 353);
+	}
+
+	function idIndexOf(array, id) {
+		for (var i = 0; i < array.length; i++) {
+			if (array[i].IDIR === id) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, 'familial'); });
