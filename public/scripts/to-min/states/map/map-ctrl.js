@@ -1,5 +1,5 @@
 angular.module('genie.map-ctrl', [])
-.controller('MapCtrl', function($scope, d3) {
+.controller('MapCtrl', function($scope, d3, $http) {
 
 	$scope.newTimeMin = {
 		value: 2000
@@ -115,6 +115,29 @@ angular.module('genie.map-ctrl', [])
 	    		.style("opacity", 0);
 
 	function updateMap() {
+		locations = [];
+		$http.get('api/locations').then(function(data) {
+			locations = data;
+			console.log(locations[0]);
+			// if(!error) {
+			// 	if (mapScope == "us") {
+			// 		if (mapType == "travel") {
+			// 			highlightStateTravel(all_json)
+			// 		} else if (mapType == "birthDeath") {
+			// 			highlightBDState(all_json)
+			// 		}
+			// 	} else if (mapScope = "globe") {
+			// 		if (mapType == "travel") {
+			// 			highlightGlobalTravel(all_json)
+			// 		} else if (mapType == "birthDeath") {
+			// 			highlightBDGlobal(all_json)
+			// 		}
+			// 	}
+			// } else {
+			// 	console.log(error);
+			// }
+		});
+
 		d3.json("data/river-force-test.json", function(error, all_json) {
 			if(!error) {
 				if (mapScope == "us") {
@@ -134,7 +157,6 @@ angular.module('genie.map-ctrl', [])
 				console.log(error);
 			}
 		})
-
 	}
 
 	//updates the mapdict with travel data and updates the map view
