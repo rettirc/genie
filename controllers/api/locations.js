@@ -8,3 +8,21 @@ exports.all = function(req, res) {
 		res.json(rows);
 	});
 };
+
+exports.getLocs = function(req, res) {
+	db.all(`
+        SELECT lr.Location AS loc,
+    	CASE WHEN ir.IDLRBirth = lr.IDLR THEN ir.BirthD
+    	WHEN ir.IDLRDeath = lr.IDLR THEN ir.DeathD END AS date
+    	FROM tblLR as lr
+        JOIN tblIR as ir
+    	ON ir.IDLRBirth = lr.IDLR
+    	WHERE loc IS NOT NULL
+	`, function(err, rows) {
+        if (err) {
+			console.error(err);
+		} else {
+			res.json(rows);
+		}
+	});
+};

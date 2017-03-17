@@ -19,7 +19,7 @@ const fileUpload = require('express-fileupload');
  * Controllers (route handlers).
  */
 const controller = require(path.join(__dirname, 'controllers/index'));
-const apiController = require(path.join(__dirname, 'controllers/api/locations'));
+const locApiController = require(path.join(__dirname, 'controllers/api/locations'));
 const peopleApiController = require(path.join(__dirname, 'controllers/api/people'));
 
 /**
@@ -99,7 +99,7 @@ router.post('/uploadFile',  function(req, res) {
     res.redirect("/upload");
   });
 });
-router.get('/api/locations', apiController.all);
+router.get('/api/locations', locApiController.getLocs);
 router.get('/api/people', peopleApiController.people);
 router.get('/api/children', peopleApiController.childrenOfMarriage);
 router.get('/api/marriages', peopleApiController.marriages);
