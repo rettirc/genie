@@ -174,13 +174,13 @@ angular.module('genie.river-ctrl', [])
 			.enter()
 			.append("path");
 
-		var link = svg.append("g")
-			.classed("links", true)
-			.selectAll("line")
-			.data(linkingData)
-			.enter()
-			.append("line")
-			.attr("marker-end", linkMode != 'personal' ? "url(#arrow)" : null);
+		// var link = svg.append("g")
+		// 	.classed("links", true)
+		// 	.selectAll("line")
+		// 	.data(linkingData)
+		// 	.enter()
+		// 	.append("line")
+		// 	.attr("marker-end", linkMode != 'personal' ? "url(#arrow)" : null);
 
 
 		var node = svg.append("g")
@@ -190,6 +190,7 @@ angular.module('genie.river-ctrl', [])
 			.enter()
 			.append("svg")
 			.classed("node", true)
+			.attr("idir", function(d) { return d.IDIR; })
 			.attr("x", 0)
 			.attr("y", 0)
 			.attr("vizId", function(d) { return d.id; })
@@ -271,6 +272,8 @@ angular.module('genie.river-ctrl', [])
 
 	function displayPersonalData(nodes) { // Helper method to display personal data
 
+		console.log(nodes);
+
 		nodes.each(
 			function(d) {
 				var attributes = Object.keys(d.attributes);
@@ -278,20 +281,20 @@ angular.module('genie.river-ctrl', [])
 				group.append("text")
 					.attr("x", 5)
 					.attr("y", 15)
-					.text(function(d) {return d.firstName + " " + d.lastName});
-				for (var i = 0; i < attributes.length; i++) {
-					group.append("text")
-					.classed("info",true)
-					.attr("x", 5)
-					.attr("y", (i + 1) * 30)
-					.text(capitalizeAttribute(attributes[i]));
-
-					d3.select(this).append("text")
-					.classed("info",true)
-					.attr("x", 5)
-					.attr("y", (i + 1) * 30 + 15)
-					.text(capitalizeAttribute(d.attributes[attributes[i]]));
-				}
+					.text(function(d) {return d.GivenName + " " + d.Surname});
+				// for (var i = 0; i < attributes.length; i++) {
+				// 	group.append("text")
+				// 	.classed("info",true)
+				// 	.attr("x", 5)
+				// 	.attr("y", (i + 1) * 30)
+				// 	.text(capitalizeAttribute(attributes[i]));
+				//
+				// 	d3.select(this).append("text")
+				// 	.classed("info",true)
+				// 	.attr("x", 5)
+				// 	.attr("y", (i + 1) * 30 + 15)
+				// 	.text(capitalizeAttribute(d.attributes[attributes[i]]));
+				// }
 			}
 		);
 
@@ -342,21 +345,64 @@ angular.module('genie.river-ctrl', [])
 	function fetchChildren(jsonData) {
 		$http.get("/api/children").then(function successCallback(response) {
 			// console.log(response);
-			combineData(jsonData, response.data, 4);
+			fetchMarriages(jsonData, response.data, 4);
 		}, function errorCallback(response) {
 			console.log(response);
 		});
 	}
 
-	function combineData(people, children, depth) {
+	function fetchMarriages(jsonData, childJsonData) {
+		$http.get("/api/marriages").then(function successCallback(response) {
+			// console.log(response.data);
+			combineData(jsonData, childJsonData, response.data, 4);
+		}, function errorCallback(response) {
+			console.log(response);
+		});
+	}
+
+	function combineData(people, children, marriages, depth) {
 		var nodes = [];
 		var links = [];
 		var root = idIndexOf(people, 353);
+		depthSearch(root, people, children, marriages, depth);
+		console.log(people.filter(function(i) { return i["seen"]; } ) );
+		displayData(0, {"nodes":people.filter(function(i) { return i["seen"]; } )}, 'familial');
+	}
+
+	// target -> Index of current person
+	function depthSearch(target, people, children, marriages, depth) {
+		if (depth == 0) {
+			return; // Go home
+		}
+		//Find relevant edges
+
+		let target_obj = people[target];
+		target_obj["seen"] = true;
+
+    var edges = [];
+		for (let i = 0; i < children.length; i++) {
+			let testEdge = children[i];
+			if (testEdge.child_id === target_obj.IDIR) {
+				var parents = marriageIdIndexOf(marriages, testEdge.marriage_id);
+				depthSearch(idIndexOf(people, marriages[parents].IDIRHusb), people, children, marriages, depth - 1);
+				depthSearch(idIndexOf(people, marriages[parents].IDIRWife), people, children, marriages, depth - 1);
+			}
+		}
+
 	}
 
 	function idIndexOf(array, id) {
 		for (var i = 0; i < array.length; i++) {
 			if (array[i].IDIR === id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	function marriageIdIndexOf(array, id) {
+		for (var i = 0; i < array.length; i++) {
+			if (array[i].marriage_id === id) {
 				return i;
 			}
 		}
