@@ -11,10 +11,10 @@ exports.all = function(req, res) {
 
 exports.childrenOfMarriage = function(req, res) {
 	db.all(`
-	SELECT cr.IDMR AS marriage_id, cr.IDIR AS child_id
+	SELECT cr.IDMR AS marriage_id, mr.IDIRHusb, mr.IDIRWife , cr.IDIR AS child_id
 	FROM tblCR as cr
-	JOIN tblIR as ir
-	ON ir.IDIR = cr.IDIR
+	JOIN tblMR as mr
+	ON mr.IDMR = cr.IDMR
 	ORDER BY cr.IDMR
 	`, function(err, rows) {
 		if (err) {

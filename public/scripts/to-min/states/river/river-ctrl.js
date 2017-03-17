@@ -345,32 +345,36 @@ angular.module('genie.river-ctrl', [])
 	function fetchChildren(jsonData) {
 		$http.get("/api/children").then(function successCallback(response) {
 			// console.log(response);
-			fetchMarriages(jsonData, response.data, 4);
+			combineData(jsonData, response.data, 4);
 		}, function errorCallback(response) {
 			console.log(response);
 		});
 	}
 
-	function fetchMarriages(jsonData, childJsonData) {
-		$http.get("/api/marriages").then(function successCallback(response) {
-			// console.log(response.data);
-			combineData(jsonData, childJsonData, response.data, 4);
-		}, function errorCallback(response) {
-			console.log(response);
-		});
-	}
-
-	function combineData(people, children, marriages, depth) {
+	function combineData(people, children, depth) {
 		var nodes = [];
 		var links = [];
+		var edges = [];
+		var rEdges = [];
+		for (var i = 0; i < children.length; i++) {
+			let childRelation = children[i];
+			edges.push({"source": childRelation.IDIRHusb, "target": childRelation.child_id});
+			edges.push({"source": childRelation.IDIRWife, "target": childRelation.child_id});
+			rEdges.push({"source": childRelation.child_id, "target": childRelation.IDIRHusb});
+			rEdges.push({"source": childRelation.child_id, "target": childRelation.IDIRWife});
+		}
 		var root = idIndexOf(people, 353);
-		depthSearch(root, people, children, marriages, depth);
-		console.log(people.filter(function(i) { return i["seen"]; } ) );
-		displayData(0, {"nodes":people.filter(function(i) { return i["seen"]; } )}, 'familial');
+		nodes = people.filter(function(i) { return i["seen"]; });
+		// depthSearch(root, people, edges, rEdges, depth);
+		for (var i = 0; i < depth; i++) {
+			for (var j = 0; j < people.length; j++) {
+				if ()
+			}
+		}
 	}
 
 	// target -> Index of current person
-	function depthSearch(target, people, children, marriages, depth) {
+	function depthSearch(target, people, edges, rEdges, depth) {
 		if (depth == 0) {
 			return; // Go home
 		}
@@ -379,34 +383,49 @@ angular.module('genie.river-ctrl', [])
 		let target_obj = people[target];
 		target_obj["seen"] = true;
 
-    var edges = [];
-		for (let i = 0; i < children.length; i++) {
-			let testEdge = children[i];
-			if (testEdge.child_id === target_obj.IDIR) {
-				var parents = marriageIdIndexOf(marriages, testEdge.marriage_id);
-				depthSearch(idIndexOf(people, marriages[parents].IDIRHusb), people, children, marriages, depth - 1);
-				depthSearch(idIndexOf(people, marriages[parents].IDIRWife), people, children, marriages, depth - 1);
+    var related = findConnected(edges, rEdges, target_obj.IDIR);
+		// console.log(rEdges.filter(function(i) {return i["source"] == 353}));
+		console.log(related);
+		for (let i = 0; i < related.length; i++) {
+			if (!people[idIndexOf(people, related[i]["source"])]["seen"]) {
+				depthSearch(idIndexOf(people, x),people, edges, rEdges, depth - 1);
 			}
 		}
+		// for (let i = 0; i < children.length; i++) {
+		// 	let testEdge = children[i];
+		// 	if (testEdge.child_id === target_obj.IDIR) {
+		// 		// var parents = marriageIdIndexOf(marriages, testEdge.marriage_id);
+		// 		// depthSearch(idIndexOf(people, marriages[parents].IDIRHusb), people, children, marriages, depth - 1);
+		// 		// depthSearch(idIndexOf(people, marriages[parents].IDIRWife), people, children, marriages, depth - 1);
+		// 		console.log(findConnected(edges, rEdges, target_obj))
+		// 	}
+		// }
 
 	}
 
+	var reverseLookup = null;
 	function idIndexOf(array, id) {
-		for (var i = 0; i < array.length; i++) {
-			if (array[i].IDIR === id) {
-				return i;
+		if (reverseLookup != null) {
+			return reverseLookup[id];
+		} else {
+			for (var i = 0; i < array; i++) {
+				reverseLookup[array[i].IDIR] = i;
 			}
 		}
-		return -1;
 	}
 
-	function marriageIdIndexOf(array, id) {
-		for (var i = 0; i < array.length; i++) {
-			if (array[i].marriage_id === id) {
-				return i;
-			}
-		}
-		return -1;
+	function findConnected(sources, targets, id) {
+		// var out = [];
+		// for (var i = 0; i < sources.length; i++) {
+		// 	if (targets[i]["source"] === 353) { // Target of something
+		// 		out.push(targets[i].target); // My parent
+		// 	}
+		// 	if (sources[i]["target"] === id) {
+		// 		out.push(sources[i].source); // My child
+		// 	}
+		// }
+		return sources.filter(function(i) { return i.source == id || i.target == id });
+		return out;
 	}
 
 	// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, 'familial'); });
