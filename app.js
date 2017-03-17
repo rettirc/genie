@@ -103,6 +103,7 @@ router.get('/api/locations', locApiController.getLocs);
 router.get('/api/people', peopleApiController.people);
 router.get('/api/children', peopleApiController.childrenOfMarriage);
 router.get('/api/marriages', peopleApiController.marriages);
+router.get('/api/relations', peopleApiController.relatedGraph);
 
 /**
  * 500 Error Handler.

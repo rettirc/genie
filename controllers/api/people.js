@@ -78,6 +78,37 @@ exports.people = function(req, res) {
 	})
 }
 
+exports.relatedGraph = function(req, res) {
+	db.all(`
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father
+		FROM tblIR as ir
+		JOIN tblMR as mr
+		ON mr.IDMR = ir.IDMRParents
+		`, function(err, rows) {
+		if (err) console.error(err);
+
+		var idirToIndex = [];
+		for (var i = 0; i < rows.length; i++) {
+			let p = rows[i];
+			idirToIndex[p.IDIR] = i;
+			p["index"] = i;
+			p["children"] = [];
+		}
+
+		for (var i = 0; i < rows.length; i++) {
+			let p = rows[i];
+			let motherIDIR = p["mother"];
+			let fatherIDIR = p["father"];
+			let motherIndex = idirToIndex[motherIDIR];
+			let fatherIndex = idirToIndex[fatherIDIR];
+			rows[motherIndex].children.push(p.IDIR);
+			rows[fatherIndex].children.push(p.IDIR);
+		}
+		var out = {"rows": rows, "lookup":idirToIndex};
+		res.json(out);
+	})
+}
+
 // JOIN IDIR on Table IR
 
 // SELECT *

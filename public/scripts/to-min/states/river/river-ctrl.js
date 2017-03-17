@@ -146,47 +146,44 @@ angular.module('genie.river-ctrl', [])
 
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) {
-			return d.id;
+			return d.IDIR;
 		}))
 		.force("collide", d3.forceCollide().radius(90).iterations(2))
 		// .force("charge", d3.forceManyBody().strength())
 		.force("center", forceCenter);
 
-	function displayData(error, json, linkMode) { // The data is physically in this file as JSON
-		if(error) {
-			return console.error(error);
-		}
+	function displayData(nodes, links, linkMode) { // The data is physically in this file as JSON
 
-		var connectionList = processConnections(json);
+		// var connectionList = processConnections(json);
 
-		var linkingData = json.links;
-		var connectionData = connectionList;
+		var linkingData = links;
+		// var connectionData = connectionList;
 
-		if (linkMode == 'personal') {
-			var linkingData = connectionList;
-			var connectionData = json.links;
-		}
+		// if (linkMode == 'personal') {
+		// 	var linkingData = connectionList;
+		// 	var connectionData = json.links;
+		// }
 
-		var connections = svg.append("g")
-			.classed("connections", true)
-			.selectAll("path")
-			.data(connectionData)
-			.enter()
-			.append("path");
-
-		// var link = svg.append("g")
-		// 	.classed("links", true)
-		// 	.selectAll("line")
-		// 	.data(linkingData)
+		// var connections = svg.append("g")
+		// 	.classed("connections", true)
+		// 	.selectAll("path")
+		// 	.data(connectionData)
 		// 	.enter()
-		// 	.append("line")
-		// 	.attr("marker-end", linkMode != 'personal' ? "url(#arrow)" : null);
+		// 	.append("path");
+
+		var link = svg.append("g")
+			.classed("links", true)
+			.selectAll("line")
+			.data(linkingData)
+			.enter()
+			.append("line")
+			.attr("marker-end", linkMode != 'personal' ? "url(#arrow)" : null);
 
 
 		var node = svg.append("g")
 			.classed("nodes", true)
 			.selectAll("g.node")
-			.data(json.nodes)
+			.data(nodes)
 			.enter()
 			.append("svg")
 			.classed("node", true)
@@ -210,18 +207,18 @@ angular.module('genie.river-ctrl', [])
 
 		node.append("title").text(function(d) { return d.firstName });
 		// displayPersonalData();
-		simulation.nodes(json.nodes).on("tick", ticked);
+		simulation.nodes(nodes).on("tick", ticked);
 		simulation.force("link").links(linkingData);
 
 		var targetDist = (linkMode == 'personal') ? 50 : 65;
 
 		function ticked() {
 
-			connections.attr("d", function(d) {
-				var n1 = json.nodes[d.source];
-				var n2 = json.nodes[d.target];
-				return "M" + n1.x + " " + n1.y + " Q " + n2.x + " " + n1.y + " " + n2.x + " " + n2.y; // Quadratic Bessier Curve
-			});
+			// connections.attr("d", function(d) {
+			// 	var n1 = json.nodes[d.source];
+			// 	var n2 = json.nodes[d.target];
+			// 	return "M" + n1.x + " " + n1.y + " Q " + n2.x + " " + n1.y + " " + n2.x + " " + n2.y; // Quadratic Bessier Curve
+			// });
 
 			link.attr("x1", function(d) {
 					var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
@@ -276,7 +273,7 @@ angular.module('genie.river-ctrl', [])
 
 		nodes.each(
 			function(d) {
-				var attributes = Object.keys(d.attributes);
+				// var attributes = Object.keys(d.attributes);
 				var group = d3.select(this);
 				group.append("text")
 					.attr("x", 5)
@@ -334,98 +331,43 @@ angular.module('genie.river-ctrl', [])
 	}
 
 	function gatherData(depth) {
-		$http.get("/api/people").then(function successCallback(response) {
-			// console.log(response);
-			fetchChildren(response.data, depth);
-		}, function errorCallback(response) {
-			console.log(response);
-		});
-	}
-
-	function fetchChildren(jsonData) {
-		$http.get("/api/children").then(function successCallback(response) {
-			// console.log(response);
-			combineData(jsonData, response.data, 4);
-		}, function errorCallback(response) {
-			console.log(response);
-		});
-	}
-
-	function combineData(people, children, depth) {
-		var nodes = [];
-		var links = [];
-		var edges = [];
-		var rEdges = [];
-		for (var i = 0; i < children.length; i++) {
-			let childRelation = children[i];
-			edges.push({"source": childRelation.IDIRHusb, "target": childRelation.child_id});
-			edges.push({"source": childRelation.IDIRWife, "target": childRelation.child_id});
-			rEdges.push({"source": childRelation.child_id, "target": childRelation.IDIRHusb});
-			rEdges.push({"source": childRelation.child_id, "target": childRelation.IDIRWife});
-		}
-		var root = idIndexOf(people, 353);
-		nodes = people.filter(function(i) { return i["seen"]; });
-		// depthSearch(root, people, edges, rEdges, depth);
-		for (var i = 0; i < depth; i++) {
-			for (var j = 0; j < people.length; j++) {
-				if ()
+		$http.get("/api/relations").then(function successCallback(response) {
+			let rows = response.data.rows;
+			let idirToIndex = response.data.lookup;
+			dfs(353, rows, idirToIndex, 4);
+			let seenPeople = rows.filter(function(d) { return d.seen; });
+			let links = [];
+			for (let i = 0; i < seenPeople.length; i++) {
+				let p = seenPeople[i];
+				for (let j = 0; j < p.children.length; j++) {
+					if(rows[idirToIndex[p.children[j]]].seen) {
+						links.push({"source":p.IDIR, "target":p.children[j]});
+					}
+				}
 			}
-		}
+			displayData(seenPeople, links, "familial");
+		}, function errorCallback(response) {
+			console.log(response);
+		});
 	}
 
-	// target -> Index of current person
-	function depthSearch(target, people, edges, rEdges, depth) {
+	function dfs(idir, rows, idirToIndex, depth) {
+		let p = rows[idirToIndex[idir]];
+		p.seen = true;
 		if (depth == 0) {
-			return; // Go home
+			return;
 		}
-		//Find relevant edges
-
-		let target_obj = people[target];
-		target_obj["seen"] = true;
-
-    var related = findConnected(edges, rEdges, target_obj.IDIR);
-		// console.log(rEdges.filter(function(i) {return i["source"] == 353}));
-		console.log(related);
-		for (let i = 0; i < related.length; i++) {
-			if (!people[idIndexOf(people, related[i]["source"])]["seen"]) {
-				depthSearch(idIndexOf(people, x),people, edges, rEdges, depth - 1);
+		if (p.mother && !rows[idirToIndex[p.mother]].seen) {
+			dfs(p.mother, rows, idirToIndex, depth - 1);
+		}
+		if (p.father && !rows[idirToIndex[p.father]].seen) {
+			dfs(p.father, rows, idirToIndex, depth - 1);
+		}
+		for (var i = 0; i < p.children.length; i++) {
+			if (!rows[idirToIndex[p.children[i]]].seen) {
+				dfs(p.children[i], rows, idirToIndex, depth - 1);
 			}
 		}
-		// for (let i = 0; i < children.length; i++) {
-		// 	let testEdge = children[i];
-		// 	if (testEdge.child_id === target_obj.IDIR) {
-		// 		// var parents = marriageIdIndexOf(marriages, testEdge.marriage_id);
-		// 		// depthSearch(idIndexOf(people, marriages[parents].IDIRHusb), people, children, marriages, depth - 1);
-		// 		// depthSearch(idIndexOf(people, marriages[parents].IDIRWife), people, children, marriages, depth - 1);
-		// 		console.log(findConnected(edges, rEdges, target_obj))
-		// 	}
-		// }
-
-	}
-
-	var reverseLookup = null;
-	function idIndexOf(array, id) {
-		if (reverseLookup != null) {
-			return reverseLookup[id];
-		} else {
-			for (var i = 0; i < array; i++) {
-				reverseLookup[array[i].IDIR] = i;
-			}
-		}
-	}
-
-	function findConnected(sources, targets, id) {
-		// var out = [];
-		// for (var i = 0; i < sources.length; i++) {
-		// 	if (targets[i]["source"] === 353) { // Target of something
-		// 		out.push(targets[i].target); // My parent
-		// 	}
-		// 	if (sources[i]["target"] === id) {
-		// 		out.push(sources[i].source); // My child
-		// 	}
-		// }
-		return sources.filter(function(i) { return i.source == id || i.target == id });
-		return out;
 	}
 
 	// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, 'familial'); });
