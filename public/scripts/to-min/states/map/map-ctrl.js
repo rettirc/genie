@@ -74,6 +74,7 @@ angular.module('genie.map-ctrl', [])
 	var mapDict = {}
 	var mapScope = "us" //us or globe
 	var mapType = "birthDeath" //birthDeath or travel
+    var baseColor = "green" //gray: "rgb(213,222,217)"
 	var width = 960;
 	var height = 500;
 	var maxTime = 2017;
@@ -101,7 +102,8 @@ angular.module('genie.map-ctrl', [])
 
 	// Define linear scale for output
 	var color = d3.scaleLinear()
-				  .range(["rgb(213,222,217)","blue"]);
+				  .range([baseColor,"blue"]);
+
 
 	//Create SVG element and append map to the SVG
 	var svg = d3.select("#mapView")
@@ -113,7 +115,11 @@ angular.module('genie.map-ctrl', [])
 	var div = d3.select("body")
 			    .append("div")
 	    		.attr("class", "tooltip")
-	    		.style("opacity", 0);
+                .style("background-color", "rgb(255,255,255)")
+                .style("padding", "5px")
+	    		.style("moz-border-radius", "6px")
+                .style("border-radius", "6px")
+                .style("opacity", 0);
 
 	function updateMap() {
 		locations = [];
@@ -288,9 +294,25 @@ angular.module('genie.map-ctrl', [])
 					return color(Math.min(value, colorGradient));
 				} else {
 					//If value is undefined…
-					return "rgb(213,222,217)";
+					return baseColor;
 				}
-			});
+			})
+            .on("mouseover", function(d) {
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                    div.text(d.properties.name + ": " + mapDict[d.properties.name])
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px")
+                    .style("pointer-events", "none");
+                d3.select(this).style("opacity", .8);
+            })
+            .on("mouseout", function(d) {
+                div.transition()
+                    .duration(200)
+                    .style("opacity", 0);
+                d3.select(this).style("opacity", 1);
+            });
 	}
 	//Function to zoom in when a country is clicked
 	function onClick(d) {
