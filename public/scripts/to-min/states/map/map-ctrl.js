@@ -164,9 +164,9 @@ angular.module('genie.map-ctrl', [])
             .enter().append("rect")
             .attr("height", 8)
             .attr("x", function(d) { return x(d[0]); })
-            .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-            .attr("fill", function(d) { return color(d[0]); })
-            .attr("border-color", function(d) { return color(d[0]); });
+            .attr("width", function(d) { return x(d[1]) - x(d[0]) + (d[1] != colorGradient - 1 ? 5 : 1); })
+            .style("border-color", function(d) { return color(d[0]); })
+            .style("fill", function(d) { return color(d[0]); });
 
         //Add key title
         g.append("text")
