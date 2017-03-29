@@ -60,9 +60,13 @@ angular.module('genie.river-ctrl', [])
 
 	$scope.depthSelected = 3;
 
+	$scope.$watch('depthSelected', function(newValue) {
+		gatherData($scope.depthSelected);
+	});
+
 	$scope.$watch('riverScope.model', function(newValue) {
 		d3.selectAll('#riverView svg g').each(function(d) { d3.select(this).remove(); });
-		gatherData();
+		// gatherData($scope.depthSelected);
 		// d3.json("data/river-force-test.json", function(error,json) { displayData(error,json, newValue); });
 	})
 
@@ -267,31 +271,42 @@ angular.module('genie.river-ctrl', [])
 		return string[0].toUpperCase() + string.slice(1);
 	}
 
-	function displayPersonalData(nodes) { // Helper method to display personal data
+	function parseDate(dateString) {
+		return dateString.toString().substring(0, 4);
+	}
 
-		console.log(nodes);
+	function displayPersonalData(nodes) { // Helper method to display personal data
 
 		nodes.each(
 			function(d) {
-				// var attributes = Object.keys(d.attributes);
+				var descriptionLines = [];
+				var name = d.GivenName.split(" ");
+				descriptionLines.push(name[0]);
+				descriptionLines.push(d.Surname);
+				descriptionLines.push(parseDate(d.birth));
 				var group = d3.select(this);
-				group.append("text")
-					.attr("x", 5)
-					.attr("y", 15)
-					.text(function(d) {return d.GivenName + " " + d.Surname});
-				// for (var i = 0; i < attributes.length; i++) {
-				// 	group.append("text")
-				// 	.classed("info",true)
+				// group.append("text")
 				// 	.attr("x", 5)
-				// 	.attr("y", (i + 1) * 30)
-				// 	.text(capitalizeAttribute(attributes[i]));
+				// 	.attr("y", 15)
+				// 	.text(function(d) { return d.GivenName; });
 				//
+				// group.append("text")
+				// 	.attr("x", 5)
+				// 	.attr("y", 30)
+				// 	.text(function(d) { return d.Surname; });
+				for (var i = 0; i < descriptionLines.length; i++) {
+					group.append("text")
+					.classed("info",true)
+					.attr("x", 5)
+					.attr("y", (i + 1) * 20)
+					.text(descriptionLines[i]);
+
 				// 	d3.select(this).append("text")
 				// 	.classed("info",true)
 				// 	.attr("x", 5)
 				// 	.attr("y", (i + 1) * 30 + 15)
 				// 	.text(capitalizeAttribute(d.attributes[attributes[i]]));
-				// }
+				}
 			}
 		);
 
@@ -331,10 +346,14 @@ angular.module('genie.river-ctrl', [])
 	}
 
 	function gatherData(depth) {
-		$http.get("/api/relations").then(function successCallback(response) {
+		d3.selectAll('#riverView svg g').each(function(d) { d3.select(this).remove(); });
+		$http({
+			method:"GET",
+			url:"/api/relations?depth=3"
+		}).then(function successCallback(response) {
 			let rows = response.data.rows;
 			let idirToIndex = response.data.lookup;
-			dfs(353, rows, idirToIndex, 4);
+			dfs(353, rows, idirToIndex, depth);
 			let seenPeople = rows.filter(function(d) { return d.seen; });
 			let links = [];
 			for (let i = 0; i < seenPeople.length; i++) {

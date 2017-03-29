@@ -100,10 +100,10 @@ router.post('/uploadFile',  function(req, res) {
   });
 });
 router.get('/api/locations', locApiController.getLocs);
-router.get('/api/people', peopleApiController.people);
-router.get('/api/children', peopleApiController.childrenOfMarriage);
-router.get('/api/marriages', peopleApiController.marriages);
-router.get('/api/relations', peopleApiController.relatedGraph);
+router.get('/api/people', peopleApiController.people); // All people
+// router.get('/api/children', peopleApiController.childrenOfMarriage);
+// router.get('/api/marriages', peopleApiController.marriages);
+router.get('/api/relations', peopleApiController.relatedGraph); // People of a certain depth and links
 
 /**
  * 500 Error Handler.

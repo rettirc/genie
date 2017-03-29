@@ -80,7 +80,7 @@ exports.people = function(req, res) {
 
 exports.relatedGraph = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.BirthSD as birth, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father
 		FROM tblIR as ir
 		JOIN tblMR as mr
 		ON mr.IDMR = ir.IDMRParents
