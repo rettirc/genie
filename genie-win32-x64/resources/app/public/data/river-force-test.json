@@ -1,0 +1,77 @@
+{
+  "nodes":[
+    {"id":0,"firstName":"Martin","lastName":"Smith","birthYear":2000,"attributes":{"profession":"technician"}, "birth_loc":"Wyoming", "death_loc":"Alabama",
+        "travel": {
+            "Germany": 2000,
+            "Germany":2001, "Poland":2001, "Italy":2001,
+            "Germany":2002, "United Kingdom":2002, "Portugal":2002,
+            "Indiana":2003, "Australia":2003,
+            "Michigan": 2004, "Greenland": 2004, "United Kingdom": 2004
+        }
+    },
+    {"id":1,"firstName":"Aaron","lastName":"Smith","birthYear":2001,"attributes":{"profession":"writer"}, "birth_loc":"Georgia", "death_loc":"Georgia",
+        "travel": {
+            "Germany": 2000,
+            "United Kingdom":2002,
+            "Turkey":2003,
+            "Greenland": 2004, "United Kingdom": 2004, "Australia":2004
+        }
+    },
+    {"id":2,"firstName":"Katie","lastName":"Smith","birthYear":2002,"attributes":{"profession":"programmer"}, "birth_loc":"Georgia", "death_loc":"Georgia",
+        "travel": {
+            "Kentucky":2002, "United Kingdom":2002, "Poland":2002, "Italy":2002, "France":2002, "Germany":2002, "Spain":2002, "Norway":2002
+        }
+    },
+    {"id":3, "firstName":"Scotty","lastName":"Smith","birthYear":2003,"attributes":{"profession":"salesman","hobby":"fishing"}, "birth_loc":"Florida", "death_loc":"California",
+        "travel": {
+            "Brazil":2003
+        }
+    },
+    {"id":4,"firstName":"Marge","lastName":"Mason","birthYear":2004,"attributes":{"Claim to Fame":"Apple Pie"}, "birth_loc":"New York", "death_loc":"Texas",
+        "travel": {
+            "Canada": 2004, "United Kingdom": 2004
+        }
+    },
+    {"id":5,"firstName":"Amanda","lastName":"Smith","birthYear":2005,"attributes":{"hobby":"painting"}, "birth_loc":"Alabama", "death_loc":"Florida",
+        "travel": {
+            "Germany":2001,
+            "Ethiopia":2003,
+            "India": 2004, "United Kingdom": 2004
+        }
+    },
+    {"id":6, "firstName":"Jamie","lastName":"Morgan","birthYear":2006,"attributes":{"profession":"craftsman"}, "birth_loc":"Ohio", "death_loc":"New Mexico",
+        "travel": {
+            "Germany":2002,
+            "Australia":2003,
+            "China": 2004, "United Kingdom": 2004
+        }
+    },
+    {"id":7, "firstName":"Paul","lastName":"Morgan","birthYear":2001,"attributes":{"hobby":"puzzles"}, "birth_loc":"Pennsylvania", "death_loc":"Rhode Island",
+    "travel": {
+        "Germany":2002, "United Kingdom":2002,
+        "Australia":2003, "Australia":2003,
+        "Greenland": 2004, "United Kingdom": 2004
+    }
+    },
+    {"id":8, "firstName":"Jason","lastName":"Morgan","birthYear":2004,"attributes":{"profession":"technician"}, "birth_loc":"Michigan", "death_loc":"Minnesota"},
+    {"id":9, "firstName":"Daryll","lastName":"Morgan","birthYear":2004,"attributes":{"profession":"programmer"}, "birth_loc":"Alabama", "death_loc":"Alabama",
+        "travel": {
+            "Denmark1": 2000, "Switzerland": 2000, "Czech Republic": 2000, "Germany": 2000, "Poland": 2000,
+            "Tennessee":2001, "Poland":2001, "Italy":2001, "France":2001, "Germany":2001, "Spain":2001, "United Kingdom":2001, "Norway":2001, "Denmark": 2001, "Switzerland": 2001, "Czech Republic": 2001
+        }
+    }
+  ],
+  "links":[
+    {"source":0,"target":1},
+    {"source":0,"target":2},
+    {"source":3,"target":0},
+    {"source":4,"target":0},
+    {"source":5,"target":1},
+    {"source":5,"target":2},
+    {"source":6,"target":5},
+    {"source":7,"target":5},
+    {"source":6,"target":8},
+    {"source":7,"target":8},
+    {"source":8,"target":9}
+  ]
+}

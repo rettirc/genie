@@ -1,0 +1,16 @@
+div
+  h1 Upload
+  div(style="width: 20%; margin: 20px auto")
+    div(id="fileList")
+      h3 Currently Uploaded Files
+      table(id="files")
+        tr
+          td You currently have no files uploaded
+    hr
+    div(class="form-group")
+      form(class="form-group" id="fileForm" method="post" action="/uploadFile" enctype="multipart/form-data")
+        h3 Upload a File
+        label(for="passwordInput") File to Upload
+        input(type="file" class="form-control-file" id="inputFile" name="inputFile" aria-describedby="fileHelp")
+
+        button(class="btn btn-priary" id="submitButton") Submit

@@ -74,7 +74,19 @@ angular.module('genie.map-ctrl', [])
 		updateMap()
 	}
 
-	// alled when value mapType is changed to show travel past that date
+  //Called when the start button is pressed for the time lapse
+  $scope.startTimeLapse = function() {
+    stopTime = false;
+    startTimeLapseHelper();
+  }
+
+  //Called to stop the time lapse
+  //TODO: change this up so that it is a pause that can then resume
+  $scope.stopTimeLapse = function() {
+    stopTime = true;
+  }
+
+	// Called when value mapType is changed to show travel past that date
 	$scope.$watch('mapTypeData.model', function(newValue) {
         if (initializing < 3) {
             initializing++;
@@ -89,14 +101,15 @@ angular.module('genie.map-ctrl', [])
 	var mapDict = {} //location name mapped to current number of people
 	var mapScope = "us" //us or globe
 	var mapType = "birthDeath" //birthDeath or travel
-    var baseColor = "CFCCF5" //color for 0 people, gray: "rgb(213,222,217)"
+  var baseColor = "CFCCF5" //color for 0 people, gray: "rgb(213,222,217)"
 	var width = 960; //map dimens
 	var height = 500;
 	var maxTime = 2017; //time range displayed min to max, updated by watch
 	var minTime = 0;
 	var prevView = new Array(); //stack to hold previous scale of map
-    var colorGradient = 9 //size of color range
-    var initializing = 0 //var used to track/avoid 3 initial reloads
+  var colorGradient = 9 //size of color range
+  var initializing = 0 //var used to track/avoid 3 initial reloads
+  var stopTime = false; //var used to stop time lapse
 
 	// D3 Projection
 	var projection = d3.geoAlbersUsa()
@@ -133,7 +146,7 @@ angular.module('genie.map-ctrl', [])
 		.attr("class", "tooltip")
         .style("background-color", "rgb(255,255,255)")
         .style("padding", "5px")
-		.style("moz-border-radius", "6px")
+		    .style("moz-border-radius", "6px")
         .style("border-radius", "6px")
         .style("opacity", 0);
 
@@ -381,6 +394,21 @@ angular.module('genie.map-ctrl', [])
 			updateMap();
 		}
 	}
+
+//Function to start time lapse from min date to max date
+  function startTimeLapseHelper() {
+    var inc = (maxTime - minTime) / 10; //TODO: setup an interval option for the user
+    var temp = maxTime;
+    maxTime = minTime;
+    updateMap();
+    interval = setInterval(function() {
+      if (temp == maxTime || stopTime) {
+        clearInterval(interval);
+      }
+      maxTime += inc;
+      updateMap();
+    }, 1000);
+  }
 
     //Convert sqlite json to array of state/date pairs formatted for d3's use
     function convertToStateLocDates(all_json) {

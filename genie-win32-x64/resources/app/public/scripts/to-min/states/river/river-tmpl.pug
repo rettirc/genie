@@ -1,0 +1,79 @@
+div
+div(style="display:inline-block; width: 100%")
+  //- TODO: organize properly and give better naming conventions
+  div(id="forms" class="col-lg-3")
+    h1 River View
+    div(class="form-group")
+      div(style="padding: 5px; text-align: left; width: 100%;")
+          label(style="width: 100%;") Visualization Focus
+          select(ng-model="riverScope.model" style="width: 100%;")
+              option(ng-repeat="option in riverScope.availableOptions" value="{{option.value}}") {{option.name}}
+    div(class='form-group')
+      div(class="form-check")
+        label(for='occupations' class="form-check-label" style="width: 100%; text-align: left;")
+          input(
+            type="checkbox"
+            class="form-check-input"
+            ng-model="occupationSelected.enabled"
+          )
+          label(style="padding: 10px") Search for Professions in Your Tree
+      input(
+        name="occupations"
+        id="occupations"
+        type="text"
+        placeholder="Enter an profession"
+        ng-model="occupationSelected.model"
+        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
+        class="form-control"
+      )
+      label(id="occResp" style="width: 300px; padding: 25px; text-align:left;")
+
+    div(class='form-group')
+      div(class="form-check")
+        label(for='occupations' class="form-check-label" style="width: 100%; text-align: left;")
+          input(
+            type="checkbox"
+            class="form-check-input"
+            ng-model="hobbySelected.enabled"
+          )
+          label(style="padding: 10px") Search for Hobbies in Your Tree
+      input(
+        name="hobbySearch"
+        id="hobbySearch"
+        type="text"
+        placeholder="Enter a hobby"
+        ng-model="hobbySelected.model"
+        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
+        class="form-control"
+      )
+      label(id="hobbResp" style="width: 300px; padding: 25px; text-align:left;")
+
+    div(class='form-group')
+      label(for='occupations' style="width: 100%; text-align: left;") Depth
+      input(
+        name="depth"
+        id="depthSelect"
+        type="number"
+        min="1"
+        max="10"
+        placeholder="3"
+        ng-model="depthSelected"
+        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
+        class="form-control"
+      )
+      label(id="depthResp" style="width: 300px; padding: 25px; text-align:left;")
+
+    div(class='form-group')
+      label(for='occupations' style="width: 100%; text-align: left;") Choose a Color
+      input(
+        name="color"
+        id="colorSelect"
+        type="color"
+        value="#aaaaff"
+        placeholder="Enter a color"
+        ng-model="colorSelected"
+        uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
+        class="form-control"
+      )
+      label(id="colorResp" style="width: 300px; padding: 25px; text-align:left;")
+  div(id="riverView" class="col-lg-9" style="display:inline-block; padding: 25px;")

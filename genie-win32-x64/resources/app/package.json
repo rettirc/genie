@@ -1,0 +1,44 @@
+{
+  "name": "genie",
+  "version": "0.1.0",
+  "description": "A genealogy app.",
+  "main": "app.js",
+  "scripts": {
+    "start-electron-local": "electron .",
+    "start-app-local": "nodemon app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "electron-pug": "1.5.1",
+    "errorhandler": "1.5.0",
+    "express": "4.14.0",
+    "express-fileupload": "0.0.7",
+    "fileupload": "^1.0.0",
+    "fs": "0.0.1-security",
+    "gulp-uglify": "2.0.0",
+    "mysql": "^2.13.0",
+    "parse-gedcom": "^1.0.3",
+    "pug": "2.0.0-beta6"
+  },
+  "devDependencies": {
+    "browser-sync": "2.18.2",
+    "del": "2.2.2",
+    "electron": "1.4.8",
+    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
+    "gulp-clean-css": "2.0.13",
+    "gulp-concat": "2.6.1",
+    "gulp-concat-css": "2.3.0",
+    "gulp-electron": "^0.1.3",
+    "gulp-hub": "0.8.0",
+    "gulp-imagemin": "3.1.1",
+    "gulp-minify-html": "1.0.6",
+    "gulp-ng-html2js": "0.2.2",
+    "gulp-nodemon": "2.2.1",
+    "gulp-pug": "3.2.0",
+    "gulp-rename": "1.2.2",
+    "gulp-sass": "2.3.2",
+    "gulp-uglify": "2.0.0",
+    "gulp-util": "3.0.7",
+    "streamqueue": "1.1.1"
+  }
+}
