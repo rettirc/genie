@@ -104,8 +104,8 @@ angular.module('genie.map-ctrl', [])
   var baseColor = "CFCCF5" //color for 0 people, gray: "rgb(213,222,217)"
 	var width = 960; //map dimens
 	var height = 500;
-	var maxTime = 2017; //time range displayed min to max, updated by watch
-	var minTime = 0;
+	var maxTime = 2000; //time range displayed min to max, updated by watch
+	var minTime = 1700;
 	var prevView = new Array(); //stack to hold previous scale of map
   var colorGradient = 9 //size of color range
   var initializing = 0 //var used to track/avoid 3 initial reloads
