@@ -71,6 +71,7 @@ router.get('/river', controller.index);
 router.get('/gallery', controller.index);
 router.get('/map', controller.index);
 router.get('/upload', controller.index);
+router.get('/attribute', controller.index);
 router.post('/db', function(req, res) { // Plug into database
   var db = dbConnect('fam_data');
   res.json(db.query(req.body));

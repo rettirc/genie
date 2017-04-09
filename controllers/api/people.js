@@ -70,7 +70,7 @@ exports.queryId = function(req, res) {
 
 exports.people = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents, ir.Notes
 		FROM tblIR as ir
 		`, function(err, rows) {
 		if (err) console.error(err);

@@ -62,6 +62,15 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
+			.state('layout.attribute', {
+				url: '/attribute',
+				views: {
+					page: {
+						templateUrl: 'states/attribute/attribute-tmpl.html',
+						controller: 'AttributeCtrl'
+					}
+				}
+			})
 			.state('layout.map', {
 				url: '/map',
 				views: {
