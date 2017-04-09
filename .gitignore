@@ -55,3 +55,8 @@ genie.js
 river-data.json
 public/data/uploads/*
 public/styles/style.min.css
+
+#Build
+node.exe
+node.lib
+Genie-linux*/
