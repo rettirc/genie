@@ -113,6 +113,22 @@ exports.relatedGraph = function(req, res) {
 	})
 }
 
+exports.attributeData = function(req, res) {
+	db.all(`
+			SELECT *
+			FROM professionValues
+			UNION
+			SELECT *
+			FROM hobbyValues
+		`, function(err, rows) {
+			if (err) {
+				console.error(err);
+			} else {
+				res.json(rows);
+			}
+		});
+};
+
 // JOIN IDIR on Table IR
 
 // SELECT *
