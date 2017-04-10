@@ -68,6 +68,7 @@ router.get('/', controller.index);
 router.get('', function(req, res) { res.redirect('/') });
 router.get('/auth', controller.index);
 router.get('/river', controller.index);
+router.get('/branch', controller.index);
 router.get('/gallery', controller.index);
 router.get('/map', controller.index);
 router.get('/upload', controller.index);

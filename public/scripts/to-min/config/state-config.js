@@ -53,6 +53,15 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
+			.state('layout.branch', {
+				url: '/branch',
+				views: {
+					page: {
+						templateUrl: 'states/branch/branch-tmpl.html',
+						controller: 'BranchCtrl'
+					}
+				}
+			})
 			.state('layout.gallery', {
 				url: '/gallery',
 				views: {
