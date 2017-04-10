@@ -17,6 +17,7 @@ angular.module('genie.attribute-ctrl', [])
 
 
 	function showPeople() {
+		console.log($scope.indiData);
 		if ($scope.indiData === null) {
 			throw "Error: Global individual array is null."; //Hopefully won't happen
 		}
@@ -27,6 +28,10 @@ angular.module('genie.attribute-ctrl', [])
 			.text(function(d) { return d.GivenName; });
 		rows.append("td")
 			.text(function(d) { return d.Surname; });
+		rows.append("td")
+			.text(function(d) {
+				return d.PROFESSION;
+			});
 	}
 
 	fetchData();

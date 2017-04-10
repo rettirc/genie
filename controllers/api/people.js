@@ -70,8 +70,12 @@ exports.queryId = function(req, res) {
 
 exports.people = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents, ir.Notes
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents, ir.Notes, attr.PROFESSION as professionID, prof.VALUE as PROFESSION
 		FROM tblIR as ir
+		LEFT JOIN individualAttributesIfKnown as attr
+		ON attr.IDIR = ir.IDIR
+		LEFT Join professionValues as prof
+		ON attr.PROFESSION = prof.PROFESSIONID
 		`, function(err, rows) {
 		if (err) console.error(err);
 		res.json(rows);
