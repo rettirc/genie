@@ -62,12 +62,30 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
+			.state('layout.branch', {
+				url: '/branch',
+				views: {
+					page: {
+						templateUrl: 'states/branch/branch-tmpl.html',
+						controller: 'BranchCtrl'
+					}
+				}
+			})
 			.state('layout.gallery', {
 				url: '/gallery',
 				views: {
 					page: {
 						templateUrl: 'states/gallery/gallery-tmpl.html',
 						controller: 'GalleryCtrl'
+					}
+				}
+			})
+			.state('layout.attribute', {
+				url: '/attribute',
+				views: {
+					page: {
+						templateUrl: 'states/attribute/attribute-tmpl.html',
+						controller: 'AttributeCtrl'
 					}
 				}
 			})

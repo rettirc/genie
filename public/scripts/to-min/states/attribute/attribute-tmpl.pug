@@ -1,0 +1,22 @@
+div
+  h1 Attribute Edit Screen
+  div(id="individualTable" class="col-lg-6")
+    p Scroll list of people
+    table(class="table table-striped")
+      thead
+        tr
+          th Given Name
+          th Surname
+          th Hobby
+          th Profession
+      tbody(id="individualMenu")
+
+  div(id="editPane" class="col-lg-6")
+    p(id="nameDisplay") Name
+    p(id="notesDisplay") Notes
+    div(class="form-group col-lg-6")
+      label(for="professionSelect") Profession
+      select(id="professionSelect" class="form-control")
+    div(class="form-group col-lg-6")
+      label(for="hobbySelect") Hobby
+      select(id="hobySelect" class="form-control")

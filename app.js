@@ -68,10 +68,12 @@ router.get('/', controller.index);
 router.get('', function(req, res) { res.redirect('/') });
 router.get('/auth', controller.index);
 router.get('/river', controller.index);
+router.get('/branch', controller.index);
 router.get('/gallery', controller.index);
 router.get('/detail', controller.index);
 router.get('/map', controller.index);
 router.get('/upload', controller.index);
+router.get('/attribute', controller.index);
 router.post('/db', function(req, res) { // Plug into database
   var db = dbConnect('fam_data');
   res.json(db.query(req.body));
@@ -102,6 +104,7 @@ router.post('/uploadFile',  function(req, res) {
 });
 router.get('/api/locations', locApiController.getLocs);
 router.get('/api/people', peopleApiController.people); // All people
+router.get('/api/attributeData', peopleApiController.attributeData);
 // router.get('/api/children', peopleApiController.childrenOfMarriage);
 // router.get('/api/marriages', peopleApiController.marriages);
 router.get('/api/relations', peopleApiController.relatedGraph); // People of a certain depth and links

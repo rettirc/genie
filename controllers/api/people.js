@@ -70,8 +70,12 @@ exports.queryId = function(req, res) {
 
 exports.people = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents, ir.Notes, attr.PROFESSION as professionID, prof.VALUE as PROFESSION
 		FROM tblIR as ir
+		LEFT JOIN individualAttributesIfKnown as attr
+		ON attr.IDIR = ir.IDIR
+		LEFT Join professionValues as prof
+		ON attr.PROFESSION = prof.PROFESSIONID
 		`, function(err, rows) {
 		if (err) console.error(err);
 		res.json(rows);
@@ -108,6 +112,22 @@ exports.relatedGraph = function(req, res) {
 		res.json(out);
 	})
 }
+
+exports.attributeData = function(req, res) {
+	db.all(`
+			SELECT *
+			FROM professionValues
+			UNION
+			SELECT *
+			FROM hobbyValues
+		`, function(err, rows) {
+			if (err) {
+				console.error(err);
+			} else {
+				res.json(rows);
+			}
+		});
+};
 
 // JOIN IDIR on Table IR
 

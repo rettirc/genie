@@ -22,7 +22,7 @@ function createWindow () {
   //   // slashes: true
   //   pathname: "localhost:3000"
   // }));
-  mainWindow.loadURL("http://localhost:3000");
+  mainWindow.loadURL("index.html");
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

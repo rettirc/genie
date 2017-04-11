@@ -182,6 +182,12 @@ gulp.task('default', gulp.series(
 	)
 ));
 
+gulp.task('build', gulp.parallel(
+		styles,
+		scripts
+	)
+)
+
 const packageJson = require("../../package.json");
 
 gulp.task('electron', function() {
