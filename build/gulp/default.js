@@ -126,7 +126,7 @@ const scripts = function scripts() {
 	function deps() {
 		return gulp.src([
 				// angular
-				'angular/angular.min.js',
+				'angular/angular.js',
 				'angular-bootstrap/ui-bootstrap-tpls.js',
 				'angular-ui-router/release/angular-ui-router.min.js',
 

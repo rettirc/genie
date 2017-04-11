@@ -12,7 +12,8 @@ angular.module('genie', [
 	'genie.d3',
 	'genie.occupations',
 	'genie.nav-ctrl',
-	'genie.river-ctrl',
+    'genie.river-ctrl',
+    'genie.detail-ctrl',
 	'genie.map-ctrl',
 	'genie.upload-ctrl'
 ])

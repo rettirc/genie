@@ -14,7 +14,8 @@ angular.module('genie', [
 	'genie.nav-ctrl',
 	'genie.river-ctrl',
 	'genie.map-ctrl',
-	'genie.upload-ctrl'
+	'genie.upload-ctrl',
+    'genie.detail-ctrl'
 ])
 .config(function($locationProvider) {
 	$locationProvider.html5Mode({ enabled: true, requireBase: false });
