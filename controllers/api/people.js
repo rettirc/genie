@@ -115,10 +115,10 @@ exports.relatedGraph = function(req, res) {
 
 exports.attributeData = function(req, res) {
 	db.all(`
-			SELECT *
+			SELECT professionValues.PROFESSIONID as id, professionValues.VALUE as value, 'profession' as category
 			FROM professionValues
 			UNION
-			SELECT *
+			SELECT hobbyValues.HOBBYID as id, hobbyValues.VALUE as value, 'hobby' as category
 			FROM hobbyValues
 		`, function(err, rows) {
 			if (err) {

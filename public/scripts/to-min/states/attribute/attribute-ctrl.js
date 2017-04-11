@@ -44,25 +44,47 @@ angular.module('genie.attribute-ctrl', [])
 	}
 
 	function showAttributes(data) {
-		console.log(data);
-		var professions = d3.select("#professionSelect").selectAll("option");
-		professions.data(data/*.filter(function(d) { return d.PROFESSIONID !== null; })*/);
-		professions.enter()
-			.append("option")
-			.text(function(d) { return d.VALUE; });
+		var professions = data.filter(function(d) { return d.category == 'profession';});
+		professions.unshift({"value":"Unknown", "id":0});
+		// console.log(professions);
+		professions.forEach(function(d, i) {
+			d3.select("#professionSelect").append("option")
+				.text(d.value)
+				.attr("dbID", d.id);
+		});
+
+		var hobbies = data.filter(function(d) { return d.category == 'hobby';});
+		hobbies.unshift({"value":"Unknown", "id":0});
+		// console.log(professions);
+		hobbies.forEach(function(d, i) {
+			d3.select("#hobbySelect").append("option")
+				.text(d.value)
+				.attr("dbID", d.id);
+		});
 	}
 
 	function displayEditData(d) {
 		$("#nameDisplay").text(d.GivenName + " " + d.Surname);
+		$("#nameDisplay").attr("dbid", d.IDIR);
 		$("#notesDisplay").text(d.Notes);
-		$("#professionSelect").val(d.PROFESSION);
+		if (d.PROFESSION) {
+			$("#professionSelect").val(d.PROFESSION);
+		} else {
+			$("#professionSelect").val("Unknown");
+		}
 	}
+
+	$("#submitButton").click(function() {
+		//Get stuff
+		let idir = $("#nameDisplay").attr("dbid");
+		let newProf = $("professionSelect").find("option:selected").val();
+
+		console.log(idir, newProf);
+	})
 
 	fetchData();
 
-	// TODO: Fetch Professions and Hobbies from Database
 	// TODO: Add functionality to update database
 	// TODO: Add filters
 
-	// $("#submitButton").on("click", function() { $scope.go("layout.upload")});
 });
