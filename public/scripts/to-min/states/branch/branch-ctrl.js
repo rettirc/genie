@@ -5,6 +5,7 @@ angular.module('genie.branch-ctrl', [])
 	var depth = 1;
 	var familyData = [];
 
+
 	function checkAttribute(attribute, value) {
 		var seen = 0; //Count number seen
 		var matchingData = seenAttributes[value];
@@ -119,15 +120,29 @@ angular.module('genie.branch-ctrl', [])
 			.attr("width", width);
 	})
 
+	var height = 800;
+
+	var yearScale = d3.scaleLinear().domain([1870, 2000]).range([0, height]);
+
+	var zoom = d3.zoom()
+		.scaleExtent([.1, 10])
+		.on("zoom", zoomed);
+
+
 	var svg = d3.select("#riverView").append("svg") // The page currently has no svg element. Fix this
 		.attr("width", '100%')
-		.attr("height", 800); // Arbitrary size
+		.attr("height", height)
+		.call(zoom);
+
+	function zoomed() {
+		d3.selectAll(".links, .nodes").attr("transform", d3.event.transform);
+	}
 
 	svg.append("rect")
 		.attr("id", "bg")
 		.classed("bg", true)
 		.attr("width", width)
-		.attr("height", 800);
+		.attr("height", height);
 
 	svg.append("defs").append("marker")
 		.attr("id", "arrow")
@@ -193,7 +208,7 @@ angular.module('genie.branch-ctrl', [])
 			.classed("node", true)
 			.attr("idir", function(d) { return d.IDIR; })
 			.attr("x", 0)
-			.attr("y", 0)
+			.attr("y", function(d) { return yearScale(parseDate(d.birth)) })
 			.attr("vizId", function(d) { return d.id; })
 			.call(d3.drag()
 					.on("start", dragstarted)
@@ -224,6 +239,13 @@ angular.module('genie.branch-ctrl', [])
 			// 	return "M" + n1.x + " " + n1.y + " Q " + n2.x + " " + n1.y + " " + n2.x + " " + n2.y; // Quadratic Bessier Curve
 			// });
 
+
+			node.attr("x", function(d) { return d.x - 50; })
+				.attr("y", function(d) {
+					d.y = yearScale(d.birthYear); // Bias towards birth year
+					return d.y - 50;
+				});
+
 			link.attr("x1", function(d) {
 					var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
 					return d.source.x + 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
@@ -241,8 +263,7 @@ angular.module('genie.branch-ctrl', [])
 						return d.target.y + targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
 					});
 
-			node.attr("x", function(d) { return d.x - 50; })
-				.attr("y", function(d) { return d.y - 50; });
+
 
 		}
 
@@ -363,6 +384,10 @@ angular.module('genie.branch-ctrl', [])
 						links.push({"source":p.IDIR, "target":p.children[j]});
 					}
 				}
+			}
+			for (let i = 0; i < seenPeople.length; i++) {
+				let obj = seenPeople[i];
+				obj.birthYear = parseInt(parseDate(obj.birth));
 			}
 			displayData(seenPeople, links, "familial");
 		}, function errorCallback(response) {
