@@ -108,6 +108,7 @@ router.get('/api/attributeData', peopleApiController.attributeData);
 // router.get('/api/children', peopleApiController.childrenOfMarriage);
 // router.get('/api/marriages', peopleApiController.marriages);
 router.get('/api/relations', peopleApiController.relatedGraph); // People of a certain depth and links
+router.get('/api/uploadAttribute', peopleApiController.uploadAttribute);
 
 /**
  * 500 Error Handler.

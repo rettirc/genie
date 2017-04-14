@@ -44,25 +44,59 @@ angular.module('genie.attribute-ctrl', [])
 	}
 
 	function showAttributes(data) {
-		console.log(data);
-		var professions = d3.select("#professionSelect").selectAll("option");
-		professions.data(data/*.filter(function(d) { return d.PROFESSIONID !== null; })*/);
-		professions.enter()
-			.append("option")
-			.text(function(d) { return d.VALUE; });
+		var professions = data.filter(function(d) { return d.category == 'profession';});
+		$scope.professionSelect = {
+			model: 'professions',
+			availableOptions: []
+		}
+		professions.forEach(function(d, i) {
+			$scope.professionSelect.availableOptions.push({value:d.id, name:d.value});
+		});
+
+
+		var hobbies = data.filter(function(d) { return d.category == 'hobby';});
+		$scope.hobbySelect = {
+			model: 'hobby',
+			availableOptions: []
+		}
+		hobbies.forEach(function(d, i) {
+			$scope.hobbySelect.availableOptions.push({value:d.id, name:d.value});
+		});
 	}
 
 	function displayEditData(d) {
 		$("#nameDisplay").text(d.GivenName + " " + d.Surname);
+		$scope.idir = d.IDIR;
 		$("#notesDisplay").text(d.Notes);
-		$("#professionSelect").val(d.PROFESSION);
+		if (d.PROFESSION) {
+			$("#professionSelect").val(d.PROFESSION);
+			$scope.profession = d.PROFESSION;
+		} else {
+			$("#professionSelect").val("Unknown");
+			$scope.profession = 0;
+		}
 	}
+
+	$("#submitButton").click(function() {
+		//Get stuff
+		let idir = $scope.idir;
+		// let newProf = $scope.professionSelect.model;
+		// let newHobby = $scope.hobbySelect.model;
+		// console.log(newProf, newHobby);
+
+		// $http({
+		// 	method:"GET",
+		// 	url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newHobby=" + newHobby
+		// }).then(function successCallback(response) {
+		// 	console.log(response);
+		// }, function errorCallback(response) {
+		// 	console.log(response);
+		// });
+	})
 
 	fetchData();
 
-	// TODO: Fetch Professions and Hobbies from Database
 	// TODO: Add functionality to update database
 	// TODO: Add filters
 
-	// $("#submitButton").on("click", function() { $scope.go("layout.upload")});
 });
