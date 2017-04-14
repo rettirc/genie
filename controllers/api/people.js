@@ -129,6 +129,32 @@ exports.attributeData = function(req, res) {
 		});
 };
 
+exports.uploadAttribute = function(req, res) {
+	// Sanitize the inputs
+	let idir = req.query.idir;
+	let hobbyID = req.query.newHobby;
+	let profID = req.query.newProf;
+	console.log(idir, hobbyID, profID);
+
+	db.all(`
+		--IF EXISTS (SELECT * FROM individualAttributesIfKnown WHERE individualAttributesIfKnown.IDIR = ?)
+		--BEGIN
+		--	UPDATE individualAttributesIfKnown SET PROFESSION = ?, HOBBY = ?
+		--	WHERE IDIR = ?
+		--END
+		--ELSE
+		--BEGIN
+			INSERT INTO individualAttributesIfKnown (IDIR, PROFESSION, HOBBY) VALUES (?, ?, ?)
+		--END
+		`, idir, profID, hobbyID, function(err, rows) {
+			if (err) {
+				console.error(err);
+			} else {
+				res.json(rows);
+			}
+		});
+}
+
 // JOIN IDIR on Table IR
 
 // SELECT *

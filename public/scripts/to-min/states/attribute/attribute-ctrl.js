@@ -45,41 +45,53 @@ angular.module('genie.attribute-ctrl', [])
 
 	function showAttributes(data) {
 		var professions = data.filter(function(d) { return d.category == 'profession';});
-		professions.unshift({"value":"Unknown", "id":0});
-		// console.log(professions);
+		$scope.professionSelect = {
+			model: 'professions',
+			availableOptions: []
+		}
 		professions.forEach(function(d, i) {
-			d3.select("#professionSelect").append("option")
-				.text(d.value)
-				.attr("dbID", d.id);
+			$scope.professionSelect.availableOptions.push({value:d.id, name:d.value});
 		});
 
+
 		var hobbies = data.filter(function(d) { return d.category == 'hobby';});
-		hobbies.unshift({"value":"Unknown", "id":0});
-		// console.log(professions);
+		$scope.hobbySelect = {
+			model: 'hobby',
+			availableOptions: []
+		}
 		hobbies.forEach(function(d, i) {
-			d3.select("#hobbySelect").append("option")
-				.text(d.value)
-				.attr("dbID", d.id);
+			$scope.hobbySelect.availableOptions.push({value:d.id, name:d.value});
 		});
 	}
 
 	function displayEditData(d) {
 		$("#nameDisplay").text(d.GivenName + " " + d.Surname);
-		$("#nameDisplay").attr("dbid", d.IDIR);
+		$scope.idir = d.IDIR;
 		$("#notesDisplay").text(d.Notes);
 		if (d.PROFESSION) {
 			$("#professionSelect").val(d.PROFESSION);
+			$scope.profession = d.PROFESSION;
 		} else {
 			$("#professionSelect").val("Unknown");
+			$scope.profession = 0;
 		}
 	}
 
 	$("#submitButton").click(function() {
 		//Get stuff
-		let idir = $("#nameDisplay").attr("dbid");
-		let newProf = $("professionSelect").find("option:selected").val();
+		let idir = $scope.idir;
+		// let newProf = $scope.professionSelect.model;
+		// let newHobby = $scope.hobbySelect.model;
+		// console.log(newProf, newHobby);
 
-		console.log(idir, newProf);
+		// $http({
+		// 	method:"GET",
+		// 	url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newHobby=" + newHobby
+		// }).then(function successCallback(response) {
+		// 	console.log(response);
+		// }, function errorCallback(response) {
+		// 	console.log(response);
+		// });
 	})
 
 	fetchData();

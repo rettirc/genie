@@ -15,7 +15,7 @@ angular.module('genie', [
 	'genie.river-ctrl',
 	'genie.map-ctrl',
 	'genie.upload-ctrl',
-    'genie.detail-ctrl',
+  'genie.detail-ctrl',
 	'genie.attribute-ctrl',
 	'genie.branch-ctrl'
 ])

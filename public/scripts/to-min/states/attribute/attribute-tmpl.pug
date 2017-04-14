@@ -16,8 +16,10 @@ div
     p(id="notesDisplay") Notes
     div(class="form-group col-lg-6")
       label(for="professionSelect") Profession
-      select(id="professionSelect" class="form-control")
+      select(id="professionSelect" class="form-control" ng-model="professionSelect")
+        option(ng-repeat="option in professionSelect.availableOptions" value="{{option.value}}") {{option.name}}
     div(class="form-group col-lg-6")
       label(for="hobbySelect") Hobby
-      select(id="hobbySelect" class="form-control")
+      select(id="hobbySelect" class="form-control" ng-model="hobbySelect")
+        option(ng-repeat="option in hobbySelect.availableOptions" value="{{option.value}}") {{option.name}}
     button(id="submitButton" class="btn btn-info") Submit
