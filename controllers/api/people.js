@@ -84,10 +84,14 @@ exports.people = function(req, res) {
 
 exports.relatedGraph = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.BirthSD as birth, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.BirthSD as birth, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father, prof.VALUE as profession
 		FROM tblIR as ir
-		JOIN tblMR as mr
+		LEFT JOIN tblMR as mr
 		ON mr.IDMR = ir.IDMRParents
+		LEFT JOIN individualAttributesIfKnown as attr
+		ON attr.IDIR = ir.IDIR
+		LEFT JOIN professionValues as prof
+		ON attr.PROFESSION = prof.PROFESSIONID
 		`, function(err, rows) {
 		if (err) console.error(err);
 

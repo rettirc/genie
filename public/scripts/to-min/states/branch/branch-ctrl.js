@@ -246,22 +246,27 @@ angular.module('genie.branch-ctrl', [])
 					return d.y - 50;
 				});
 
-			link.attr("x1", function(d) {
-					var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-					return d.source.x + 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
-				})
-				.attr("y1",  function(d) {
-						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.source.y - 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
-				})
-				.attr("x2",  function(d) {
-						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.x - targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
-					})
-				.attr("y2",  function(d) {
-						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-						return d.target.y + targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
-					});
+				link.attr("x1", function(d) { return d.source.x; });
+				link.attr("y1", function(d) { return d.source.y; });
+				link.attr("x2", function(d) { return d.target.x; });
+				link.attr("y2", function(d) { return d.target.y; });
+
+			// link.attr("x1", function(d) {
+			// 		var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+			// 		return d.source.x + 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+			// 	})
+			// 	.attr("y1",  function(d) {
+			// 			var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+			// 			return d.source.y - 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+			// 	})
+			// 	.attr("x2",  function(d) {
+			// 			var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+			// 			return d.target.x - targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+			// 		})
+			// 	.attr("y2",  function(d) {
+			// 			var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+			// 			return d.target.y + targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+			// 		});
 
 
 
@@ -305,28 +310,14 @@ angular.module('genie.branch-ctrl', [])
 				descriptionLines.push(name[0]);
 				descriptionLines.push(d.Surname);
 				descriptionLines.push(parseDate(d.birth));
+				descriptionLines.push(d.profession);
 				var group = d3.select(this);
-				// group.append("text")
-				// 	.attr("x", 5)
-				// 	.attr("y", 15)
-				// 	.text(function(d) { return d.GivenName; });
-				//
-				// group.append("text")
-				// 	.attr("x", 5)
-				// 	.attr("y", 30)
-				// 	.text(function(d) { return d.Surname; });
 				for (var i = 0; i < descriptionLines.length; i++) {
 					group.append("text")
 					.classed("info",true)
 					.attr("x", 5)
 					.attr("y", (i + 1) * 20)
 					.text(descriptionLines[i]);
-
-				// 	d3.select(this).append("text")
-				// 	.classed("info",true)
-				// 	.attr("x", 5)
-				// 	.attr("y", (i + 1) * 30 + 15)
-				// 	.text(capitalizeAttribute(d.attributes[attributes[i]]));
 				}
 			}
 		);
@@ -375,16 +366,43 @@ angular.module('genie.branch-ctrl', [])
 			let rows = response.data.rows;
 			let idirToIndex = response.data.lookup;
 			dfs(353, rows, idirToIndex, depth);
-			let seenPeople = rows.filter(function(d) { return d.seen; });
-			let links = [];
-			for (let i = 0; i < seenPeople.length; i++) {
-				let p = seenPeople[i];
-				for (let j = 0; j < p.children.length; j++) {
-					if(rows[idirToIndex[p.children[j]]].seen) {
-						links.push({"source":p.IDIR, "target":p.children[j]});
+			let marriages = [];
+			for (let i = 0; i < rows.length; i++) {
+				let mr = rows[i].IDMRPref;
+				if (mr) {
+					if (marriages[mr] !== undefined) {
+						marriages[mr].push(rows[i].IDIR);
+					} else {
+						marriages[mr] = [rows[i].IDIR];
 					}
 				}
 			}
+
+			let links = [];
+			for (let i = 0; i < rows.length; i++) {
+				let p = rows[i];
+				if (p.seen) {
+					for (let j = 0; j < p.children.length; j++) {
+						if(rows[idirToIndex[p.children[j]]].seen) {
+							links.push({"source":p.IDIR, "target":p.children[j]});
+						}
+					}
+					if (p.IDMRPref && marriages[p.IDMRPref].length == 2) {
+						let marriage = marriages[p.IDMRPref];
+						links.push({"source": marriage[1], "target": marriage[0]});
+					}
+				}
+			}
+			var seenPeople = rows.filter(function(d) {
+
+				for (let j = 0; j < links.length; j++) {
+					if (links[j].source == d.IDIR || links[j].target == d.IDIR) {
+						return true;
+					}
+				}
+				return false;
+			});
+
 			for (let i = 0; i < seenPeople.length; i++) {
 				let obj = seenPeople[i];
 				obj.birthYear = parseInt(parseDate(obj.birth));
