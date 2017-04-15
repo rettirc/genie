@@ -7,6 +7,18 @@ angular.module('genie.attribute-ctrl', [])
 	var hobbyID = 0;
 	var profID = 0;
 	$scope.indiData = null;
+	$scope.professionSelect = {
+		model: 0,
+		availableOptions: [
+			{ value: 0, name: "Unknown"}
+		]
+	};
+	$scope.educationSelect = {
+		model: 0,
+		availableOptions: [
+			{ value: 0, name: "Unknown"}
+		]
+	}
 
 
 	function fetchData() {
@@ -28,6 +40,8 @@ angular.module('genie.attribute-ctrl', [])
 		if ($scope.indiData === null) {
 			throw "Error: Global individual array is null."; //Hopefully won't happen
 		}
+		// console.log($scope.indiData[0]);
+		angular.element(document.querySelector('#individualMenu')).empty();
 		var dataDrivenTable = d3.select("#individualMenu").selectAll("tr").data($scope.indiData);
 		var rows = dataDrivenTable.enter()
 			.append("tr");
@@ -37,7 +51,11 @@ angular.module('genie.attribute-ctrl', [])
 			.text(function(d) { return d.Surname; });
 		rows.append("td")
 			.text(function(d) {
-				return d.PROFESSION;
+				return d.education;
+			});
+		rows.append("td")
+			.text(function(d) {
+				return d.profession;
 			});
 		rows.on("click", function(d) {
 			d3.select("tr.info").classed("info", false);
@@ -49,9 +67,11 @@ angular.module('genie.attribute-ctrl', [])
 	function showAttributes(data) {
 		var professions = data.filter(function(d) { return d.category == 'profession';});
 		$scope.professionSelect = {
-			model: 'professions',
-			availableOptions: []
-		}
+			model: 0,
+			availableOptions: [
+				// { value: 0, name: "Unknown"}
+			]
+		};
 		professions.forEach(function(d, i) {
 			$scope.professionSelect.availableOptions.push({value:d.id, name:d.value});
 			if (d.id > profID) {
@@ -60,16 +80,16 @@ angular.module('genie.attribute-ctrl', [])
 		});
 
 
-		var hobbies = data.filter(function(d) { return d.category == 'hobby';});
-		$scope.hobbySelect = {
-			model: 'hobby',
-			availableOptions: []
-		}
-		hobbies.forEach(function(d, i) {
-			$scope.hobbySelect.availableOptions.push({value:d.id, name:d.value});
-			if(d.id > hobbyID) {
-				hobbyID = d.id + 1;
-			}
+
+		var educationLevels = data.filter(function(d) { return d.category == 'education';});
+		$scope.educationSelect = {
+			model: 0,
+			availableOptions: [
+				{ value: 0, name: "Unknown"}
+			]
+		};
+		educationLevels.forEach(function(d, i) {
+			$scope.educationSelect.availableOptions.push({value:d.id, name:d.value});
 		});
 	}
 
@@ -77,27 +97,33 @@ angular.module('genie.attribute-ctrl', [])
 		$("#nameDisplay").text(d.GivenName + " " + d.Surname);
 		$scope.idir = d.IDIR;
 		$("#notesDisplay").text(d.Notes);
-		if (d.PROFESSION) {
-			$("#professionSelect").val(d.PROFESSION);
-			$scope.profession = d.PROFESSION;
-		} else {
-			$("#professionSelect").val("Unknown");
-			$scope.profession = 0;
-		}
+		$scope.professionSelect.model = d.professionID;
+		$scope.educationSelect.model = d.educationID;
+		// console.log($scope.professionSelect);
 	}
 
 	$("#submitButton").click(function() {
 		//Get stuff
 		let idir = $scope.idir;
-		console.log($scope.selectedHobby);
-		console.log($scope.selectedProf);
-		console.log($scope.newHobby);
 		$scope.hobbySelect.availableOptions.push({value:hobbyID++, name:$scope.newHobby});
 		// $http.get("/api/people").then(function successCallback(response) {
 		// 	uploadAttribute({value:hobbyID++, name:$scope.newHobby}, response);
 		// }, function errorCallback(response) {
 		// 	console.error(response);
 		// });
+
+		let newProf = $scope.professionSelect.model;
+		let newHobby = $scope.educationSelect.model;
+
+		$http({
+			method:"GET",
+			url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newEdu=" + newHobby
+		}).then(function successCallback(response) {
+			console.log(response);
+			fetchData();
+		}, function errorCallback(response) {
+			console.log(response);
+		});
 	})
 
 	fetchData();

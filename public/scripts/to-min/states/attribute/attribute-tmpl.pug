@@ -1,13 +1,12 @@
 div
   h1 Attribute Edit Screen
-  div(id="individualTable" class="col-lg-6")
-    p Scroll list of people
+  div(id="individualTable" class="col-lg-6" style="height: 100vh; overflow: scroll;")
     table(class="table table-striped")
       thead
         tr
           th Given Name
           th Surname
-          th Hobby
+          th Education
           th Profession
       tbody(id="individualMenu")
 
@@ -16,7 +15,7 @@ div
     p(id="notesDisplay") Notes
     div(class="form-group col-lg-6")
       label(for="professionSelect") Select a Profession
-      select(id="professionSelect" class="form-control" ng-options="item.value as item.name for item in professionSelect.availableOptions" 
+      select(id="professionSelect" class="form-control" ng-options="item.value as item.name for item in professionSelect.availableOptions"
       ng-model="selectedProf")
       label(for="newProf") Or Enter a new Profession
       input(id="newProf" type="text" ng-model="newProf" class="form-control")

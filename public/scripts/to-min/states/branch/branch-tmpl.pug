@@ -65,15 +65,16 @@ div(style="display:inline-block; width: 100%")
 
     div(class='form-group')
       label(for='occupations' style="width: 100%; text-align: left;") Choose a Color
-      input(
+      select(
         name="color"
         id="colorSelect"
-        type="color"
+        type="select"
         value="#aaaaff"
         placeholder="Enter a color"
-        ng-model="colorSelected"
+        ng-model="colorScheme.model"
         uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
         class="form-control"
       )
+        option(ng-repeat="option in colorScheme.availableOptions" value="{{option.value}}") {{option.name}}
       label(id="colorResp" style="width: 300px; padding: 25px; text-align:left;")
-  div(id="riverView" class="col-lg-9" style="display:inline-block; padding: 25px;")
+  div(id="riverView" class="col-lg-9 {{colorScheme.model}}" style="display:inline-block; padding: 25px;")

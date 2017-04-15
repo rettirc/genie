@@ -61,6 +61,20 @@ angular.module('genie.branch-ctrl', [])
 
 	$scope.depthSelected = 3;
 
+	$scope.colorScheme = {
+		model: 'style1',
+		availableOptions: [
+			{
+				value: 'style1',
+				name: 'Jewel Blue'
+			},
+			{
+				value: 'style2',
+				name: 'Jewel Blue'
+			}
+		]
+	}
+
 	$scope.$watch('depthSelected', function(newValue) {
 		gatherData($scope.depthSelected);
 	});
@@ -113,6 +127,7 @@ angular.module('genie.branch-ctrl', [])
 		}
 	});
 
+
 	$scope.$watch(function() {return $window.innerWidth;}, function(newValue) {
 		width = document.getElementById("riverView").clientWidth;
 		forceCenter.x(width / 2);
@@ -141,6 +156,7 @@ angular.module('genie.branch-ctrl', [])
 	svg.append("rect")
 		.attr("id", "bg")
 		.classed("bg", true)
+		.classed("a", true)
 		.attr("width", width)
 		.attr("height", height);
 
@@ -196,7 +212,16 @@ angular.module('genie.branch-ctrl', [])
 			.data(linkingData)
 			.enter()
 			.append("line")
-			.attr("marker-end", linkMode != 'personal' ? "url(#arrow)" : null);
+			.attr("marker-end", function(d) {
+				if (linkMode == 'familial' && d.type == "child") {
+					return "url(#arrow)";
+				} else {
+					return null;
+				}
+			})
+			.classed("spousal", function(d) {
+				return d.type == "marriage";
+			});
 
 
 		var node = svg.append("g")
@@ -246,27 +271,24 @@ angular.module('genie.branch-ctrl', [])
 					return d.y - 50;
 				});
 
-				link.attr("x1", function(d) { return d.source.x; });
-				link.attr("y1", function(d) { return d.source.y; });
-				link.attr("x2", function(d) { return d.target.x; });
-				link.attr("y2", function(d) { return d.target.y; });
 
-			// link.attr("x1", function(d) {
-			// 		var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-			// 		return d.source.x + 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
-			// 	})
-			// 	.attr("y1",  function(d) {
-			// 			var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-			// 			return d.source.y - 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
-			// 	})
-			// 	.attr("x2",  function(d) {
-			// 			var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-			// 			return d.target.x - targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
-			// 		})
-			// 	.attr("y2",  function(d) {
-			// 			var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
-			// 			return d.target.y + targetDist * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
-			// 		});
+
+			link.attr("x1", function(d) {
+					var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+					return d.source.x + 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1 / Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+				})
+				.attr("y1",  function(d) {
+						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+						return d.source.y - 50 * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+				})
+				.attr("x2",  function(d) {
+						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+						return d.target.x - (d.type == 'child' ? 60 : 50) * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? 1/Math.tan(Math.abs(theta)) : (Math.abs(theta) > Math.PI / 2 ? -1 : 1));
+					})
+				.attr("y2",  function(d) {
+						var theta = Math.atan2(d.source.y - d.target.y, d.target.x - d.source.x);
+						return d.target.y + (d.type == 'child' ? 60 : 50) * (Math.abs(Math.abs(theta) - Math.PI / 2) <= Math.PI / 4 ? (theta > 0 ? 1 : -1) : (Math.abs(theta) < Math.PI / 2 ? 1 : -1) * Math.tan(theta));
+					});
 
 
 
@@ -384,12 +406,12 @@ angular.module('genie.branch-ctrl', [])
 				if (p.seen) {
 					for (let j = 0; j < p.children.length; j++) {
 						if(rows[idirToIndex[p.children[j]]].seen) {
-							links.push({"source":p.IDIR, "target":p.children[j]});
+							links.push({"source":p.IDIR, "target":p.children[j], "type":"child"});
 						}
 					}
 					if (p.IDMRPref && marriages[p.IDMRPref].length == 2) {
 						let marriage = marriages[p.IDMRPref];
-						links.push({"source": marriage[1], "target": marriage[0]});
+						links.push({"source": marriage[1], "target": marriage[0], "type":"marriage"});
 					}
 				}
 			}

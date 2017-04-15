@@ -70,12 +70,14 @@ exports.queryId = function(req, res) {
 
 exports.people = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents, ir.Notes, attr.PROFESSION as professionID, prof.VALUE as PROFESSION
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.IDMRPref, ir.IDMRParents, ir.Notes, attr.PROFESSION as professionID, prof.VALUE as profession, attr.EDUCATION as educationID, edu.VALUE as education
 		FROM tblIR as ir
 		LEFT JOIN individualAttributesIfKnown as attr
 		ON attr.IDIR = ir.IDIR
 		LEFT Join professionValues as prof
 		ON attr.PROFESSION = prof.PROFESSIONID
+		LEFT JOIN educationValues as edu
+		ON attr.EDUCATION = edu.ID
 		`, function(err, rows) {
 		if (err) console.error(err);
 		res.json(rows);
@@ -122,8 +124,8 @@ exports.attributeData = function(req, res) {
 			SELECT professionValues.PROFESSIONID as id, professionValues.VALUE as value, 'profession' as category
 			FROM professionValues
 			UNION
-			SELECT hobbyValues.HOBBYID as id, hobbyValues.VALUE as value, 'hobby' as category
-			FROM hobbyValues
+			SELECT educationValues.ID as id, educationValues.VALUE as value, 'education' as category
+			FROM educationValues
 		`, function(err, rows) {
 			if (err) {
 				console.error(err);
@@ -135,22 +137,15 @@ exports.attributeData = function(req, res) {
 
 exports.uploadAttribute = function(req, res) {
 	// Sanitize the inputs
-	let idir = req.query.idir;
-	let hobbyID = req.query.newHobby;
-	let profID = req.query.newProf;
-	console.log(idir, hobbyID, profID);
 
-	db.all(`
-		--IF EXISTS (SELECT * FROM individualAttributesIfKnown WHERE individualAttributesIfKnown.IDIR = ?)
-		--BEGIN
-		--	UPDATE individualAttributesIfKnown SET PROFESSION = ?, HOBBY = ?
-		--	WHERE IDIR = ?
-		--END
-		--ELSE
-		--BEGIN
-			INSERT INTO individualAttributesIfKnown (IDIR, PROFESSION, HOBBY) VALUES (?, ?, ?)
-		--END
-		`, idir, profID, hobbyID, function(err, rows) {
+	db.run(`
+			UPDATE individualAttributesIfKnown SET PROFESSION = $prof, EDUCATION = $edu
+			WHERE individualAttributesIfKnown.IDIR = $id
+		`, {
+			$id: req.query.idir,
+			$prof: req.query.newProf,
+			$edu: req.query.newEdu
+		}, function(err, rows) {
 			if (err) {
 				console.error(err);
 			} else {
