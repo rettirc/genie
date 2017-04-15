@@ -4,7 +4,10 @@ angular.module('genie.attribute-ctrl', [])
 		$state.go(route);
 	}
 
+	var hobbyID = 0;
+	var profID = 0;
 	$scope.indiData = null;
+
 
 	function fetchData() {
 		$http.get("/api/people").then(function successCallback(response) {
@@ -51,6 +54,9 @@ angular.module('genie.attribute-ctrl', [])
 		}
 		professions.forEach(function(d, i) {
 			$scope.professionSelect.availableOptions.push({value:d.id, name:d.value});
+			if (d.id > profID) {
+				profID = d.id + 1;
+			}
 		});
 
 
@@ -61,6 +67,9 @@ angular.module('genie.attribute-ctrl', [])
 		}
 		hobbies.forEach(function(d, i) {
 			$scope.hobbySelect.availableOptions.push({value:d.id, name:d.value});
+			if(d.id > hobbyID) {
+				hobbyID = d.id + 1;
+			}
 		});
 	}
 
@@ -80,17 +89,14 @@ angular.module('genie.attribute-ctrl', [])
 	$("#submitButton").click(function() {
 		//Get stuff
 		let idir = $scope.idir;
-		// let newProf = $scope.professionSelect.model;
-		// let newHobby = $scope.hobbySelect.model;
-		// console.log(newProf, newHobby);
-
-		// $http({
-		// 	method:"GET",
-		// 	url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newHobby=" + newHobby
-		// }).then(function successCallback(response) {
-		// 	console.log(response);
+		console.log($scope.selectedHobby);
+		console.log($scope.selectedProf);
+		console.log($scope.newHobby);
+		$scope.hobbySelect.availableOptions.push({value:hobbyID++, name:$scope.newHobby});
+		// $http.get("/api/people").then(function successCallback(response) {
+		// 	uploadAttribute({value:hobbyID++, name:$scope.newHobby}, response);
 		// }, function errorCallback(response) {
-		// 	console.log(response);
+		// 	console.error(response);
 		// });
 	})
 
