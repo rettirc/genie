@@ -105,19 +105,19 @@ angular.module('genie.attribute-ctrl', [])
 	$("#submitButton").click(function() {
 		//Get stuff
 		let idir = $scope.idir;
-		$scope.hobbySelect.availableOptions.push({value:hobbyID++, name:$scope.newHobby});
-		// $http.get("/api/people").then(function successCallback(response) {
-		// 	uploadAttribute({value:hobbyID++, name:$scope.newHobby}, response);
-		// }, function errorCallback(response) {
-		// 	console.error(response);
-		// });
-
-		let newProf = $scope.professionSelect.model;
-		let newHobby = $scope.educationSelect.model;
+		$scope.educationSelect.availableOptions.push({value:hobbyID++, name:$scope.newEdu});
+		let newProf = $scope.selectedProf;
+		let newEdu = $scope.selectedEducation;
+		if (!newProf) {
+			newProf = $scope.newProf;
+		}
+		if (!newEdu) {
+			newEdu = $scope.newEdu;
+		}
 
 		$http({
 			method:"GET",
-			url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newEdu=" + newHobby
+			url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newEdu=" + newEdu
 		}).then(function successCallback(response) {
 			console.log(response);
 			fetchData();

@@ -14,14 +14,14 @@ div
     p(id="nameDisplay") Name
     p(id="notesDisplay") Notes
     div(class="form-group col-lg-6")
+      label(for="hobbySelect") Select an Education Level
+      select(class="form-control" ng-options="item.value as item.name for item in educationSelect.availableOptions" ng-model="selectedEducation")
+      label(for="newHobby") Or Enter a new Education Level
+      input(id="newHobby" type="text" ng-model="newEducation" class="form-control")
+    div(class="form-group col-lg-6")
       label(for="professionSelect") Select a Profession
       select(id="professionSelect" class="form-control" ng-options="item.value as item.name for item in professionSelect.availableOptions"
       ng-model="selectedProf")
       label(for="newProf") Or Enter a new Profession
       input(id="newProf" type="text" ng-model="newProf" class="form-control")
-    div(class="form-group col-lg-6")
-      label(for="hobbySelect") Select a Hobby
-      select(class="form-control" ng-options="item.value as item.name for item in hobbySelect.availableOptions" ng-model="selectedHobby")
-      label(for="newHobby") Or Enter a new Hobby
-      input(id="newHobby" type="text" ng-model="newHobby" class="form-control")
     button(id="submitButton" class="btn btn-info") Submit
