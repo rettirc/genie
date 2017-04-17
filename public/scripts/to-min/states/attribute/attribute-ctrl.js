@@ -113,13 +113,14 @@ angular.module('genie.attribute-ctrl', [])
 			if (newProf) {
 				$http({
 					method:"GET",
-					url:"/api/uploadNewProfession?profID=" + profID++ + "&newProf=" + newProf
+					url:"/api/uploadNewProfession?profID=" + profID + "&newProf=" + newProf
 				}).then(function successCallback(response) {
 					console.log(response);
 					fetchData();
 				}, function errorCallback(response) {
 					console.log(response);
 				});
+				newProf = profID++;
 			}
 		}
 		if (!newEdu) {
