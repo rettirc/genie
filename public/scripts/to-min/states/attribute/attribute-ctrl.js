@@ -110,6 +110,17 @@ angular.module('genie.attribute-ctrl', [])
 		let newEdu = $scope.selectedEducation;
 		if (!newProf) {
 			newProf = $scope.newProf;
+			if (newProf) {
+				$http({
+					method:"GET",
+					url:"/api/uploadNewProfession?profID=" + profID++ + "&newProf=" + newProf
+				}).then(function successCallback(response) {
+					console.log(response);
+					fetchData();
+				}, function errorCallback(response) {
+					console.log(response);
+				});
+			}
 		}
 		if (!newEdu) {
 			newEdu = $scope.newEdu;

@@ -154,6 +154,22 @@ exports.uploadAttribute = function(req, res) {
 		});
 }
 
+exports.uploadNewProfession = function(req, res) {
+
+	db.run(`
+			INSERT INTO professionValues (PROFESSIONID, VALUE) VALUES ($id, $name)
+		`, {
+			$id: req.query.profID,
+			$name: req.query.newProf
+		}, function(err, rows) {
+			if (err) {
+				console.error(err);
+			} else {
+				res.json(rows);
+			}
+		});
+}
+
 // JOIN IDIR on Table IR
 
 // SELECT *
