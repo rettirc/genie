@@ -111,6 +111,7 @@ angular.module('genie.attribute-ctrl', [])
 		if (!newProf) {
 			newProf = $scope.newProf;
 			if (newProf) {
+				profID++;
 				$http({
 					method:"GET",
 					url:"/api/uploadNewProfession?profID=" + profID + "&newProf=" + newProf
@@ -120,7 +121,7 @@ angular.module('genie.attribute-ctrl', [])
 				}, function errorCallback(response) {
 					console.log(response);
 				});
-				newProf = profID++;
+				newProf = profID;
 			}
 		}
 		if (!newEdu) {
