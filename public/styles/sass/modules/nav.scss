@@ -1,0 +1,29 @@
+nav {
+
+  background-color: #333333;
+  width: 100%;
+  font-size: 20px;
+
+  .navbar-brand {
+    color: white;
+    font-size: 30px;
+    vertical-align: middle;
+    padding-left: 50px;
+  }
+
+  .nav-link {
+    color: white;
+    padding: 50px;
+    vertical-align: middle;
+  }
+
+  .nav-link:hover {
+    color: white;
+    text-decoration: none;
+  }
+
+  .nav-link:focus {
+    color: white;
+    text-decoration: none;
+  }
+}
