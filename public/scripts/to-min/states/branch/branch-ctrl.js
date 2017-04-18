@@ -338,7 +338,12 @@ angular.module('genie.branch-ctrl', [])
 				descriptionLines.push(name[0]);
 				descriptionLines.push(d.Surname);
 				// descriptionLines.push(parseDate(d.birth));
-				descriptionLines.push(d.profession);
+				if (d.profession) {
+					descriptionLines.push(d.profession);
+				}
+				if (d.education) {
+					descriptionLines.push(d.education);
+				}
 				var group = d3.select(this);
 				for (var i = 0; i < descriptionLines.length; i++) {
 					group.append("text")
