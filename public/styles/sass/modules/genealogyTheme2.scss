@@ -2,11 +2,11 @@
 
 .style2	{
 
-	$color0: #dddddd;	//Background
-	$color1: #2E3336;	//Normal Lines
+	$color0: #dfdce3;	//Background
+	$color1: #111111;	//Normal Lines
 		//Spousal Lines
-	$color3: #FAE9D7; // Unselected Rectangles
-	$color4: #C9DAD2;	//Selected Rectangles
+	$color3: #4abdac; // Unselected Rectangles
+	$color4: #fc4a1a;	//Selected Rectangles
 
 		rect {
 		fill: $color3;

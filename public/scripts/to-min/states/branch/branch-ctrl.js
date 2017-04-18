@@ -76,7 +76,7 @@ angular.module('genie.branch-ctrl', [])
 			},
 			{
 				value: 'style2',
-				name: 'Jewel Blue'
+				name: 'Muave'
 			}
 		]
 	}
