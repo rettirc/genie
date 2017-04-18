@@ -3,6 +3,15 @@ div
 		img(style = "align-items: center; margin-top: 50px" src="media/genie-logo.png")
 		h3(style = "margin-bottom: 50px") Genealogy Done Right
 	div(class="container")
-		img(style = "align-items: center; margin: 0 0 0 auto; border:5px solid black;" src="media/tree_icon.png" ng-click="go('layout.detail')" width="300vh")
-		img(style = "align-items: center; margin: 0 10px 0 10px; border:5px solid black;" src="media/river_icon.png" ng-click="go('layout.branch')" width="300vh")
-		img(style = "align-items: center; margin: 0 auto 0 0; border:5px solid black;" src="media/map_icon.png" ng-click="go('layout.map')" width="300vh")
+		div(class="col-lg-4")
+			div Discover your past
+			hr
+			img(style = "align-items: center;  " src="media/tree_icon.png" ng-click="go('layout.detail')" )
+		div(class="col-lg-4 center")
+			div See your Roots
+			hr
+			img(style = "align-items: center;  " src="media/riverBlank.png" ng-click="go('layout.branch')" )
+		div(class="col-lg-4")
+			div Find your Origins
+			hr
+			img(style = "align-items: center; " src="media/genieMap.png" ng-click="go('layout.map')" )

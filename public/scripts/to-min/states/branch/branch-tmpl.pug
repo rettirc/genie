@@ -2,7 +2,7 @@ div
 div(style="display:inline-block; width: 100%")
   //- TODO: organize properly and give better naming conventions
   div(id="forms" class="col-lg-3")
-    h1 Branch View
+    h1 River View
     div(class="form-group")
       div(style="padding: 5px; text-align: left; width: 100%;")
           label(style="width: 100%;") Visualization Focus
@@ -36,12 +36,12 @@ div(style="display:inline-block; width: 100%")
             class="form-check-input"
             ng-model="hobbySelected.enabled"
           )
-          label(style="padding: 10px") Search for Hobbies in Your Tree
+          label(style="padding: 10px") Search for Education Levels in Your Tree
       input(
         name="hobbySearch"
         id="hobbySearch"
         type="text"
-        placeholder="Enter a hobby"
+        placeholder="Enter an Education Level"
         ng-model="hobbySelected.model"
         uib-typeahead="occupation for occupation in occupations | filter:$viewValue | limitTo:8"
         class="form-control"

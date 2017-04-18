@@ -8,21 +8,27 @@ angular.module('genie.branch-ctrl', [])
 
 	function checkAttribute(attribute, value) {
 		var seen = 0; //Count number seen
-		var matchingData = seenAttributes[value];
-		if (matchingData) {
-			for (var i = 0; i < matchingData.length; i++) {
-				var selectedNode = matchingData[i];
-				d3.selectAll("g.nodes svg").classed("selected-" + attribute + '-enabled', function(d) {
-					return d.attributes[attribute] === value;
-				})
-					.classed('selected-' + attribute + '-disabled', false);
+		// var matchingData = seenAttributes[value];
+		// if (matchingData) {
+		// 	for (var i = 0; i < matchingData.length; i++) {
+		// 		var selectedNode = matchingData[i];
+		// 		d3.selectAll("g.nodes svg").classed("selected-" + attribute + '-enabled', function(d) {
+		// 			return d.attributes[attribute] === value;
+		// 		})
+		// 			.classed('selected-' + attribute + '-disabled', false);
+		// 	}
+		// } else {
+		// 	d3.selectAll("g.nodes svg")
+		// 		.classed('selected-' + attribute + '-enabled', false)
+		// 		.classed('selected-' + attribute + '-disabled', false);
+		//
+		// }
+		d3.selectAll("g.nodes svg").each(function(d, i) {
+			if (d[attribute] && d[attribute].toLowerCase() == value) {
+				d3.select(this).classed("selected-hobby-enabled", true);
 			}
-		} else {
-			d3.selectAll("g.nodes svg")
-				.classed('selected-' + attribute + '-enabled', false)
-				.classed('selected-' + attribute + '-disabled', false);
-
-		}
+			// console.log(d[attribute]);
+		})
 	}
 	// $scope.$watch('depthSelected', function(newValue) {
 		// checkAttribute(newValue.toLowerCase());
@@ -87,7 +93,7 @@ angular.module('genie.branch-ctrl', [])
 
 	$scope.$watch('hobbySelected.model', function(newValue) {
 		if(newValue) {
-			checkAttribute('hobby', newValue.toLowerCase());
+			checkAttribute('education', newValue.toLowerCase());
 			$scope.hobbySelected.enabled = true;
 		} else {
 			$scope.hobbySelected.enabled = false;
@@ -331,7 +337,7 @@ angular.module('genie.branch-ctrl', [])
 				var name = d.GivenName.split(" ");
 				descriptionLines.push(name[0]);
 				descriptionLines.push(d.Surname);
-				descriptionLines.push(parseDate(d.birth));
+				// descriptionLines.push(parseDate(d.birth));
 				descriptionLines.push(d.profession);
 				var group = d3.select(this);
 				for (var i = 0; i < descriptionLines.length; i++) {

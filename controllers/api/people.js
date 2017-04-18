@@ -86,7 +86,7 @@ exports.people = function(req, res) {
 
 exports.relatedGraph = function(req, res) {
 	db.all(`
-		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.BirthSD as birth, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father, prof.VALUE as profession
+		SELECT ir.IDIR, ir.Surname, ir.GivenName, ir.BirthSD as birth, ir.IDMRPref, mr.IDIRWife as mother, mr.IDIRHusb as father, prof.VALUE as profession, edu.VALUE as education
 		FROM tblIR as ir
 		LEFT JOIN tblMR as mr
 		ON mr.IDMR = ir.IDMRParents
@@ -94,6 +94,8 @@ exports.relatedGraph = function(req, res) {
 		ON attr.IDIR = ir.IDIR
 		LEFT JOIN professionValues as prof
 		ON attr.PROFESSION = prof.PROFESSIONID
+		LEFT JOIN educationValues as edu
+		ON attr.EDUCATION = edu.ID
 		`, function(err, rows) {
 		if (err) console.error(err);
 
