@@ -53,17 +53,18 @@ angular.module('genie.state-config', [])
 					}
 				}
 			})
-			.state('layout.river', {
-				url: '/river',
-				views: {
-					page: {
-						templateUrl: 'states/river/river-tmpl.html',
-						controller: 'RiverCtrl'
-					}
-				}
-			})
+			// Renaming this is generating a bug
+			// .state('layout.river', {
+			// 	url: '/river',
+			// 	views: {
+			// 		page: {
+			// 			templateUrl: 'states/river/river-tmpl.html',
+			// 			controller: 'RiverCtrl'
+			// 		}
+			// 	}
+			// })
 			.state('layout.branch', {
-				url: '/branch',
+				url: '/river',
 				views: {
 					page: {
 						templateUrl: 'states/branch/branch-tmpl.html',

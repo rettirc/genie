@@ -3,12 +3,30 @@ const path = require('path');
 
 const db = new sqlite3.Database(path.join(__dirname, '../../genie.sqlite'));
 
+/*
+	This contains exported functions that will be called by the router to query the
+	database. Note that all functions have the expected paramaters from Express:
+	Req - The request
+			- query: method that can be called on req to get the parameters passed by the user
+	Res - The object that handles the results
+
+  Note: This is the point of highest coupling with the database and the rest of
+	the application. This was neccessary due to the time constraints and resources
+	for this project
+
+	These names are arbitrary and mainly for the poor team member working on the
+	database at the moment
+
+*/
+
+// Every person
 exports.all = function(req, res) {
 	db.all("SELECT * FROM tblIR", function(err, rows) {
 		res.json(rows);
 	});
 };
 
+// Get everyone in an object with their biological parents
 exports.childrenOfMarriage = function(req, res) {
 	db.all(`
 	SELECT cr.IDMR AS marriage_id, mr.IDIRHusb, mr.IDIRWife , cr.IDIR AS child_id
