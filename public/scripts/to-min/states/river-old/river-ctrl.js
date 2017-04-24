@@ -1,3 +1,9 @@
+/*
+ * This is the older version of the River View
+ * The updated version contains fixed positions for nodes
+ * Otherwise, there's too much randomness in the visualization
+ */
+
 angular.module('genie.river-ctrl', [])
 .controller('RiverCtrl', function($scope, $http, $window, d3) {
 
