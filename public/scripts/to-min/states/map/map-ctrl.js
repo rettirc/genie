@@ -1,8 +1,5 @@
 angular.module('genie.map-ctrl', [])
 .controller('MapCtrl', function($scope, d3, $http) {
-    //Initial display
-    updateMap()
-
     //Initialize scope variables used in UI and watched by controller
 	$scope.newTimeMin = {
 		value: 1700
@@ -12,9 +9,17 @@ angular.module('genie.map-ctrl', [])
 		value: 2000
 	};
 
+    $scope.newTimeInc = {
+		value: 100
+	};
+
 	$scope.mapScope = {
 		value: "us"
 	};
+
+    $scope.newTimeInc = {
+        value: 100
+    };
 
 	$scope.mapScopeData = {
 		model: 'us',
@@ -50,7 +55,7 @@ angular.module('genie.map-ctrl', [])
             initializing++;
         } else {
             if(newValue) {
-                minTime = newValue;
+                overallMinTime = newValue;
                 updateMap();
             }
         }
@@ -62,10 +67,14 @@ angular.module('genie.map-ctrl', [])
             initializing++;
         } else {
             if(newValue) {
-    			maxTime = newValue;
+    			overallMaxTime = newValue;
     			updateMap();
     		}
         }
+	});
+
+	$scope.$watch('newTimeInc.value', function(newValue) {
+        date_inc = newValue
 	});
 
 	//Called when zoom out button is pressed; zooms to the last map on the stack
@@ -74,17 +83,22 @@ angular.module('genie.map-ctrl', [])
 		updateMap()
 	}
 
-  //Called when the start button is pressed for the time lapse
-  $scope.startTimeLapse = function() {
-    stopTime = false;
-    startTimeLapseHelper();
-  }
+    //Called when the start button is pressed for the time lapse
+    $scope.startTimeLapse = function() {
+        stopTime = false;
+        startTimeLapseHelper();
+    }
 
-  //Called to stop the time lapse
-  //TODO: change this up so that it is a pause that can then resume
-  $scope.stopTimeLapse = function() {
-    stopTime = true;
-  }
+    //Called to stop the time lapse
+    //TODO: change this up so that it is a pause that can then resume
+    $scope.stopTimeLapse = function() {
+        stopTime = true;
+    }
+
+    $scope.resetMap = function() {
+        stopTime = true;
+        updateMap()
+    }
 
 	// Called when value mapType is changed to show travel past that date
 	$scope.$watch('mapTypeData.model', function(newValue) {
@@ -98,22 +112,49 @@ angular.module('genie.map-ctrl', [])
         }
 	});
 
+    $scope.showDateFrame = function() {
+        toggleDateFrame(true)
+    }
+
+    $scope.hideDateFrame = function() {
+        toggleDateFrame(false)
+    }
+
+    function toggleDateFrame(showDateFrame) {
+        var frameOptions = document.getElementById('dateFrameOptions');
+        if (showDateFrame) {
+            frameOptions.style.display = 'block';
+            displayMaxTime = overallMinTime + date_inc
+            cumulative = false
+        } else {
+            frameOptions.style.display = 'none';
+            displayMaxTime = overallMaxTime
+            cumulative = true
+        }
+        updateTimeline()
+    }
+
 	var mapDict = {} //location name mapped to current number of people
 	var mapScope = "us" //us or globe
 	var mapType = "birthDeath" //birthDeath or travel
-  var baseColor = "CFCCF5" //color for 0 people, gray: "rgb(213,222,217)"
+    var baseColor = "CFCCF5" //color for 0 people, gray: "rgb(213,222,217)"
 	var width = 960; //map dimens
 	var height = 500;
-	var maxTime = 2000; //time range displayed min to max, updated by watch
-	var minTime = 1700;
+	var overallMaxTime = 2000; //time range displayed min to max, updated by watch
+	var overallMinTime = 1700;
+    var displayMinTime = overallMinTime;
+    var displayMaxTime = overallMaxTime;
 	var prevView = new Array(); //stack to hold previous scale of map
-  var colorGradient = 9 //size of color range
-  var initializing = 0 //var used to track/avoid 3 initial reloads
-  var stopTime = false; //var used to stop time lapse
+    var colorGradient = 9 //size of color range
+    var initializing = 0 //var used to track/avoid 3 initial reloads
+    var stopTime = false; //var used to stop time lapse
+    var timelineLeftPad = 200;
+    var cumulative = true;
+    var slider, start_marker, finish_marker, date_inc;
 
 	// D3 Projection
 	var projection = d3.geoAlbersUsa()
-					   .translate([width/2, height/2]) // move to center screen
+					   .translate([width/2, height/2.2]) // move to center screen
 					   .scale([1000]); // scale things down so see entire US
 
 	// D3 World Projection; geoAlbersUsa creates a map zoomed into us only
@@ -155,6 +196,32 @@ angular.module('genie.map-ctrl', [])
         .domain(d3.range(0, colorGradient))
         .range([1, 10, 25, 50, 90, 100, 150, 200, 500]);
 
+    date_scale = d3.scaleLinear()
+        .domain([overallMinTime, overallMaxTime])
+        .range([timelineLeftPad, width/1.3])
+        .clamp(true);
+
+    //Initiallize the view
+    addKey()
+    addTimeline()
+    updateMap()
+
+    // function toggleDateDisplay() {
+    //     displayDateRange(!dateRangeNotIncrement)
+    // }
+
+    function displayDateRange(display) {
+        var minDateDiv = document.getElementById('minDateDiv');
+        var maxDateDiv = document.getElementById('maxDateDiv');
+        if (display) {
+            minDateDiv.style.display = 'block';
+            maxDateDiv.style.display = 'block';
+        } else {
+            minDateDiv.style.display = 'none';
+            maxDateDiv.style.display = 'none';
+        }
+    }
+
     function addKey() {
         //Linear scale to translate values to screen x coors
         var x = d3.scaleLinear()
@@ -164,7 +231,7 @@ angular.module('genie.map-ctrl', [])
         //create/add the key
         var g = svg.append("g")
             .attr("class", "key")
-            .attr("transform", "translate(0,40)");
+            .attr("transform", "translate(0,30)");
 
         //Color and space the rectangles of the key
         g.selectAll("rect")
@@ -185,7 +252,7 @@ angular.module('genie.map-ctrl', [])
         g.append("text")
             .attr("class", "caption")
             .attr("x", x.range()[0])
-            .attr("y", -6)
+            .attr("y", -10)
             .attr("fill", "#000")
             .attr("text-anchor", "start")
             .attr("font-weight", "bold")
@@ -202,106 +269,92 @@ angular.module('genie.map-ctrl', [])
             .remove();
     }
 
-    //Initially add the key
-    addKey()
+    function addTimeline() {
+        var moveDown = 470
+
+        date_scale = d3.scaleLinear()
+            .domain([overallMinTime, overallMaxTime])
+            .range([timelineLeftPad, width/1.3])
+            .clamp(true);
+
+        slider = svg.append("g")
+            .attr("class", "slider")
+            .attr("transform", "translate(0, " + moveDown + ")");
+
+        slider.append("line")
+            .attr("class", "track")
+            .attr("x1", date_scale.range()[0])
+            .attr("x2", date_scale.range()[1])
+            .attr("style", "stroke: #000; stroke-opacity: 0.3; stroke-width: 10px;  stroke-linecap: round;")
+          .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-inset")
+            .attr("style", "stroke: #ddd; stroke-width: 8px; stroke-linecap: round;")
+          .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-overlay")
+            .attr("style", "stroke-linecap: round; pointer-events: stroke; stroke-width: 50px; stroke: transparent; ")
+
+        slider.insert("g", ".track-overlay")
+            .attr("class", "ticks")
+            .attr("style", "font: 10px sans-serif;")
+            .attr("transform", "translate(0," + 18 + ")")
+          .selectAll("text")
+          .data(date_scale.ticks(10))
+          .enter().append("text")
+            .attr("x", date_scale)
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d; });
+
+        start_marker = slider.insert("circle", ".track-overlay")
+            .attr("class", "handle")
+            .attr("style", "fill: #fff; stroke: #000; stroke-opacity: 0.5; stroke-width: 1.25px;")
+            .attr("r", 9)
+            .attr("cx", date_scale(displayMinTime));
+
+        finish_marker = slider.insert("circle", ".track-overlay")
+            .attr("class", "handle")
+            .attr("style", "fill: #fff; stroke: #000; stroke-opacity: 0.5; stroke-width: 1.25px;")
+            .attr("r", 9)
+            .attr("cx", date_scale(displayMaxTime));
+    }
+
+    function updateTimeline() {
+        start_marker.attr("cx", date_scale(displayMinTime))
+        finish_marker.attr("cx", date_scale(displayMaxTime))
+    }
 
     //Choose what map to display then update it with new global var values
 	function updateMap() {
-		locations = [];
+        displayMinTime = overallMinTime
+        displayMaxTime = overallMaxTime
+		updateMapWithRange()
+	}
+
+    //Choose what map to display then update it with new global var values
+    function updateMapWithRange() {
+        locations = [];
         //Get locations from sqlite database
-		$http.get('api/locations').then(function(all_json, error) {
-			if(!error) {
-			    if (mapScope == "us") {
-            // For travel implementation
-			// 		if (mapType == "travel") {
-			// 			highlightStateTravel(all_json)
-			// 		} else if (mapType == "birthDeath") {
-			         highlightBDState(all_json.data)
-			// 		}
-				} else if (mapScope = "globe") {
-            // For travel implementation
-			// 		if (mapType == "travel") {
-			// 			highlightGlobalTravel(all_json)
-			// 		} else if (mapType == "birthDeath") {
-				     highlightBDGlobal(all_json.data)
-			// 		}
-				}
-			} else {
-				console.log(error);
-			}
-		});
-
-        //For dummy data demo
-		// d3.json("data/river-force-test.json", function(error, all_json) {
-		// 	if(!error) {
-		// 		if (mapScope == "us") {
-		// 			if (mapType == "travel") {
-		// 				highlightStateTravel(all_json)
-		// 			} else if (mapType == "birthDeath") {
-		// 				highlightBDState(all_json)
-		// 			}
-		// 		} else if (mapScope = "globe") {
-		// 			if (mapType == "travel") {
-		// 				highlightGlobalTravel(all_json)
-		// 			} else if (mapType == "birthDeath") {
-		// 				highlightBDGlobal(all_json)
-		// 			}
-		// 		}
-		// 	} else {
-		// 		console.log(error);
-		// 	}
-		// })
-	}
-
-	//updates the mapdict with travel data and updates the US map view
-	function highlightStateTravel(all_json) {
-		highlightTravel(all_json, "data/us-states.json")
-	}
-
-	//updates the mapdict with travel data and updates the global map view
-	function highlightGlobalTravel(all_json) {
-		highlightTravel(all_json, "data/world-countries.json")
-	}
-
-    //Clear the current map/data and collect/display new data based on inputs
-	function highlightTravel(all_json, mapPath) {
-        //clear current data
-        mapDict = {}
-        //unpack JSON with state names and geo data for map shape and position
-		d3.json(mapPath, function(loc_json) {
-			//initialize the mapDict
-			for (var j = 0; j < loc_json.features.length; j++)  {
-				mapDict[loc_json.features[j].properties.name] = 0;
-			}
-			// Loop through each state data value in the inputted json file
-			for (var i = 0; i < all_json.nodes.length; i++) {
-				// Grab the map of locations traveled to
-				var travelJson = all_json.nodes[i].travel
-				if (travelJson) {
-					visitedLocs = Object.keys(travelJson)
-					//for each state, create/increment the map entry
-					for (var x = 0; x < visitedLocs.length; x++) {
-						if (travelJson[visitedLocs[x]] >= minTime
-							&& travelJson[visitedLocs[x]] <= maxTime) {
-							mapDict[visitedLocs[x]] += 1
-						}
-					}
-				}
-			}
-            //execute d3 commands to display new data in the UI
-			highlightLocations(loc_json)
-		});
-	}
+        $http.get('api/locations').then(function(all_json, error) {
+            if(!error) {
+                if (mapScope == "us") {
+                     highlightBDState(all_json.data, displayMinTime, displayMaxTime)
+                } else if (mapScope = "globe") {
+                     highlightBDGlobal(all_json.data, displayMinTime, displayMaxTime)
+                }
+            } else {
+                console.log(error);
+            }
+        });
+    }
 
 	//Highlight where people were born and died
 	function highlightBDState(all_json) {
         locs = convertToStateLocDates(all_json)
-		highlightBD(locs, "data/us-states.json", 'S')
+		highlightBD(locs, "data/us-states.json")
 	}
 
 	//Highlight where people were born and died globally
 	function highlightBDGlobal(all_json) {
-		highlightBD(all_json, "data/world-countries.json", 'G');
+		highlightBD(all_json, "data/world-countries.json");
 	}
 
     //Update UI with locatins of birth/death based on time of birth/death
@@ -317,11 +370,14 @@ angular.module('genie.map-ctrl', [])
 			// Loop through each inidivdual data value in the inputted json file
 			for (var i = 0; i < locs.length; i++) {
 				//if either piece of data is included, update to dict
-				if (locs[i].date && locs[i].date >= minTime
-                    && locs[i].date <= maxTime) {
+				if (locs[i].date && locs[i].date >= displayMinTime
+                    && locs[i].date <= displayMaxTime) {
 				    mapDict[locs[i].loc] += 1;
 				}
 			}
+
+            updateTimeline()
+
 			//show results on the map
 			highlightLocations(loc_json)
 		});
@@ -385,6 +441,7 @@ angular.module('genie.map-ctrl', [])
 
             //Re-add the map key since the svg was cleared
             addKey()
+            addTimeline()
 	}
 
 	//Function to zoom in when a country is clicked
@@ -395,20 +452,24 @@ angular.module('genie.map-ctrl', [])
 		}
 	}
 
-//Function to start time lapse from min date to max date
-  function startTimeLapseHelper() {
-    var inc = (maxTime - minTime) / 10; //TODO: setup an interval option for the user
-    var temp = maxTime;
-    maxTime = minTime;
-    updateMap();
-    interval = setInterval(function() {
-      if (temp == maxTime || stopTime) {
-        clearInterval(interval);
-      }
-      maxTime += inc;
-      updateMap();
-    }, 1000);
-  }
+    //Function to start time lapse from min date to max date
+    function startTimeLapseHelper() {
+        updateMapWithRange(displayMinTime, displayMinTime);
+        var inc = (overallMaxTime - overallMinTime) / 10; //TODO: setup an interval option for the user
+        displayMinTime = overallMinTime;
+        displayMaxTime = overallMinTime + date_inc;
+        interval = setInterval(function() {
+            if (displayMaxTime >= overallMaxTime || stopTime) {
+                displayMaxTime = overallMaxTime
+                clearInterval(interval);
+            }
+            if (!cumulative) {
+                displayMinTime += inc;
+            }
+            displayMaxTime += inc;
+            updateMapWithRange(displayMinTime, displayMaxTime);
+        }, 1000);
+    }
 
     //Convert sqlite json to array of state/date pairs formatted for d3's use
     function convertToStateLocDates(all_json) {

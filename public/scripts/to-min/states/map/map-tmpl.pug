@@ -1,19 +1,30 @@
 div(ui-view="page")
     h1 Map View
 div(class="form-group" style="width: 20%; padding: 0px; text-align: left; float:left;")
-    div(style="padding: 5px; text-align: left; width: 100%;")
-        button(ng-click="zoomOut()") Zoom Out
+    div(style="padding: 5px; text-align: left; font-size:25px;")
+        label(style="width: 100%;") Map Options
+    //- div(style="padding: 5px; text-align: left; width: 100%;")
+    //-     button(ng-click="zoomOut()") Zoom Out
     div(style="padding: 5px; text-align: left;")
         label(style="width: 100%;") Map Type
         select(ng-model="mapTypeData.model" style="width: 100%;")
             option(ng-repeat="option in mapTypeData.availableOptions" value="{{option.value}}") {{option.name}}
     div(style="padding: 5px; text-align: left;")
-        label(for='occupations' style="width: 100%;") Choose a minimum date
+        label(style="width: 100%;") Choose a minimum date
         input(type="number" step="1" ng-model="newTimeMin.value" ng-min=0 ng-max=2017)
     div(style="padding: 5px; text-align: left;")
-        label(for='occupations' style="width: 100%;") Choose a maximum date
+        label(style="width: 100%;") Choose a maximum date
         input(type="number" step="1" ng-model="newTimeMax.value" ng-min=0 ng-max=2017)
+    div(style="padding-top: 20px; padding-left: 5px; text-align: left; font-size:25px;")
+        label(style="width: 100%;") Animation Options
+    div(style="padding: 5px; text-align: left;")
+        button(ng-click="showDateFrame(true)") Date Frame
+        button(ng-click="hideDateFrame(false)") Include All Dates
+    div(id="dateFrameOptions" style="padding: 5px; text-align: left; display:none")
+        label(style="width: 100%;") Choose a date frame
+        input(type="number" step="1" ng-model="newTimeInc.value" ng-min=0 ng-max=2017)
     div(style="padding: 5px; text-align: left; width: 100%")
         button(ng-click="startTimeLapse()") Start
         button(ng-click="stopTimeLapse()") Stop
-div(id="mapView" style="padding: 0px; width: 40%; float:left;")
+        button(ng-click="resetMap()") Reset
+div(id="mapView" style="padding: 0px; width: 30%; float:left; vertical-align: top;")
