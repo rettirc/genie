@@ -122,6 +122,7 @@ angular.module('genie.map-ctrl', [])
 
     function toggleDateFrame(showDateFrame) {
         var frameOptions = document.getElementById('dateFrameOptions');
+        stopTime = true
         if (showDateFrame) {
             frameOptions.style.display = 'block';
             displayMaxTime = overallMinTime + date_inc
@@ -326,6 +327,7 @@ angular.module('genie.map-ctrl', [])
 	function updateMap() {
         displayMinTime = overallMinTime
         displayMaxTime = overallMaxTime
+        stopTime = true
 		updateMapWithRange()
 	}
 
