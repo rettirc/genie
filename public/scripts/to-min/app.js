@@ -17,7 +17,8 @@ angular.module('genie', [
 	'genie.upload-ctrl',
   'genie.detail-ctrl',
 	'genie.attribute-ctrl',
-	'genie.branch-ctrl'
+	'genie.branch-ctrl',
+	'genie.moduleTest'
 ])
 .config(function($locationProvider) {
 	$locationProvider.html5Mode({ enabled: true, requireBase: false });
