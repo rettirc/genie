@@ -15,10 +15,12 @@ angular.module('genie', [
 	// 'genie.river-ctrl',
 	'genie.map-ctrl',
 	'genie.upload-ctrl',
-  'genie.detail-ctrl',
+    'genie.detail-ctrl',
 	'genie.attribute-ctrl',
 	'genie.branch-ctrl',
-	'genie.moduleTest'
+	'genie.moduleTest',
+    'genie.map-utils',
+    'genie.map-managers'
 ])
 .config(function($locationProvider) {
 	$locationProvider.html5Mode({ enabled: true, requireBase: false });

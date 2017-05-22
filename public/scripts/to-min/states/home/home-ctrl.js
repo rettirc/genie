@@ -10,3 +10,5 @@ angular.module('genie.home-ctrl', []) // Hiya
 });
 /* Bada Bing, Bada Boom */
 // If you don't know what I"m talking about, this is the annotations for a group member who is currently in Seattle
+
+// Sounds like a cool guy. Who has no idea what he's doing
