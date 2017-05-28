@@ -10,8 +10,9 @@ angular.module('genie.map-utils', [])
         }
 
         this.getD3LocPath = function () {
-            return d3.geoPath()
-                         .projection(this.projection);
+            // return d3.geoPath()
+            //              .projection(this.worldProjection);
+            return this.mapScopeDict[this.mapScope][1]
         }
 
         this.pushScope = function (newScope) {
@@ -32,6 +33,7 @@ angular.module('genie.map-utils', [])
         // this.worldProjection = d3.geoEquirectangular()
         //                     .scale(mapManager.height / Math.PI);
         this.worldProjection = d3.geoEquirectangular()
+                                .scale(mapManager.height / Math.PI);
                             // .scale(mapManager.height / Math.PI);
         // Define US path generator
         this.usPath = d3.geoPath()
@@ -40,6 +42,10 @@ angular.module('genie.map-utils', [])
         // World path for the world projection rather than US
         this.worldPath = d3.geoPath()
                             .projection(this.worldProjection);
+
+        this.getUsPath = function () {
+          return this.usPath
+        }
 
         this.mapScopeDict = {
             "USA": ["data/us-states.json", this.usPath],

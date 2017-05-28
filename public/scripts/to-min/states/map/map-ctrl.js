@@ -95,7 +95,7 @@ angular.module('genie.map-ctrl', [])
     			mapManager.mapType = newValue
     			mapManager.updateMap()
     		}
-        }
+      }
 	});
 
     $scope.showDateFrame = function() {
