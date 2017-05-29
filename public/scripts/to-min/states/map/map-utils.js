@@ -67,7 +67,7 @@ angular.module('genie.map-utils', [])
             }
         }
 
-        this.convertToLocDates = function (all_json, mapManager) {
+        this.getLocDict = function (mapManager) {
             var scope = mapManager.mapScopeTracker.mapScope;
 
             var locDict;
@@ -79,6 +79,11 @@ angular.module('genie.map-utils', [])
                     locDict = this.countryNameDict;
                     break;
             }
+            return locDict;
+        }
+
+        this.convertToLocDates = function (all_json, mapManager) {
+            locDict = this.getLocDict(mapManager);
 
             var locations = [];
             for (var i = 0; i < all_json.length; i++) {

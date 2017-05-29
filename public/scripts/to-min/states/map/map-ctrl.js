@@ -37,7 +37,7 @@ angular.module('genie.map-ctrl', [])
 
 	//Called when value minTime is changed to show travel past that date
 	$scope.$watch('newTimeMin.value', function(newValue) {
-        if (initializing < 3) {
+        if (initializing < 4) {
             initializing++;
         } else {
             if(newValue) {
@@ -49,7 +49,7 @@ angular.module('genie.map-ctrl', [])
 
 	//Called when value maxTime field is changed to show travel past that date
 	$scope.$watch('newTimeMax.value', function(newValue) {
-        if (initializing < 3) {
+        if (initializing < 4) {
             initializing++;
         } else {
             if(newValue) {
@@ -136,8 +136,10 @@ angular.module('genie.map-ctrl', [])
     var initializing = 0 //var used to track/avoid 3 initial reloads
     var mapManager = new MapManager()
     //Initiallize the view
-    mapManager.initialize()
-
+    mapManager.initialize(function () {
+        $scope.newTimeMin.value = mapManager.overallMinTime;
+        $scope.newTimeMax.value = mapManager.overallMaxTime;
+    })
     // function toggleDateDisplay() {
     //     displayDateRange(!dateRangeNotIncrement)
     // }

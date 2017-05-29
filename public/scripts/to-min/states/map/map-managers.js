@@ -65,7 +65,6 @@ angular.module('genie.map-managers', [])
         //Choose what map to display then update it with new global var values
         this.updateMapWithRange = function () {
             this.locations = [];
-            var mapManager = this
             //Get locations from sqlite database
             $http.get('api/locations').then(function(all_json, error) {
                 if(!error) {
@@ -84,7 +83,6 @@ angular.module('genie.map-managers', [])
     		//clear the map dict, may have any set of locations
     		this.mapDict = {}
     		//unpack JSON with state names and geo data for map shape and position
-            var mapManager = this
     		d3.json(mapPath, function(loc_json) {
     			//initialize the mapDict
     			for (var j = 0; j < loc_json.features.length; j++)  {
@@ -115,7 +113,6 @@ angular.module('genie.map-managers', [])
         //update the map to display the contents of mapDict
         this.highlightLocations = function (location_json) {
     		locationPath = this.mapScopeTracker.getD3LocPath()
-            var mapManager = this
     		// Bind the data to the SVG and create one path per GeoJSON feature
     		this.svg.selectAll("*").remove()
     		this.svg.selectAll("path")
@@ -169,32 +166,71 @@ angular.module('genie.map-managers', [])
             var inc = (this.overallMaxTime - this.overallMinTime) / 10; //TODO: setup an interval option for the user
             this.displayMinTime = this.overallMinTime;
             this.displayMaxTime = this.overallMinTime + this.date_inc;
-            var mapManager = this
             interval = setInterval(function() {
                 if (mapManager.displayMaxTime >= mapManager.overallMaxTime || mapManager.stopTime) {
                     mapManager.displayMaxTime = mapManager.overallMaxTime
                     clearInterval(interval);
                 }
                 if (!mapManager.cumulative) {
-                    mapManager.displayMinTime += inc;
+                    mapManager.displayMinTime += date_inc;
+                    mapManager.displayMaxTime += date_inc;
+                } else {
+                    mapManager.displayMaxTime += inc;
                 }
-                mapManager.displayMaxTime += inc;
                 mapManager.updateMapWithRange(mapManager.displayMinTime, mapManager.displayMaxTime);
             }, 1000);
         }
 
         //Function to zoom in when a country is clicked
         this.onClick = function (d) {
-            console.log(d.id);
     		if (mapManager.mapScopeTracker.pushScope(d.id)) {
-    			mapManager.updateMap();
+                mapManager.initializeMinMaxDates(function () {
+                    mapManager.updateMap();
+                })
     		}
     	}
 
-        this.initialize = function () {
-            this.mapKeyManager.addKey()
-            this.mapTimelineManager.addTimeline()
-            this.updateMap()
+        this.initialize = function (initFunction) {
+            this.initializeMinMaxDates(function () {
+                mapManager.mapKeyManager.addKey()
+                mapManager.mapTimelineManager.addTimeline()
+                mapManager.updateMap()
+                initFunction()
+            })
+        }
+
+        this.initializeMinMaxDates = function (postFunction) {
+            $http.get('api/locations').then(function(all_json, error) {
+                if(!error) {
+                    var locs = all_json.data;
+                    var locDict = mapManager.mapUtil.getLocDict(mapManager)
+                    mapManager.overallMinTime = mapManager.mapUtil.formatDate(locs[0].date);
+                    mapManager.overallMaxTime = mapManager.mapUtil.formatDate(locs[0].date);
+                    for (var i = 0; i < locs.length; i++) {
+                        var locStr = locs[i].loc;
+                        if (locStr) {
+                            var arr = locStr.split(",");
+                            for (index = 0; index < arr.length; index++) {
+                                element = arr[index].trim()
+                                if (locDict[element] != null) {
+                                    var newDate = mapManager.mapUtil.formatDate(locs[i].date);
+                                    if (newDate > 0 && mapManager.overallMinTime > newDate) {
+                                        mapManager.overallMinTime = newDate
+                                        console.log("change min", newDate);
+                                    } else if (mapManager.overallMaxTime < newDate){
+                                        mapManager.overallMaxTime = newDate
+                                        console.log("change max", newDate);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    postFunction()
+                } else {
+                    //TODO: show error when there is no data
+                    console.log(error);
+                }
+            });
         }
     }
 
