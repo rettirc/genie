@@ -10,8 +10,6 @@ angular.module('genie.map-utils', [])
         }
 
         this.getD3LocPath = function () {
-            // return d3.geoPath()
-            //              .projection(this.worldProjection);
             return this.mapScopeDict[this.mapScope][1]
         }
 
@@ -30,11 +28,9 @@ angular.module('genie.map-utils', [])
             .scale([1000]); // scale things down so see entire US
 
         // D3 World Projection; geoAlbersUsa creates a map zoomed into us only
-        // this.worldProjection = d3.geoEquirectangular()
-        //                     .scale(mapManager.height / Math.PI);
         this.worldProjection = d3.geoEquirectangular()
                                 .scale(mapManager.height / Math.PI);
-                            // .scale(mapManager.height / Math.PI);
+
         // Define US path generator
         this.usPath = d3.geoPath()
                      .projection(this.projection);
@@ -71,23 +67,232 @@ angular.module('genie.map-utils', [])
             }
         }
 
-        //Convert sqlite json '.data' field to array of state/date pairs formatted for d3's use
-        this.convertToStateLocDates = function (all_json) {
-            var states = [];
+        this.convertToLocDates = function (all_json, mapManager) {
+            var scope = mapManager.mapScopeTracker.mapScope;
+
+            var locDict;
+            switch (scope) {
+                case 'USA':
+                    locDict = this.stateNameDict;
+                    break;
+                case 'Globe':
+                    locDict = this.countryNameDict;
+                    break;
+            }
+
+            var locations = [];
             for (var i = 0; i < all_json.length; i++) {
                 var locStr = all_json[i].loc;
                 if (locStr) {
                     var arr = locStr.split(",");
                     for (index = 0; index < arr.length; index++) {
                         element = arr[index].trim()
-                        if (this.stateNameDict[element] != null) {
-                            states.push(new locDate(this.stateNameDict[element],
+                        if (locDict[element] != null) {
+                            locations.push(new locDate(locDict[element],
                                 this.formatDate(all_json[i].date)));
                         }
                     }
                 }
             }
-            return states
+            return locations
+        }
+
+        this.countryNameDict = {
+            'Afghanistan': 'Afghanistan',
+            'Angola': 'Angola',
+            'Albania':'Albania',
+            'Emirates':'United Arab Emirates',
+            'UAE':'United Arab Emirates',
+            'Argentina': 'Argentina',
+            'Armenia': 'Armenia',
+            'Antarctica': 'Antarctica',
+            'Antarctic': 'French Southern and Antarctic Lands',
+            'Australia': 'Australia',
+            'Austria': 'Austria',
+            'Azerbaijan':'Azerbaijan',
+            'Burundi':'Burundi',
+            'Belgium': 'Belgium',
+            'Benin': 'Benin',
+            'Burkina Faso': 'Burkina Faso',
+            'Bangladesh': 'Bangladesh',
+            'Bulgaria': 'Bulgaria',
+            'Bahamas': 'The Bahamas',
+            'Bosnia': 'Bosnia and Herzegovina',
+            'Herzegovina': 'Bosnia and Herzegovina',
+            'Belarus': 'Belarus',
+            'Belize': 'Belize',
+            'Bermuda': 'Bermuda',
+            'Bolivia': 'Bolivia',
+            'Brazil': 'Brazil',
+            'Brunei': 'Brunei',
+            'Bhutan': 'Bhutan',
+            'Botswana': 'Botswana',
+            'Central African Republic': 'Central African Republic',
+            'African Republic': 'Central African Republic',
+            'Canada': 'Canada',
+            'Switzerland': 'Switzerland',
+            'Chile': 'Chile',
+            'China': 'China',
+            'Ivory Coast': 'Ivory Coast',
+            'Cameroon': 'Cameroon',
+            'Republic of the Congo': 'Republic of the Congo',
+            'Colombia': 'Colombia',
+            'Costa Rica': 'Costa Rica',
+            'Cuba': 'Cuba',
+            'Northern Cyprus': 'Northern Cyprus',
+            'Cyprus': 'Cyprus',
+            'Czech Republic': 'Czech Republic',
+            'Germany': 'Germany',
+            'Djibouti': 'Djibouti',
+            'Denmark': 'Denmark',
+            'Dominican Republic': 'Dominican Republic',
+            'Algeria': 'Algeria',
+            'Ecuador': 'Ecuador',
+            'Egypt': 'Egypt',
+            'Eritrea': 'Eritrea',
+            'Spain': 'Spain',
+            'Estonia': 'Estonia',
+            'Ethiopia': 'Ethiopia',
+            'Finland': 'Finland',
+            'Fiji': 'Fiji',
+            'Falkland Islands': 'Falkland Islands',
+            'France': 'France',
+            'Gabon': 'Gabon',
+            'United Kingdom': 'United Kingdom',
+            'Kingdom': 'United Kingdom',
+            'Britain': 'United Kingdom',
+            'Great Britain': 'United Kingdom',
+            'UK': 'United Kingdom',
+            // 'Georgia': 'Georgia' assuming GA is a state
+            'Ghana': 'Ghana',
+            'Guinea': 'Guinea',
+            'Gambia': 'Gambia',
+            'Guinea Bissau': 'Guinea Bissau',
+            'Equatorial Guinea': 'Equatorial Guinea',
+            'Greece':'Greece',
+            'Greenland':'Greenland',
+            'Guatemala':'Guatemala',
+            'French Guiana': 'French Guiana',
+            'Guiana': 'French Guiana',
+            'Guyana': 'Guyana',
+            'Honduras': 'Honduras',
+            'Croatia': 'Croatia',
+            'Haiti': 'Haiti',
+            'Hungary': 'Hungary',
+            'Indonesia': 'Indonesia',
+            'India': 'India',
+            'Ireland': 'Ireland',
+            'Iran': 'Iran',
+            'Iraq': 'Iraq',
+            'Iceland': 'Iceland',
+            'Israel': 'Israel',
+            'Italy': 'Italy',
+            'Jamaica': 'Jamaica',
+            'Jordan': 'Jordan',
+            'Japan': 'Japan',
+            'Kazakhstan': 'Kazakhstan',
+            'Kenya': 'Kenya',
+            'Kyrgyzstan': 'Kyrgyzstan',
+            'Cambodia': 'Cambodia',
+            'South Korea': 'South Korea',
+            'Kosovo': 'Kosovo',
+            'Kuwait': 'Kuwait',
+            'Laos': 'Laos',
+            'Lebanon': 'Lebanon',
+            'Liberia': 'Liberia',
+            'Libya': 'Libya',
+            'Sri Lanka': 'Sri Lanka',
+            'Lesotho': 'Lesotho',
+            'Lithuania': 'Lithuania',
+            'Luxembourg': 'Luxembourg',
+            'Latvia': 'Latvia',
+            'Morocco': 'Morocco',
+            'Moldova': 'Moldova',
+            'Madagascar':'Madagascar',
+            'Mexico': 'Mexico',
+            'Macedonia': 'Macedonia',
+            'Mali': 'Mali',
+            'Malta': 'Malta',
+            'Myanmar': 'Myanmar',
+            'Montenegro': 'Montenegro',
+            'Mongolia': 'Mongolia',
+            'Mozambique': 'Mozambique',
+            'Mauritania': 'Mauritania',
+            'Malawi': 'Malawi',
+            'Malaysia': 'Malaysia',
+            'Namibia': 'Namibia',
+            'New Caledonia': 'New Caledonia',
+            'Niger': 'Niger',
+            'Nigeria': 'Nigeria',
+            'Nicaragua': 'Nicaragua',
+            'Netherlands': 'Netherlands',
+            'Norway': 'Norway',
+            'Nepal': 'Nepal',
+            'New Zealand': 'New Zealand',
+            'Oman': 'Oman',
+            'Pakistan': 'Pakistan',
+            'Panama': 'Panama',
+            'Peru': 'Peru',
+            'Philippines': 'Philippines',
+            'Papua New Guinea': 'Papua New Guinea',
+            'Poland': 'Poland',
+            'Puerto Rico': 'Puerto Rico',
+            'North Korea': 'North Korea',
+            'Portugal': 'Portugal',
+            'Paraguay': 'Paraguay',
+            'Qatar': 'Qatar',
+            'Romania': 'Romania',
+            'Russia': 'Russia',
+            'Rwanda': 'Rwanda',
+            'Western Sahara': 'Western Sahara',
+            'Saudi Arabia': 'Saudi Arabia',
+            'Sudan': 'Sudan',
+            'South Sudan': 'South Sudan',
+            'Senegal': 'Senegal',
+            'Solomon Islands': 'Solomon Islands',
+            'Sierra Leone': 'Sierra Leone',
+            'El Salvador': 'El Salvador',
+            'Somaliland': 'Somaliland',
+            'Somalia': 'Somalia',
+            'Republic of Serbia': 'Republic of Serbia',
+            'Serbia': 'Republic of Serbia',
+            'Suriname': 'Suriname',
+            'Slovakia': 'Slovakia',
+            'Slovenia': 'Slovenia',
+            'Sweden': 'Sweden',
+            'Swaziland': 'Swaziland',
+            'Syria': 'Syria',
+            'Chad': 'Chad',
+            'Togo': 'Togo',
+            'Thailand': 'Thailand',
+            'Tajikistan': 'Tajikistan',
+            'Turkmenistan': 'Turkmenistan',
+            'East Timor': 'East Timor',
+            'Timor': 'East Timor',
+            'Trinidad': 'Trinidad and Tobago',
+            'Tobago': 'Trinidad and Tobago',
+            'Tunisia': 'Tunisia',
+            'Turkey': 'Turkey',
+            'Taiwan': 'Taiwan',
+            'United Republic of Tanzania': 'United Republic of Tanzania',
+            'Tanzania': 'United Republic of Tanzania',
+            'Uganda': 'Uganda',
+            'Ukraine': 'Ukraine',
+            'Uruguay': 'Uruguay',
+            'United States of America': 'United States of America',
+            'USA': 'United States of America',
+            'US': 'United States of America',
+            'America': 'United States of America',
+            'United States': 'United States of America',
+            'Uzbekistan': 'Uzbekistan',
+            'Venezuela': 'Venezuela',
+            'Vietnam': 'Vietnam',
+            'Vanuatu': 'Vanuatu',
+            'West Bank': 'West Bank',
+            'Yemen': 'Yemen',
+            'South Africa': 'South Africa',
+            'Zambia': 'Zambia',
+            'Zimbabwe': 'Zimbabwe'
         }
 
         //Map of any value that could represent a state name

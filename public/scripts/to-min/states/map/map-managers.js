@@ -7,12 +7,10 @@ angular.module('genie.map-managers', [])
 
         this.baseColor = "CFCCF5"; //color for 0 people, gray: "rgb(213,222,217)"
         this.colorGradient = 9; //size of color range
-
-    	  this.width = 960; //map dimens
-    	  this.height = 500;
-
-    	  this.overallMaxTime = 2000; //time range displayed min to max, updated by watch
-    	  this.overallMinTime = 1700;
+        this.width = 960; //map dimens
+        this.height = 500;
+        this.overallMaxTime = 2000; //time range displayed min to max, updated by watch
+        this.overallMinTime = 1700;
         this.displayMinTime = this.overallMinTime;
         this.displayMaxTime = this.overallMaxTime;
 
@@ -80,9 +78,7 @@ angular.module('genie.map-managers', [])
 
         //Update UI with locatins of birth/death based on time of birth/death
     	this.highlightBD = function (locs) {
-
-            //TODO: Change this for other scopes, this is for states
-            locs = this.mapUtil.convertToStateLocDates(locs.data)
+            locs = this.mapUtil.convertToLocDates(locs.data, this);
 
             var mapPath = this.mapScopeTracker.getMapFilePath()
     		//clear the map dict, may have any set of locations
@@ -119,11 +115,6 @@ angular.module('genie.map-managers', [])
         //update the map to display the contents of mapDict
         this.highlightLocations = function (location_json) {
     		locationPath = this.mapScopeTracker.getD3LocPath()
-        if (locationPath == this.mapScopeTracker.getUsPath()) {
-          console.log("Yup")
-        }
-        console.log(this.mapScopeTracker.getUsPath());
-        console.log(locationPath);
             var mapManager = this
     		// Bind the data to the SVG and create one path per GeoJSON feature
     		this.svg.selectAll("*").remove()
