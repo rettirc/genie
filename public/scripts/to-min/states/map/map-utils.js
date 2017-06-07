@@ -9,6 +9,10 @@ angular.module('genie.map-utils', [])
             return this.mapScopeDict[this.mapScope][0]
         }
 
+        this.getProjection = function () {
+            return this.mapScopeDict[this.mapScope][2]
+        }
+
         this.getD3LocPath = function () {
             return this.mapScopeDict[this.mapScope][1]
         }
@@ -39,13 +43,9 @@ angular.module('genie.map-utils', [])
         this.worldPath = d3.geoPath()
                             .projection(this.worldProjection);
 
-        this.getUsPath = function () {
-          return this.usPath
-        }
-
         this.mapScopeDict = {
-            "USA": ["data/us-states.json", this.usPath],
-            "Globe": ["data/world-countries.json", this.worldPath]
+            "USA": ["data/us-states.json", this.usPath, this.projection],
+            "Globe": ["data/world-countries.json", this.worldPath, this.worldProjection]
         }
     }
 
@@ -82,6 +82,13 @@ angular.module('genie.map-utils', [])
             return locDict;
         }
 
+        this.locInScope = function(loc, mapManager) {
+            locDict = this.getLocDict(mapManager);
+
+            return locDict[element] != null || (mapManager.mapScopeTracker
+                .mapScope == 'Globe' && this.stateNameDict[element] != null)
+        }
+
         this.convertToLocDates = function (all_json, mapManager) {
             locDict = this.getLocDict(mapManager);
 
@@ -90,12 +97,24 @@ angular.module('genie.map-utils', [])
                 var locStr = all_json[i].loc;
                 if (locStr) {
                     var arr = locStr.split(",");
+                    var isState = false;
                     for (index = 0; index < arr.length; index++) {
                         element = arr[index].trim()
                         if (locDict[element] != null) {
                             locations.push(new locDate(locDict[element],
                                 this.formatDate(all_json[i].date)));
+                                if (this.formatDate(all_json[i].date) == 804) {
+                                    console.log(locDict[element]);
+                                }
+                            isState = false;
+                        } else if (mapManager.mapScopeTracker.mapScope == 'Globe'
+                            && this.stateNameDict[element] != null) {
+                            isState = true;
                         }
+                    }
+                    if (isState) {
+                        locations.push(new locDate('United States of America',
+                            this.formatDate(all_json[i].date)));
                     }
                 }
             }

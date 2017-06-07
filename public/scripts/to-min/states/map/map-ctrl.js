@@ -136,10 +136,11 @@ angular.module('genie.map-ctrl', [])
     var initializing = 0 //var used to track/avoid 3 initial reloads
     var mapManager = new MapManager()
     //Initiallize the view
-    mapManager.initialize(function () {
+    mapManager.initializeDates = function () {
         $scope.newTimeMin.value = mapManager.overallMinTime;
         $scope.newTimeMax.value = mapManager.overallMaxTime;
-    })
+    }
+    mapManager.initialize()
     // function toggleDateDisplay() {
     //     displayDateRange(!dateRangeNotIncrement)
     // }

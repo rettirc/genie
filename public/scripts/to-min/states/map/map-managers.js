@@ -18,12 +18,43 @@ angular.module('genie.map-managers', [])
         this.cumulative = true;
         this.slider;
         this.date_inc;
+        // this.scale0 = (this.width - 1) / 2 / Math.PI;
+        //
+        // this.zoom = d3.zoom()
+        //     .translate([this.width / 2, this.height / 2])
+        //     .scale(this.scale0)
+        //     .scaleExtent([this.scale0, 8 * this.scale0])
+        //     .on("zoom", this.zoomed);
+
+        // this.zoomed = function () {
+        //   mapManager.mapScopeTracker.getProjection()
+        //       .translate(mapManager.zoom.translate())
+        //       .scale(zoom.scale());
+        //
+        //   g.selectAll("path")
+        //       .attr("d", path);
+        // }
+
+        // this.zoomed = function () {
+        //     this.svg.selectAll("path").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        // }
 
         this.mapUtil = new MapUtil();
         this.mapScopeTracker = new MapScopeTracker(this)
         this.mapTimelineManager = new MapTimelineManager(this);
         this.mapKeyManager = new MapKeyManager(this);
         var mapManager = this
+
+        this.zoom = d3.zoom()
+            .scaleExtent([1, 8])
+            .on("zoom", mapManager.zoomed);
+
+        function zoomed() {
+            console.log("going", d3.event.transform);
+            mapManager.g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+            // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
+            mapManager.g.attr("transform", d3.event.transform); // updated for d3 v4
+        }
 
     	// Define linear scale for output color
         this.color = d3.scaleThreshold()
@@ -35,7 +66,10 @@ angular.module('genie.map-managers', [])
     	this.svg = d3.select("#mapView")
 			.append("svg")
 			.attr("width", this.width)
-			.attr("height", this.height);
+			.attr("height", this.height)
+            .call(mapManager.zoom)
+
+        this.g = this.svg.append("g");
 
     	// Append Div to show state name and number of people on mouseover
     	this.div = d3.select("body")
@@ -51,8 +85,6 @@ angular.module('genie.map-managers', [])
         this.expScale = d3.scaleLinear()
             .domain(d3.range(0, this.colorGradient))
             .range([1, 10, 25, 50, 90, 100, 150, 200, 500]);
-
-
 
         //Choose what map to display then update it with new global var values
     	this.updateMap = function () {
@@ -114,8 +146,8 @@ angular.module('genie.map-managers', [])
         this.highlightLocations = function (location_json) {
     		locationPath = this.mapScopeTracker.getD3LocPath()
     		// Bind the data to the SVG and create one path per GeoJSON feature
-    		this.svg.selectAll("*").remove()
-    		this.svg.selectAll("path")
+    		this.g.selectAll("*").remove()
+    		this.g.selectAll("path")
     			.data(location_json.features)
     			.enter()
     			.append("path")
@@ -153,7 +185,8 @@ angular.module('genie.map-managers', [])
                         .duration(200)
                         .style("opacity", 0);
                     d3.select(this).style("opacity", 1);
-                });
+                })
+                .call(mapManager.zoom);
 
                 //Re-add the map key since the svg was cleared
                 this.mapKeyManager.addKey()
@@ -172,11 +205,9 @@ angular.module('genie.map-managers', [])
                     clearInterval(interval);
                 }
                 if (!mapManager.cumulative) {
-                    mapManager.displayMinTime += date_inc;
-                    mapManager.displayMaxTime += date_inc;
-                } else {
-                    mapManager.displayMaxTime += inc;
+                    mapManager.displayMinTime += inc;
                 }
+                mapManager.displayMaxTime += inc;
                 mapManager.updateMapWithRange(mapManager.displayMinTime, mapManager.displayMaxTime);
             }, 1000);
         }
@@ -186,16 +217,17 @@ angular.module('genie.map-managers', [])
     		if (mapManager.mapScopeTracker.pushScope(d.id)) {
                 mapManager.initializeMinMaxDates(function () {
                     mapManager.updateMap();
+                    mapManager.initializeDates()
                 })
     		}
     	}
 
-        this.initialize = function (initFunction) {
+        this.initialize = function () {
             this.initializeMinMaxDates(function () {
                 mapManager.mapKeyManager.addKey()
                 mapManager.mapTimelineManager.addTimeline()
                 mapManager.updateMap()
-                initFunction()
+                mapManager.initializeDates()
             })
         }
 
@@ -212,7 +244,7 @@ angular.module('genie.map-managers', [])
                             var arr = locStr.split(",");
                             for (index = 0; index < arr.length; index++) {
                                 element = arr[index].trim()
-                                if (locDict[element] != null) {
+                                if (mapManager.mapUtil.locInScope(element, mapManager)) {
                                     var newDate = mapManager.mapUtil.formatDate(locs[i].date);
                                     if (newDate > 0 && mapManager.overallMinTime > newDate) {
                                         mapManager.overallMinTime = newDate
@@ -239,9 +271,10 @@ angular.module('genie.map-managers', [])
 
 .service("MapTimelineManager", function(d3){ // Any modules or services needed for this go in the parens
     mapTimelineManager = function(mapManager) {
-        this.start_marker
-        this.finish_marker
+        this.start_marker;
+        this.finish_marker;
         this.timelineLeftPad = 200;
+        this.slider;
 
         this.date_scale = d3.scaleLinear()
             .domain([mapManager.overallMinTime, mapManager.overallMaxTime])
@@ -261,11 +294,15 @@ angular.module('genie.map-managers', [])
                 .range([this.timelineLeftPad, mapManager.width/1.3])
                 .clamp(true);
 
-            var slider = mapManager.svg.append("g")
+            if (this.slider) {
+                this.slider.selectAll("*").remove()
+            }
+
+            this.slider = mapManager.svg.append("g")
                 .attr("class", "slider")
                 .attr("transform", "translate(0, " + moveDown + ")");
 
-            slider.append("line")
+            this.slider.append("line")
                 .attr("class", "track")
                 .attr("x1", this.date_scale.range()[0])
                 .attr("x2", this.date_scale.range()[1])
@@ -277,7 +314,7 @@ angular.module('genie.map-managers', [])
                 .attr("class", "track-overlay")
                 .attr("style", "stroke-linecap: round; pointer-events: stroke; stroke-width: 50px; stroke: transparent; ")
 
-            slider.insert("g", ".track-overlay")
+            this.slider.insert("g", ".track-overlay")
                 .attr("class", "ticks")
                 .attr("style", "font: 10px sans-serif;")
                 .attr("transform", "translate(0," + 18 + ")")
@@ -288,13 +325,13 @@ angular.module('genie.map-managers', [])
                 .attr("text-anchor", "middle")
                 .text(function(d) { return d; });
 
-            this.start_marker = slider.insert("circle", ".track-overlay")
+            this.start_marker = this.slider.insert("circle", ".track-overlay")
                 .attr("class", "handle")
                 .attr("style", "fill: #fff; stroke: #000; stroke-opacity: 0.5; stroke-width: 1.25px;")
                 .attr("r", 9)
                 .attr("cx", this.date_scale(mapManager.displayMinTime));
 
-            this.finish_marker = slider.insert("circle", ".track-overlay")
+            this.finish_marker = this.slider.insert("circle", ".track-overlay")
                 .attr("class", "handle")
                 .attr("style", "fill: #fff; stroke: #000; stroke-opacity: 0.5; stroke-width: 1.25px;")
                 .attr("r", 9)
