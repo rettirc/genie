@@ -21,15 +21,37 @@ angular.module('genie.attribute-ctrl', [])
 	}
 
 
-	function fetchData() {
+	function fetchData(filter) {
 		$http.get("/api/people").then(function successCallback(response) {
-			$scope.indiData = response.data;
+			if (filter != null) {
+				data = [];
+				for (var i = 0; i < response.data.length; i++) {
+					if (response.data[i].GivenName == filter ||
+							response.data[i].Surname == filter) {
+						data.push(response.data[i])
+					}
+				}
+				$scope.indiData = data;
+			} else {
+				$scope.indiData = response.data;
+			}
 			showPeople();
 		}, function errorCallback(response) {
 			console.error(response);
 		});
 		$http.get("/api/attributeData").then(function successCallback(response) {
-			showAttributes(response.data);
+			if (filter != null) {
+				data = [];
+				for (var i = 0; i < response.data.length; i++) {
+					if (response.data[i].category == filter ||
+							response.data[i].education == filter) {
+						data.push(response.data[i])
+					}
+				}
+				showAttributes(data)
+			} else {
+				showAttributes(response.data);
+			}
 		}, function errorCallback(response) {
 			console.error(error);
 		})
@@ -43,18 +65,17 @@ angular.module('genie.attribute-ctrl', [])
 		// console.log($scope.indiData[0]);
 		angular.element(document.querySelector('#individualMenu')).empty();
 		var dataDrivenTable = d3.select("#individualMenu").selectAll("tr").data($scope.indiData);
-		var rows = dataDrivenTable.enter()
-			.append("tr");
-		rows.append("td")
-			.text(function(d) { return d.GivenName; });
-		rows.append("td")
-			.text(function(d) { return d.Surname; });
-		rows.append("td")
-			.text(function(d) {
+		var rows = dataDrivenTable.enter().append("tr");
+		rows.append("td").text(function(d) {
+			return d.GivenName;
+		});
+		rows.append("td").text(function(d) {
+			return d.Surname;
+		});
+		rows.append("td").text(function(d) {
 				return d.education;
 			});
-		rows.append("td")
-			.text(function(d) {
+		rows.append("td").text(function(d) {
 				return d.profession;
 			});
 		rows.on("click", function(d) {
@@ -102,6 +123,11 @@ angular.module('genie.attribute-ctrl', [])
 		// console.log($scope.professionSelect);
 	}
 
+	$("#filterButton").click(function() {
+		var filter = $scope.filter
+		fetchData(filter)
+	})
+
 	$("#submitButton").click(function() {
 		//Get stuff
 		let idir = $scope.idir;
@@ -117,7 +143,7 @@ angular.module('genie.attribute-ctrl', [])
 					url:"/api/uploadNewProfession?profID=" + profID + "&newProf=" + newProf
 				}).then(function successCallback(response) {
 					console.log(response);
-					fetchData();
+					fetchData(null);
 				}, function errorCallback(response) {
 					console.log(response);
 				});
@@ -133,13 +159,13 @@ angular.module('genie.attribute-ctrl', [])
 			url:"/api/uploadAttribute?idir=" + idir + "&newProf=" + newProf + "&newEdu=" + newEdu
 		}).then(function successCallback(response) {
 			console.log(response);
-			fetchData();
+			fetchData(null);
 		}, function errorCallback(response) {
 			console.log(response);
 		});
 	})
 
-	fetchData();
+	fetchData(null);
 
 	// TODO: Add functionality to update database
 	// TODO: Add filters
