@@ -50,7 +50,7 @@ angular.module('genie.map-managers', [])
             .on("zoom", mapManager.zoomed);
 
         function zoomed() {
-            console.log("going", d3.event.transform);
+            // console.log("going", d3.event.transform);
             mapManager.g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
             // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
             mapManager.g.attr("transform", d3.event.transform); // updated for d3 v4
@@ -248,10 +248,10 @@ angular.module('genie.map-managers', [])
                                     var newDate = mapManager.mapUtil.formatDate(locs[i].date);
                                     if (newDate > 0 && mapManager.overallMinTime > newDate) {
                                         mapManager.overallMinTime = newDate
-                                        console.log("change min", newDate);
+                                        // console.log("change min", newDate);
                                     } else if (mapManager.overallMaxTime < newDate){
                                         mapManager.overallMaxTime = newDate
-                                        console.log("change max", newDate);
+                                        // console.log("change max", newDate);
                                     }
                                 }
                             }

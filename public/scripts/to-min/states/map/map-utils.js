@@ -103,9 +103,9 @@ angular.module('genie.map-utils', [])
                         if (locDict[element] != null) {
                             locations.push(new locDate(locDict[element],
                                 this.formatDate(all_json[i].date)));
-                                if (this.formatDate(all_json[i].date) == 804) {
-                                    console.log(locDict[element]);
-                                }
+                                // if (this.formatDate(all_json[i].date) == 804) {
+                                //     console.log(locDict[element]);
+                                // }
                             isState = false;
                         } else if (mapManager.mapScopeTracker.mapScope == 'Globe'
                             && this.stateNameDict[element] != null) {
