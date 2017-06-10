@@ -1,6 +1,10 @@
 div
   h1 Attribute Edit Screen
   div(id="individualTable" class="col-lg-6" style="height: 100vh; overflow: scroll;")
+    form
+      label(for="filterInput") Search:
+      input(type="text" id="filterInput" ng-model="filter")
+      button(type="submit" id="filterButton" class="btn btn-info") Enter
     table(class="table table-striped")
       thead
         tr
